@@ -1,0 +1,31 @@
+{
+  "name": "battleships",
+  "version": "1.0.0",
+  "description": "TODO: Make this readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiligentViking/battleships.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DiligentViking/battleships/issues"
+  },
+  "homepage": "https://github.com/DiligentViking/battleships#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.6",
+    "@eslint/css": "^0.14.1",
+    "@eslint/js": "^9.39.2",
+    "@eslint/json": "^0.14.0",
+    "@eslint/markdown": "^7.5.1",
+    "eslint": "^9.39.2",
+    "globals": "^17.1.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "prettier": "3.8.1"
+  }
+}

@@ -4,7 +4,8 @@
   "description": "TODO: Make this readme",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest ./src/scripts/tests",
+    "check-format": "npx eslint ./src ; npx prettier ./src --check"
   },
   "repository": {
     "type": "git",

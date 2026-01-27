@@ -5,10 +5,13 @@ export function View(root) {
     renderBoard(board, playerNum) {
       const shipIcons = [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
       const boardElem = playerNum === 1 ? p1Board : p2Board;
-      for (const row of board) {
-        for (const cell of row) {
+      for (let i = 0; i < board.length; i++) {
+        const row = board[i];
+        for (let j = 0; j < row.length; j++) {
+          const cell = board[i][j];
           const cellElem = document.createElement("button");
           cellElem.textContent = shipIcons[cell];
+          cellElem.dataset.coord = `${i},${j}`;
           boardElem.appendChild(cellElem);
         }
       }

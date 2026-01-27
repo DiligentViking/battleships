@@ -1,0 +1,5 @@
+Random Unique Ideas:
+
+-Have two computers (a dumb one and a smart one) play against each other
+
+-Try to play two games at the same time (as this is very modular).

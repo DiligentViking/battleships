@@ -18,6 +18,10 @@ export function Gameboard() {
     board: createBoard(),
     numSunk: 0,
 
+    getBoard() {
+      return this.board;
+    },
+
     addShip(shipLength) {
       this.ships.push(Ship(shipLength));
     },

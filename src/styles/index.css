@@ -1,0 +1,24 @@
+body {
+  height: 98vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-area {
+  display: flex;
+  gap: 100px
+}
+
+.p1-board,
+.p2-board {
+  display: grid;
+  grid-template-columns: repeat(10, 25px);
+  grid-template-rows: repeat(10, 25px);
+}
+
+.p1-board > button,
+.p2-board > button {
+  padding-left: 2px;
+}

@@ -1,5 +1,6 @@
 export function Ship(length) {
   return {
+    length,
     hits: 0,
 
     hit() {
@@ -7,7 +8,7 @@ export function Ship(length) {
     },
 
     isSunk() {
-      return this.hits === length;
+      return this.hits === this.length;
     },
   };
 }

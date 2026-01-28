@@ -7,14 +7,24 @@ export function Controller(player1, player2, view) {
       this.runGame();
     },
 
+    checkGameEnd() {
+      if (player1.gameboard.areAllShipsSunk()) {
+        view.showWinner(2);
+      } else if (player2.gameboard.areAllShipsSunk()) {
+        view.showWinner(1);
+      }
+    },
+
     runGame() {
-      function attackCell(cellElem, playerNum) {
+      const attackCell = (cellElem, playerNum) => {
         const player = playerNum === 1 ? player1 : player2;
         const coords = cellElem.dataset.coord.split(",");
         const board = player.gameboard.getBoard();
 
         player.gameboard.receiveAttack(coords);
         view.renderBoard(board, playerNum);
+
+        this.checkGameEnd();
       }
 
       let turn = 1;
@@ -29,7 +39,8 @@ export function Controller(player1, player2, view) {
             computerMoves.push([i, j]);
           }
         }
-        (() => {  // Fisher-Yates shuffle found online
+        // Fisher-Yates shuffle found online
+        (() => {
           const array = computerMoves;
           for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));

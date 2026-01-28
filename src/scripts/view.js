@@ -1,12 +1,14 @@
 export function View(root) {
   const p1Board = root.querySelector(".p1-board");
   const p2Board = root.querySelector(".p2-board");
+  const p1Result = root.querySelector(".p1-result");
+  const p2Result = root.querySelector(".p2-result");
   return {
-    eventElems: {p1Board, p2Board},
+    eventElems: { p1Board, p2Board },
     renderBoard(board, playerNum) {
       const shipIcons = [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
       const boardElem = playerNum === 1 ? p1Board : p2Board;
-      boardElem.textContent = '';
+      boardElem.textContent = "";
       for (let i = 0; i < board.length; i++) {
         const row = board[i];
         for (let j = 0; j < row.length; j++) {
@@ -17,6 +19,10 @@ export function View(root) {
           boardElem.appendChild(cellElem);
         }
       }
+    },
+    showWinner(playerNum) {
+      const playerResultElem = playerNum === 1 ? p1Result : p2Result;
+      playerResultElem.textContent = "you win";
     },
   };
 }

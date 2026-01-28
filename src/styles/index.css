@@ -8,7 +8,12 @@ body {
 
 .game-area {
   display: flex;
-  gap: 100px
+  gap: 100px;
+}
+
+.p1-area,
+.p2-area {
+  position: relative;
 }
 
 .p1-board,
@@ -21,4 +26,10 @@ body {
 .p1-board > button,
 .p2-board > button {
   padding-left: 2px;
+}
+
+.p1-result,
+.p2-result {
+  position: absolute;
+  top: -40px;
 }

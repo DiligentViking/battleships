@@ -29,18 +29,25 @@ export function Controller(player1, player2, view) {
             computerMoves.push([i, j]);
           }
         }
+        (() => {  // Fisher-Yates shuffle found online
+          const array = computerMoves;
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+        })();
       }
 
       p2Board.addEventListener("click", (e) => {
-        if (e.target.tagName !== "BUTTON") return;
         if (turn !== 1) return;
+        if (e.target.tagName !== "BUTTON") return;
+        if (["m", "x"].includes(e.target.textContent)) return;
 
-        attackCell(e.target);
+        attackCell(e.target, 2);
 
         turn = 2;
         if (player2.type !== "computer") return;
-        const move =
-          computerMoves[Math.round(Math.random() * computerMoves.length)];
+        const move = computerMoves.pop();
         const cellToAttack = document.querySelector(
           `.p1-board > [data-coord='${move[0]},${move[1]}']`,
         );
@@ -48,10 +55,10 @@ export function Controller(player1, player2, view) {
       });
 
       p1Board.addEventListener("click", (e) => {
-        if (e.target.tagName !== "BUTTON") return;
         if (turn !== 2) return;
+        if (e.target.tagName !== "BUTTON") return;
 
-        attackCell(e.target);
+        attackCell(e.target, 1);
 
         turn = 1;
       });

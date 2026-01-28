@@ -11,6 +11,11 @@ body {
   gap: 100px;
 }
 
+.ship-placer {
+  position: absolute;
+  top: -45px;
+}
+
 .p1-area,
 .p2-area {
   position: relative;

@@ -22,18 +22,16 @@ export function Gameboard() {
       return this.board;
     },
 
-    addShip(shipLength) {
-      this.ships.push(Ship(shipLength));
-    },
-
-    placeShip(shipID, coords) {
+    placeShip(shipID, shipLength, coords) {
       const [y, x] = coords;
-      const ship = this.ships[shipID];
-      for (let i = 0; i < ship.length; i++) {
-        if (this.board[y][x + i] !== 0)
-          throw new Error("Cell out of bounds or already taken");
+      for (let i = 0; i < shipLength; i++) {
+        if (this.board[y][x + i] !== 0) {
+          console.error("Cell out of bounds or already taken");
+          return -1;
+        }
         this.board[y][x + i] = shipID;
       }
+      this.ships.push(Ship(shipLength));
     },
 
     receiveAttack(coords) {

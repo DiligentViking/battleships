@@ -1,10 +1,11 @@
 export function View(root) {
+  const placeShipInput = root.querySelector("#place-ship");
   const p1Board = root.querySelector(".p1-board");
   const p2Board = root.querySelector(".p2-board");
   const p1Result = root.querySelector(".p1-result");
   const p2Result = root.querySelector(".p2-result");
   return {
-    eventElems: { p1Board, p2Board },
+    eventElems: { placeShipInput, p1Board, p2Board },
     renderBoard(board, playerNum) {
       const shipIcons = [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
       const boardElem = playerNum === 1 ? p1Board : p2Board;

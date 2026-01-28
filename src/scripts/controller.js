@@ -4,8 +4,44 @@ export function Controller(player1, player2, view) {
       view.renderBoard(player1.gameboard.getBoard(), 1);
       view.renderBoard(player2.gameboard.getBoard(), 2);
 
-      this.runGame();
+      const { placeShipInput } = view.eventElems;
+      let shipLength = 1;
+      let count = 1;
+      placeShipInput.addEventListener("keyup", (e) => {
+        if (e.key !== "Enter") return;
+
+        const inputCoords = placeShipInput.value;
+        const commaDelimited = inputCoords.split(",");
+        const spaceDelimited = inputCoords.split(" ");
+        const coords =
+          commaDelimited.length === 2
+            ? [+commaDelimited[0], +commaDelimited[1]]
+            : spaceDelimited.length === 2
+              ? [+spaceDelimited[0], +spaceDelimited[1]]
+              : -1;
+        if (coords === -1) return;
+
+        let validity;
+        validity = player1.gameboard.placeShip(count, shipLength, coords);
+        if (validity === -1) return;
+
+        view.renderBoard(player1.gameboard.getBoard(), 1);
+
+        shipLength++;
+        count++;
+
+        if (count === 7) this.runGame();
+      });
     },
+
+    // setUpGame() {
+    //   for (let i = 1; i <= 6; i++) {
+
+    //     view.renderBoard(player1.gameboard.getBoard(), 1);
+    //   }
+
+    //   // TOOD: Computer Setup
+    // },
 
     checkGameEnd() {
       if (player1.gameboard.areAllShipsSunk()) {
@@ -25,7 +61,7 @@ export function Controller(player1, player2, view) {
         view.renderBoard(board, playerNum);
 
         this.checkGameEnd();
-      }
+      };
 
       let turn = 1;
       const { p1Board, p2Board } = view.eventElems;

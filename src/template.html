@@ -1,26 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>battleships</title>
-  <link rel="stylesheet" href="./styles/index.css">
-  <script type="module" src="./scripts/index.js"></script>
-</head>
-<body>
-  <div class="game-area">
-    <div class="p1-area">
-      <div class="ship-placer">
-        <label for="place-ship">Place Ship: 🛶</label>
-        <input id="place-ship" type="text" placeholder='x y'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>battleships</title>
+    <link rel="stylesheet" href="./styles/index.css" />
+    <script type="module" src="./scripts/index.js"></script>
+  </head>
+  <body>
+    <div class="game-area">
+      <div class="p1-area">
+        <div class="ship-placer">
+          <label for="place-ship">Place Ship: 🛶</label>
+          <input id="place-ship" type="text" placeholder="x y" />
+        </div>
+        <p class="p1-result"></p>
+        <div class="p1-board"></div>
       </div>
-      <p class="p1-result"></p>
-      <div class="p1-board board"></div>
+      <div class="p2-area">
+        <p class="p2-result"></p>
+        <div class="p2-board"></div>
+      </div>
     </div>
-    <div class="p2-area">
-      <p class="p2-result"></p>
-      <div class="p2-board board"></div>
-    </div>
-  </div>
-</body>
+  </body>
 </html>

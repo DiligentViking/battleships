@@ -23,7 +23,11 @@ export function View(root) {
         for (let j = 0; j < row.length; j++) {
           const cell = board[i][j];
           const cellElem = document.createElement("button");
-          cellElem.textContent = this.shipIcons[cell] ?? cell;
+          if (cell.shipID === 0) {
+            cellElem.textContent = cell.hit ? "m" : " ";
+          } else {
+            cellElem.textContent = cell.hit ? "x" : this.shipIcons[cell.shipID];
+          }
           cellElem.dataset.coord = `${i},${j}`;
           boardElem.appendChild(cellElem);
         }

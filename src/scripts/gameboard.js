@@ -6,7 +6,7 @@ export function Gameboard() {
     for (let i = 0; i < 10; i++) {
       const row = [];
       for (let j = 0; j < 10; j++) {
-        row.push(0);
+        row.push({shipID: 0, hit: false});
       }
       grid.push(row);
     }
@@ -25,26 +25,25 @@ export function Gameboard() {
     placeShip(shipID, shipLength, coords) {
       const [y, x] = coords;
       for (let i = 0; i < shipLength; i++) {
-        if (this.board[y][x + i] !== 0) {
+        if (this.board[y][x + i]?.shipID !== 0) {
           console.error("Cell out of bounds or already taken");
           return -1;
         }
       }
       for (let i = 0; i < shipLength; i++) {
-        this.board[y][x + i] = shipID;
+        this.board[y][x + i].shipID = shipID;
       }
       this.ships.push(Ship(shipLength));
     },
 
     receiveAttack(coords) {
       const [y, x] = coords;
-      if (this.board[y][x] !== 0) {
-        this.ships[this.board[y][x]].hit();
-        if (this.ships[this.board[y][x]].isSunk()) this.numSunk++;
-        this.board[y][x] = "x";
-      } else {
-        this.board[y][x] = "m";
+      const shipID = this.board[y][x].shipID;
+      if (shipID !== 0) {
+        this.ships[shipID].hit();
+        if (this.ships[shipID].isSunk()) this.numSunk++;
       }
+      this.board[y][x].hit = true;
     },
 
     areAllShipsSunk() {

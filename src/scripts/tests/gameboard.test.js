@@ -18,13 +18,13 @@ test("places a ship horizontally at a coordinate", () => {
 test("does not place ship out of bounds", () => {
   const gameboard = Gameboard();
 
-  expect(() => gameboard.placeShip(1, 3, [1, 8])).toThrow(Error);
+  expect(gameboard.placeShip(1, 3, [1, 8])).toBe(-1);
 });
 test("does not place ship in already taken cells", () => {
   const gameboard = Gameboard();
 
   gameboard.placeShip(1, 3, [1, 4]);
-  expect(() => gameboard.placeShip(2, 5, [1, 2])).toThrow(Error);
+  expect(gameboard.placeShip(2, 5, [1, 2])).toBe(-1);
 });
 
 test("increments ship hits when a ship cell is hit", () => {
@@ -39,14 +39,14 @@ test("marks ship cell when the cell is hit", () => {
   gameboard.placeShip(1, 3, [1, 2]);
 
   gameboard.receiveAttack([1, 3]);
-  expect(gameboard.board[1][3]).toBe("x");
+  expect(gameboard.board[1][3]).toEqual({"hit": true, "shipID": 1});
 });
 test("marks empty cell when the cell is hit", () => {
   const gameboard = Gameboard();
   gameboard.placeShip(1, 3, [1, 2]);
 
   gameboard.receiveAttack([2, 3]);
-  expect(gameboard.board[2][3]).toBe("m");
+  expect(gameboard.board[2][3]).toEqual({"hit": true, "shipID": 0});
 });
 
 test("knows if all ships are sunk", () => {

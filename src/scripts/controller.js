@@ -23,11 +23,9 @@ export function Controller(player1, player2, view) {
             : spaceDelimited.length === 2
               ? [+spaceDelimited[0], +spaceDelimited[1]]
               : -1;
-        if (coords === -1) return;
+        if (coords === -1) throw new Error("Invalid coord  format");
 
-        let validity;
-        validity = player1.gameboard.placeShip(count, shipLength, coords);
-        if (validity === -1) return;
+        player1.gameboard.placeShip(count, shipLength, coords);
 
         view.renderBoard(player1.gameboard.getBoard(), 1);
 
@@ -54,9 +52,11 @@ export function Controller(player1, player2, view) {
           Math.round(Math.random() * 9),
         ];
 
-        let validity;
-        validity = player2.gameboard.placeShip(count, shipLength, coords);
-        if (validity === -1) continue;
+        try {
+          player2.gameboard.placeShip(count, shipLength, coords);
+        } catch {
+          continue;
+        }
 
         view.renderBoard(player2.gameboard.getBoard(), 2);
 

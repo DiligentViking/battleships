@@ -6,7 +6,7 @@ export function Gameboard() {
     for (let i = 0; i < 10; i++) {
       const row = [];
       for (let j = 0; j < 10; j++) {
-        row.push({shipID: 0, hit: false});
+        row.push({ shipID: 0, hit: false });
       }
       grid.push(row);
     }
@@ -26,8 +26,7 @@ export function Gameboard() {
       const [y, x] = coords;
       for (let i = 0; i < shipLength; i++) {
         if (this.board[y][x + i]?.shipID !== 0) {
-          console.error("Cell out of bounds or already taken");
-          return -1;
+          throw new Error("Cell out of bounds or already taken");
         }
       }
       for (let i = 0; i < shipLength; i++) {

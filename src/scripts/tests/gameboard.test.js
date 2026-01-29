@@ -18,13 +18,13 @@ test("places a ship horizontally at a coordinate", () => {
 test("does not place ship out of bounds", () => {
   const gameboard = Gameboard();
 
-  expect(gameboard.placeShip(1, 3, [1, 8])).toBe(-1);
+  expect(() => gameboard.placeShip(1, 3, [1, 8])).toThrow(Error);
 });
 test("does not place ship in already taken cells", () => {
   const gameboard = Gameboard();
 
   gameboard.placeShip(1, 3, [1, 4]);
-  expect(gameboard.placeShip(2, 5, [1, 2])).toBe(-1);
+  expect(() => gameboard.placeShip(2, 5, [1, 2])).toThrow(Error);
 });
 
 test("increments ship hits when a ship cell is hit", () => {

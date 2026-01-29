@@ -6,6 +6,10 @@ body {
   align-items: center;
 }
 
+.hide {
+  visibility: hidden;
+}
+
 .game-area {
   display: flex;
   gap: 100px;

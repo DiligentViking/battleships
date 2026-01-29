@@ -1,13 +1,21 @@
 export function View(root) {
+  const shipPlacer = root.querySelector(".ship-placer");
+  const placeShipLabel = root.querySelector("label[for='place-ship']");
   const placeShipInput = root.querySelector("#place-ship");
   const p1Board = root.querySelector(".p1-board");
   const p2Board = root.querySelector(".p2-board");
   const p1Result = root.querySelector(".p1-result");
   const p2Result = root.querySelector(".p2-result");
   return {
-    eventElems: { placeShipInput, p1Board, p2Board },
+    eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
+    shipIcons: [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"],
+    showPlaceShipIcon(shipID) {
+      placeShipLabel.textContent = "Place Ship: " + this.shipIcons[shipID];
+    },
+    hideShipPlacer() {
+      shipPlacer.classList.add("hide");
+    },
     renderBoard(board, playerNum) {
-      const shipIcons = [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
       const boardElem = playerNum === 1 ? p1Board : p2Board;
       boardElem.textContent = "";
       for (let i = 0; i < board.length; i++) {
@@ -15,7 +23,7 @@ export function View(root) {
         for (let j = 0; j < row.length; j++) {
           const cell = board[i][j];
           const cellElem = document.createElement("button");
-          cellElem.textContent = shipIcons[cell] ?? cell;
+          cellElem.textContent = this.shipIcons[cell] ?? cell;
           cellElem.dataset.coord = `${i},${j}`;
           boardElem.appendChild(cellElem);
         }

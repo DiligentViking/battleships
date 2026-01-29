@@ -30,7 +30,13 @@ export function Controller(player1, player2, view) {
         shipLength++;
         count++;
 
-        if (count === 7) this.runGame();
+        view.showPlaceShipIcon(count);
+
+        if (count === 7) {
+          view.hideShipPlacer();
+
+          this.runGame();
+        }
       });
     },
 

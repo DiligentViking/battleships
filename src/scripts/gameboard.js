@@ -29,6 +29,8 @@ export function Gameboard() {
           console.error("Cell out of bounds or already taken");
           return -1;
         }
+      }
+      for (let i = 0; i < shipLength; i++) {
         this.board[y][x + i] = shipID;
       }
       this.ships.push(Ship(shipLength));

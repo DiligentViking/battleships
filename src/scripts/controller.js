@@ -4,6 +4,10 @@ export function Controller(player1, player2, view) {
       view.renderBoard(player1.gameboard.getBoard(), 1);
       view.renderBoard(player2.gameboard.getBoard(), 2);
 
+      this.runPlayerSetup();
+    },
+
+    runPlayerSetup() {
       const { placeShipInput } = view.eventElems;
       let shipLength = 1;
       let count = 1;
@@ -34,10 +38,33 @@ export function Controller(player1, player2, view) {
 
         if (count === 7) {
           view.hideShipPlacer();
-
-          this.runGame();
+          if (player2.type === "computer") {
+            this.runComputerSetup();
+          }
         }
       });
+    },
+
+    runComputerSetup() {
+      let shipLength = 1;
+      let count = 1;
+      while (count !== 7) {
+        const coords = [
+          Math.round(Math.random() * 9),
+          Math.round(Math.random() * 9),
+        ];
+
+        let validity;
+        validity = player2.gameboard.placeShip(count, shipLength, coords);
+        if (validity === -1) continue;
+
+        view.renderBoard(player2.gameboard.getBoard(), 2);
+
+        shipLength++;
+        count++;
+      }
+
+      this.runGame();
     },
 
     // setUpGame() {

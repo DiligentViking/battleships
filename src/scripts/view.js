@@ -16,6 +16,24 @@ export function View(root) {
       placeShipLabel.textContent = "Place Ship: " + SHIPICONS[shipID];
     },
 
+    validatePlaceShipInput() {
+      const inputCoords = placeShipInput.value;
+
+      const commaDelimited = inputCoords.split(",");
+      const spaceDelimited = inputCoords.split(" ");
+
+      const coords =
+        commaDelimited.length === 2
+          ? [+commaDelimited[0], +commaDelimited[1]]
+          : spaceDelimited.length === 2
+            ? [+spaceDelimited[0], +spaceDelimited[1]]
+            : -1;
+
+      if (coords === -1) throw new Error("Invalid coord format");
+
+      return coords;
+    },
+
     hideShipPlacer() {
       shipPlacer.classList.add("hide");
     },

@@ -14,16 +14,7 @@ export function Controller(player1, player2, view) {
       placeShipInput.addEventListener("keyup", (e) => {
         if (e.key !== "Enter") return;
 
-        const inputCoords = placeShipInput.value;
-        const commaDelimited = inputCoords.split(",");
-        const spaceDelimited = inputCoords.split(" ");
-        const coords =
-          commaDelimited.length === 2
-            ? [+commaDelimited[0], +commaDelimited[1]]
-            : spaceDelimited.length === 2
-              ? [+spaceDelimited[0], +spaceDelimited[1]]
-              : -1;
-        if (coords === -1) throw new Error("Invalid coord format");
+        const coords = view.validatePlaceShipInput();
 
         player1.gameboard.placeShip(count, shipLength, coords);
 
@@ -79,10 +70,9 @@ export function Controller(player1, player2, view) {
       const attackCell = (cellElem, playerNum) => {
         const player = playerNum === 1 ? player1 : player2;
         const coords = cellElem.dataset.coord.split(",");
-        const board = player.gameboard.getBoard();
 
         player.gameboard.receiveAttack(coords);
-        view.renderBoard(board, playerNum);
+        view.renderBoard(player.gameboard.getBoard(), playerNum);
 
         this.checkGameEnd();
       };
@@ -112,7 +102,7 @@ export function Controller(player1, player2, view) {
       p2Board.addEventListener("click", (e) => {
         if (turn !== 1) return;
         if (e.target.tagName !== "BUTTON") return;
-        if (["m", "x"].includes(e.target.textContent)) return;
+        if (["m", "x"].includes(e.target.textContent)) return; // TODO: fix coupledness
 
         attackCell(e.target, 2);
 

@@ -1,4 +1,5 @@
 import { Ship } from "./ship.js";
+import { deepCopy } from "./utils.js";
 
 export function Gameboard() {
   const ships = [null];
@@ -15,7 +16,7 @@ export function Gameboard() {
 
   return {
     getShips() {
-      return [...ships];
+      return deepCopy(ships);
     },
 
     getNumSunk() {
@@ -23,7 +24,7 @@ export function Gameboard() {
     },
 
     getBoard() {
-      return [...board];
+      return deepCopy(board);
     },
 
     placeShip(shipID, shipLength, coords) {

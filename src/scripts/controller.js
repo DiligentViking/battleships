@@ -23,7 +23,7 @@ export function Controller(player1, player2, view) {
             : spaceDelimited.length === 2
               ? [+spaceDelimited[0], +spaceDelimited[1]]
               : -1;
-        if (coords === -1) throw new Error("Invalid coord  format");
+        if (coords === -1) throw new Error("Invalid coord format");
 
         player1.gameboard.placeShip(count, shipLength, coords);
 
@@ -66,15 +66,6 @@ export function Controller(player1, player2, view) {
 
       this.runGame();
     },
-
-    // setUpGame() {
-    //   for (let i = 1; i <= 6; i++) {
-
-    //     view.renderBoard(player1.gameboard.getBoard(), 1);
-    //   }
-
-    //   // TOOD: Computer Setup
-    // },
 
     checkGameEnd() {
       if (player1.gameboard.areAllShipsSunk()) {

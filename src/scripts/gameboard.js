@@ -27,6 +27,11 @@ export function Gameboard() {
       return deepCopy(board);
     },
 
+    getCell(coords) {
+      const [y, x] = coords;
+      return {...board[y][x]};
+    },
+
     placeShip(shipID, shipLength, coords) {
       const [y, x] = coords;
       for (let i = 0; i < shipLength; i++) {

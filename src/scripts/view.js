@@ -29,9 +29,14 @@ export function View(root) {
             ? [+spaceDelimited[0], +spaceDelimited[1]]
             : -1;
 
-      if (coords === -1) throw new Error("Invalid coord format");
+      if (coords === -1) throw new Error("Invalid coords format");
 
       return coords;
+    },
+
+    parseCellCoords(cellElem) {
+      const coordsString = cellElem.dataset.coords;
+      return coordsString.split(',').map((item) => +item);
     },
 
     hideShipPlacer() {
@@ -49,7 +54,7 @@ export function View(root) {
           const cell = board[i][j];
 
           const cellElem = document.createElement("button");
-          cellElem.dataset.coord = `${i},${j}`;
+          cellElem.dataset.coords = `${i},${j}`;
 
           if (cell.shipID === 0) {
             cellElem.textContent = cell.hit ? "m" : " ";

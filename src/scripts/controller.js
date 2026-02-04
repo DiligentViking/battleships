@@ -20,14 +20,11 @@ export function Controller(player1, player2, view) {
     return moves;
   }
 
-  function attackCell(cellElem, playerNum) {
+  function attackCell(coords, playerNum) {
     const player = playerNum === 1 ? player1 : player2;
-    const coords = cellElem.dataset.coord.split(",");
 
     player.gameboard.receiveAttack(coords);
     view.renderBoard(player.gameboard.getBoard(), playerNum);
-
-    checkGameEnd();
   }
 
   function checkGameEnd() {
@@ -111,24 +108,31 @@ export function Controller(player1, player2, view) {
     p2Board.addEventListener("click", (e) => {
       if (turn !== 1) return;
       if (e.target.tagName !== "BUTTON") return;
-      if (["m", "x"].includes(e.target.textContent)) return; // TODO: fix coupledness
 
-      attackCell(e.target, 2);
+      const coords = view.parseCellCoords(e.target);
+      if (player1.gameboard.getCell(coords).hit) return;
+      attackCell(coords, 2);
+
+      checkGameEnd();
 
       turn = 2;
-      if (player2.type !== "computer") return;
-      const move = computerMoves.pop();
-      const cellToAttack = document.querySelector(
-        `.p1-board > [data-coord='${move[0]},${move[1]}']`,
-      );
-      cellToAttack.click();
+      if (player2.type === "computer") {
+        const move = computerMoves.pop();
+        const cellToAttack = document.querySelector(
+          `.p1-board > [data-coords='${move[0]},${move[1]}']`,
+        );
+        cellToAttack.click();
+      }
     });
 
     p1Board.addEventListener("click", (e) => {
       if (turn !== 2) return;
       if (e.target.tagName !== "BUTTON") return;
 
-      attackCell(e.target, 1);
+      const coords = view.parseCellCoords(e.target);
+      attackCell(coords, 1);
+
+      checkGameEnd();
 
       turn = 1;
     });

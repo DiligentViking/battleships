@@ -44,15 +44,15 @@ export function Controller(player1, player2, view) {
     runPlayerSetup();
   }
 
-  function runPlayerSetup(numShips = 7) {  // still a lil magic with the [null] thing
+  function runPlayerSetup(numShips = 6) {
     const { placeShipInput } = view.eventElems;
-    let count = 1;
+    let count = 0;
 
     placeShipInput.addEventListener("keyup", (e) => {
       if (e.key !== "Enter") return;
 
       const shipID = count;
-      const shipLength = count;
+      const shipLength = count + 1;
       const coords = view.validatePlaceShipInput();
 
       player1.gameboard.placeShip(shipID, shipLength, coords);
@@ -71,11 +71,12 @@ export function Controller(player1, player2, view) {
     });
   }
 
-  function runComputerSetup(numShips = 7) {
-    let count = 1;
+  function runComputerSetup(numShips = 6) {
+    let count = 0;
+
     while (count !== numShips) {
       const shipID = count;
-      const shipLength = count;
+      const shipLength = count + 1;
       const coords = [
         Math.round(Math.random() * player1.gameboard.getBoardHeight()),
         Math.round(Math.random() * player1.gameboard.getBoardWidth()),

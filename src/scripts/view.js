@@ -7,13 +7,13 @@ export function View(root) {
   const p1Result = root.querySelector(".p1-result");
   const p2Result = root.querySelector(".p2-result");
 
-  const SHIPICONS = [" ", "🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
+  const SHIPICONS = ["🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
 
   return {
     eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
 
     showPlaceShipIcon(shipID) {
-      placeShipLabel.textContent = "Place Ship: " + SHIPICONS[shipID];
+      placeShipLabel.textContent = "Place Ship: " + (SHIPICONS[shipID] ?? "S");
     },
 
     validatePlaceShipInput() {
@@ -36,7 +36,7 @@ export function View(root) {
 
     parseCellCoords(cellElem) {
       const coordsString = cellElem.dataset.coords;
-      return coordsString.split(',').map((item) => +item);
+      return coordsString.split(",").map((item) => +item);
     },
 
     hideShipPlacer() {
@@ -56,10 +56,10 @@ export function View(root) {
           const cellElem = document.createElement("button");
           cellElem.dataset.coords = `${i},${j}`;
 
-          if (cell.shipID === 0) {
+          if (cell.shipID === null) {
             cellElem.textContent = cell.hit ? "m" : " ";
           } else {
-            cellElem.textContent = cell.hit ? "x" : SHIPICONS[cell.shipID];
+            cellElem.textContent = cell.hit ? "x" : (SHIPICONS[cell.shipID] ?? "S");
           }
 
           boardElem.appendChild(cellElem);

@@ -1,128 +1,130 @@
 export function Controller(player1, player2, view) {
-  return {
-    init() {
+  function init() {
+    view.renderBoard(player1.gameboard.getBoard(), 1);
+    view.renderBoard(player2.gameboard.getBoard(), 2);
+
+    runPlayerSetup();
+  }
+
+  function runPlayerSetup() {
+    const { placeShipInput } = view.eventElems;
+    let shipLength = 1;
+    let count = 1;
+
+    placeShipInput.addEventListener("keyup", (e) => {
+      if (e.key !== "Enter") return;
+
+      const coords = view.validatePlaceShipInput();
+
+      player1.gameboard.placeShip(count, shipLength, coords);
       view.renderBoard(player1.gameboard.getBoard(), 1);
+
+      shipLength++;
+      count++;
+
+      view.showPlaceShipIcon(count);
+
+      if (count === 7) {
+        view.hideShipPlacer();
+        if (player2.type === "computer") {
+          runComputerSetup();
+        }
+      }
+    });
+  }
+
+  function runComputerSetup() {
+    let shipLength = 1;
+    let count = 1;
+    while (count !== 7) {
+      const coords = [
+        Math.round(Math.random() * 9),
+        Math.round(Math.random() * 9),
+      ];
+
+      try {
+        player2.gameboard.placeShip(count, shipLength, coords);
+      } catch {
+        continue;
+      }
+
       view.renderBoard(player2.gameboard.getBoard(), 2);
 
-      this.runPlayerSetup();
-    },
+      shipLength++;
+      count++;
+    }
 
-    runPlayerSetup() {
-      const { placeShipInput } = view.eventElems;
-      let shipLength = 1;
-      let count = 1;
+    runGame();
+  }
 
-      placeShipInput.addEventListener("keyup", (e) => {
-        if (e.key !== "Enter") return;
+  function checkGameEnd() {
+    if (player1.gameboard.areAllShipsSunk()) {
+      view.showWinner(2);
+    } else if (player2.gameboard.areAllShipsSunk()) {
+      view.showWinner(1);
+    }
+  }
 
-        const coords = view.validatePlaceShipInput();
+  function runGame() {
+    const attackCell = (cellElem, playerNum) => {
+      const player = playerNum === 1 ? player1 : player2;
+      const coords = cellElem.dataset.coord.split(",");
 
-        player1.gameboard.placeShip(count, shipLength, coords);
-        view.renderBoard(player1.gameboard.getBoard(), 1);
+      player.gameboard.receiveAttack(coords);
+      view.renderBoard(player.gameboard.getBoard(), playerNum);
 
-        shipLength++;
-        count++;
+      checkGameEnd();
+    };
 
-        view.showPlaceShipIcon(count);
+    let turn = 1;
+    const { p1Board, p2Board } = view.eventElems;
 
-        if (count === 7) {
-          view.hideShipPlacer();
-          if (player2.type === "computer") {
-            this.runComputerSetup();
-          }
+    const computerMoves = [];
+    if (player2.type === "computer") {
+      const board1 = player1.gameboard.getBoard();
+      for (let i = 0; i < board1.length; i++) {
+        const row = board1[i];
+        for (let j = 0; j < row.length; j++) {
+          computerMoves.push([i, j]);
         }
-      });
-    },
-
-    runComputerSetup() {
-      let shipLength = 1;
-      let count = 1;
-      while (count !== 7) {
-        const coords = [
-          Math.round(Math.random() * 9),
-          Math.round(Math.random() * 9),
-        ];
-
-        try {
-          player2.gameboard.placeShip(count, shipLength, coords);
-        } catch {
-          continue;
+      }
+      // Fisher-Yates shuffle found online
+      (() => {
+        const array = computerMoves;
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
         }
+      })();
+    }
 
-        view.renderBoard(player2.gameboard.getBoard(), 2);
+    p2Board.addEventListener("click", (e) => {
+      if (turn !== 1) return;
+      if (e.target.tagName !== "BUTTON") return;
+      if (["m", "x"].includes(e.target.textContent)) return; // TODO: fix coupledness
 
-        shipLength++;
-        count++;
-      }
+      attackCell(e.target, 2);
 
-      this.runGame();
-    },
+      turn = 2;
+      if (player2.type !== "computer") return;
+      const move = computerMoves.pop();
+      const cellToAttack = document.querySelector(
+        `.p1-board > [data-coord='${move[0]},${move[1]}']`,
+      );
+      cellToAttack.click();
+    });
 
-    checkGameEnd() {
-      if (player1.gameboard.areAllShipsSunk()) {
-        view.showWinner(2);
-      } else if (player2.gameboard.areAllShipsSunk()) {
-        view.showWinner(1);
-      }
-    },
+    p1Board.addEventListener("click", (e) => {
+      if (turn !== 2) return;
+      if (e.target.tagName !== "BUTTON") return;
 
-    runGame() {
-      const attackCell = (cellElem, playerNum) => {
-        const player = playerNum === 1 ? player1 : player2;
-        const coords = cellElem.dataset.coord.split(",");
+      attackCell(e.target, 1);
 
-        player.gameboard.receiveAttack(coords);
-        view.renderBoard(player.gameboard.getBoard(), playerNum);
+      turn = 1;
+    });
+  }
 
-        this.checkGameEnd();
-      };
-
-      let turn = 1;
-      const { p1Board, p2Board } = view.eventElems;
-
-      const computerMoves = [];
-      if (player2.type === "computer") {
-        const board1 = player1.gameboard.getBoard();
-        for (let i = 0; i < board1.length; i++) {
-          const row = board1[i];
-          for (let j = 0; j < row.length; j++) {
-            computerMoves.push([i, j]);
-          }
-        }
-        // Fisher-Yates shuffle found online
-        (() => {
-          const array = computerMoves;
-          for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-        })();
-      }
-
-      p2Board.addEventListener("click", (e) => {
-        if (turn !== 1) return;
-        if (e.target.tagName !== "BUTTON") return;
-        if (["m", "x"].includes(e.target.textContent)) return; // TODO: fix coupledness
-
-        attackCell(e.target, 2);
-
-        turn = 2;
-        if (player2.type !== "computer") return;
-        const move = computerMoves.pop();
-        const cellToAttack = document.querySelector(
-          `.p1-board > [data-coord='${move[0]},${move[1]}']`,
-        );
-        cellToAttack.click();
-      });
-
-      p1Board.addEventListener("click", (e) => {
-        if (turn !== 2) return;
-        if (e.target.tagName !== "BUTTON") return;
-
-        attackCell(e.target, 1);
-
-        turn = 1;
-      });
-    },
+  return {
+    init,
   };
 }

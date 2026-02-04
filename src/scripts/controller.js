@@ -44,25 +44,25 @@ export function Controller(player1, player2, view) {
     runPlayerSetup();
   }
 
-  function runPlayerSetup() {
+  function runPlayerSetup(numShips = 7) {  // still a lil magic with the [null] thing
     const { placeShipInput } = view.eventElems;
-    let shipLength = 1;
     let count = 1;
 
     placeShipInput.addEventListener("keyup", (e) => {
       if (e.key !== "Enter") return;
 
+      const shipID = count;
+      const shipLength = count;
       const coords = view.validatePlaceShipInput();
 
-      player1.gameboard.placeShip(count, shipLength, coords);
+      player1.gameboard.placeShip(shipID, shipLength, coords);
       view.renderBoard(player1.gameboard.getBoard(), 1);
 
-      shipLength++;
       count++;
 
       view.showPlaceShipIcon(count);
 
-      if (count === 7) {
+      if (count === numShips) {
         view.hideShipPlacer();
         if (player2.type === "computer") {
           runComputerSetup();
@@ -71,24 +71,24 @@ export function Controller(player1, player2, view) {
     });
   }
 
-  function runComputerSetup() {
-    let shipLength = 1;
+  function runComputerSetup(numShips = 7) {
     let count = 1;
-    while (count !== 7) {
+    while (count !== numShips) {
+      const shipID = count;
+      const shipLength = count;
       const coords = [
-        Math.round(Math.random() * 9),
-        Math.round(Math.random() * 9),
+        Math.round(Math.random() * player1.gameboard.getBoardHeight()),
+        Math.round(Math.random() * player1.gameboard.getBoardWidth()),
       ];
 
       try {
-        player2.gameboard.placeShip(count, shipLength, coords);
+        player2.gameboard.placeShip(shipID, shipLength, coords);
       } catch {
         continue;
       }
 
       view.renderBoard(player2.gameboard.getBoard(), 2);
 
-      shipLength++;
       count++;
     }
 
@@ -110,7 +110,7 @@ export function Controller(player1, player2, view) {
       if (e.target.tagName !== "BUTTON") return;
 
       const coords = view.parseCellCoords(e.target);
-      if (player1.gameboard.getCell(coords).hit) return;
+      if (player2.gameboard.getCellHit(coords)) return;
       attackCell(coords, 2);
 
       checkGameEnd();

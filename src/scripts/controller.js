@@ -78,8 +78,8 @@ export function Controller(player1, player2, view) {
       const shipID = count;
       const shipLength = count + 1;
       const coords = [
-        Math.round(Math.random() * player1.gameboard.getBoardHeight()),
-        Math.round(Math.random() * player1.gameboard.getBoardWidth()),
+        Math.floor(Math.random() * player2.gameboard.getBoardHeight()),
+        Math.floor(Math.random() * player2.gameboard.getBoardWidth()),
       ];
 
       try {

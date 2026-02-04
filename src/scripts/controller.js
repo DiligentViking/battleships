@@ -11,13 +11,13 @@ export function Controller(player1, player2, view) {
       const { placeShipInput } = view.eventElems;
       let shipLength = 1;
       let count = 1;
+
       placeShipInput.addEventListener("keyup", (e) => {
         if (e.key !== "Enter") return;
 
         const coords = view.validatePlaceShipInput();
 
         player1.gameboard.placeShip(count, shipLength, coords);
-
         view.renderBoard(player1.gameboard.getBoard(), 1);
 
         shipLength++;

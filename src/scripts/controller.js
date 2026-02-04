@@ -1,4 +1,45 @@
 export function Controller(player1, player2, view) {
+  //---Helpers---
+
+  function getComputerMoves(board) {
+    const moves = [];
+
+    for (let i = 0; i < board.length; i++) {
+      const row = board[i];
+      for (let j = 0; j < row.length; j++) {
+        moves.push([i, j]);
+      }
+    }
+
+    for (let i = moves.length - 1; i > 0; i--) {
+      // Fisher-Yates shuffle
+      const j = Math.floor(Math.random() * (i + 1));
+      [moves[i], moves[j]] = [moves[j], moves[i]];
+    }
+
+    return moves;
+  }
+
+  function attackCell(cellElem, playerNum) {
+    const player = playerNum === 1 ? player1 : player2;
+    const coords = cellElem.dataset.coord.split(",");
+
+    player.gameboard.receiveAttack(coords);
+    view.renderBoard(player.gameboard.getBoard(), playerNum);
+
+    checkGameEnd();
+  }
+
+  function checkGameEnd() {
+    if (player1.gameboard.areAllShipsSunk()) {
+      view.showWinner(2);
+    } else if (player2.gameboard.areAllShipsSunk()) {
+      view.showWinner(1);
+    }
+  }
+
+  //---Flow---
+
   function init() {
     view.renderBoard(player1.gameboard.getBoard(), 1);
     view.renderBoard(player2.gameboard.getBoard(), 2);
@@ -57,46 +98,15 @@ export function Controller(player1, player2, view) {
     runGame();
   }
 
-  function checkGameEnd() {
-    if (player1.gameboard.areAllShipsSunk()) {
-      view.showWinner(2);
-    } else if (player2.gameboard.areAllShipsSunk()) {
-      view.showWinner(1);
-    }
-  }
-
   function runGame() {
-    const attackCell = (cellElem, playerNum) => {
-      const player = playerNum === 1 ? player1 : player2;
-      const coords = cellElem.dataset.coord.split(",");
-
-      player.gameboard.receiveAttack(coords);
-      view.renderBoard(player.gameboard.getBoard(), playerNum);
-
-      checkGameEnd();
-    };
-
-    let turn = 1;
     const { p1Board, p2Board } = view.eventElems;
 
-    const computerMoves = [];
-    if (player2.type === "computer") {
-      const board1 = player1.gameboard.getBoard();
-      for (let i = 0; i < board1.length; i++) {
-        const row = board1[i];
-        for (let j = 0; j < row.length; j++) {
-          computerMoves.push([i, j]);
-        }
-      }
-      // Fisher-Yates shuffle found online
-      (() => {
-        const array = computerMoves;
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      })();
-    }
+    const computerMoves =
+      player2.type === "computer"
+        ? getComputerMoves(player1.gameboard.getBoard())
+        : undefined;
+
+    let turn = 1;
 
     p2Board.addEventListener("click", (e) => {
       if (turn !== 1) return;

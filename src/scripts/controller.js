@@ -20,6 +20,14 @@ export function Controller(player1, player2, view) {
     return moves;
   }
 
+  function moveComputer(computerMoves, playerToAttack) {
+    const move = computerMoves.pop();
+    const cellToAttack = document.querySelector(
+      `.p${playerToAttack}-board > [data-coords='${move[0]},${move[1]}']`,
+    );
+    cellToAttack.click();
+  }
+
   function attackCell(coords, playerNum) {
     const player = playerNum === 1 ? player1 : player2;
 
@@ -118,11 +126,7 @@ export function Controller(player1, player2, view) {
 
       turn = 2;
       if (player2.type === "computer") {
-        const move = computerMoves.pop();
-        const cellToAttack = document.querySelector(
-          `.p1-board > [data-coords='${move[0]},${move[1]}']`,
-        );
-        cellToAttack.click();
+        moveComputer(computerMoves, 1);
       }
     });
 

@@ -80,28 +80,7 @@ export function Controller(player1, player2, view) {
   }
 
   function runComputerSetup(numShips = 6) {
-    let count = 0;
-
-    while (count !== numShips) {
-      const shipID = count;
-      const shipLength = count + 1;
-      const coords = [
-        Math.floor(Math.random() * player2.gameboard.getBoardHeight()),
-        Math.floor(Math.random() * player2.gameboard.getBoardWidth()),
-      ];
-
-      try {
-        player2.gameboard.placeShip(shipID, shipLength, coords);
-      } catch {
-        continue;
-      }
-
-      view.renderBoard(player2.gameboard.getBoard(), 2);
-
-      count++;
-    }
-
-    runGame();
+    
   }
 
   function runGame() {
@@ -147,3 +126,5 @@ export function Controller(player1, player2, view) {
     init,
   };
 }
+
+// well i think i am being too much of a stickler for mvc but i'm just not there yet. I learned some stuff and I think I should move on now

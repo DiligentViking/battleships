@@ -3,3 +3,6 @@ Random Unique Ideas:
 -Have two computers (a dumb one and a smart one) play against each other
 
 -Try to play two games at the same time (as this is very modular).
+
+-a mode where the players asynchronously attack each other, but they have a limited 'juice' bar so they can't just spam top to bottom (but it's still enough for you to want to rush).
+-p1 plays with mouse, p2 plays with keyboard

@@ -1,4 +1,5 @@
 import { ComputerStrategy } from "./computer-strategy.js";
+import { PlayerStrategy } from "./player-strategy.js";
 import { Player } from "./player.js";
 import { View } from "./view.js";
 import { Controller } from "./controller.js";

@@ -4,7 +4,7 @@
   "description": "TODO: Make this readme",
   "main": "index.js",
   "scripts": {
-    "test": "jest ./src/scripts/tests",
+    "test": "jest ./src/scripts/models/tests",
     "check-format": "npx eslint ./src ; npx prettier ./src --check"
   },
   "repository": {

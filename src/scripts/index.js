@@ -1,6 +1,6 @@
-import { Player } from "./player.js";
-import { View } from "./view.js";
-import { Controller } from "./controller.js";
+import { Player } from "./models/player.js";
+import { View } from "./ui/view.js";
+import { Controller } from "./ui/controller.js";
 
 const player1 = Player("real");
 const player2 = Player("computer");

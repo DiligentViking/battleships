@@ -20,6 +20,7 @@ export default defineConfig([
   {
 		languageOptions: {
 			globals: {
+        jest: "readonly",
         test: "readonly",
         expect: "readonly",
 			},

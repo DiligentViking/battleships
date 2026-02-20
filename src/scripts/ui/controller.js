@@ -1,45 +1,9 @@
-export function Controller(player1, player2, view) {
-  //---Helpers---
-
-  function getComputerMoves(board) {
-    const moves = [];
-
-    for (let i = 0; i < board.length; i++) {
-      const row = board[i];
-      for (let j = 0; j < row.length; j++) {
-        moves.push([i, j]);
-      }
-    }
-
-    for (let i = moves.length - 1; i > 0; i--) {
-      // Fisher-Yates shuffle
-      const j = Math.floor(Math.random() * (i + 1));
-      [moves[i], moves[j]] = [moves[j], moves[i]];
-    }
-
-    return moves;
-  }
-
-  function attackCell(coords, playerNum) {
-    const player = playerNum === 1 ? player1 : player2;
-
-    player.gameboard.receiveAttack(coords);
-    view.renderBoard(player.gameboard.getBoard(), playerNum);
-  }
-
-  function checkGameEnd() {
-    if (player1.gameboard.areAllShipsSunk()) {
-      view.showWinner(2);
-    } else if (player2.gameboard.areAllShipsSunk()) {
-      view.showWinner(1);
-    }
-  }
-
-  //---Flow---
-
+export function Controller(player1, player2, game, view) {
   function init() {
-    view.renderBoard(player1.gameboard.getBoard(), 1);
-    view.renderBoard(player2.gameboard.getBoard(), 2);
+    view.initBoardPlayerNames(player1.getName(), player2.getName());
+
+    view.renderBoard(player1.gameboard.getBoard(), player1.getName());
+    view.renderBoard(player2.gameboard.getBoard(), player2.getName());
 
     runPlayerSetup();
   }
@@ -56,7 +20,7 @@ export function Controller(player1, player2, view) {
       const coords = view.validatePlaceShipInput();
 
       player1.gameboard.placeShip(shipID, shipLength, coords);
-      view.renderBoard(player1.gameboard.getBoard(), 1);
+      view.renderBoard(player1.gameboard.getBoard(), player1.getName());
 
       count++;
 
@@ -64,7 +28,7 @@ export function Controller(player1, player2, view) {
 
       if (count === numShips) {
         view.hideShipPlacer();
-        if (player2.type === "computer") {
+        if (player2.getType() === "computer") {
           runComputerSetup();
         }
       }
@@ -88,7 +52,7 @@ export function Controller(player1, player2, view) {
         continue;
       }
 
-      view.renderBoard(player2.gameboard.getBoard(), 2);
+      view.renderBoard(player2.gameboard.getBoard(), player2.getName());
 
       count++;
     }
@@ -99,44 +63,35 @@ export function Controller(player1, player2, view) {
   function runGame() {
     const { p1Board, p2Board } = view.eventElems;
 
-    const computerMoves =
-      player2.type === "computer"
-        ? getComputerMoves(player1.gameboard.getBoard())
-        : undefined;
-
-    let turn = 1;
-
-    p2Board.addEventListener("click", (e) => {
-      if (turn !== 1) return;
-      if (e.target.tagName !== "BUTTON") return;
-
-      const coords = view.parseCellCoords(e.target);
-      if (player2.gameboard.getCellHit(coords)) return;
-      attackCell(coords, 2);
-
-      checkGameEnd();
-
-      turn = 2;
-      if (player2.type === "computer") {
-        const move = computerMoves.pop();
-        const cellToAttack = document.querySelector(
-          `.p1-board > [data-coords='${move[0]},${move[1]}']`,
-        );
-        cellToAttack.click();
+    function attackCell(receiverName, coords = null) {
+      try {
+        game.attack(receiverName, coords);
+      } catch (err) {
+        console.error(err);
       }
-    });
 
-    p1Board.addEventListener("click", (e) => {
-      if (turn !== 2) return;
+      const receiver = player1.getName() === receiverName ? player1 : player2;
+      const receiverBoard = receiver.gameboard.getBoard();
+
+      view.renderBoard(receiverBoard, receiverName);
+
+      if (receiver.getType() === "computer") {
+        const newReceiver = player1.getName() === receiverName ? player2.getName() : player1.getName();
+        attackCell(newReceiver);
+      }
+    }
+
+    function onBoardClick(e) {
       if (e.target.tagName !== "BUTTON") return;
 
       const coords = view.parseCellCoords(e.target);
-      attackCell(coords, 1);
+      const receiverName = this.dataset.playername;
 
-      checkGameEnd();
+      attackCell(receiverName, coords);
+    }
 
-      turn = 1;
-    });
+    p1Board.addEventListener("click", onBoardClick);
+    p2Board.addEventListener("click", onBoardClick);
   }
 
   return {

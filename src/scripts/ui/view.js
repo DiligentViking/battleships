@@ -43,8 +43,14 @@ export function View(root) {
       shipPlacer.classList.add("hide");
     },
 
-    renderBoard(board, playerNum) {
-      const boardElem = playerNum === 1 ? p1Board : p2Board;
+    initBoardPlayerNames(player1Name, player2Name) {
+      p1Board.dataset.playername = player1Name;
+      p2Board.dataset.playername = player2Name;
+    },
+
+    renderBoard(board, playerName) {
+      const boardElem =
+        p1Board.dataset.playername === playerName ? p1Board : p2Board;
 
       boardElem.textContent = "";
 
@@ -59,7 +65,9 @@ export function View(root) {
           if (cell.shipID === null) {
             cellElem.textContent = cell.hit ? "m" : " ";
           } else {
-            cellElem.textContent = cell.hit ? "x" : (SHIPICONS[cell.shipID] ?? "S");
+            cellElem.textContent = cell.hit
+              ? "x"
+              : (SHIPICONS[cell.shipID] ?? "S");
           }
 
           boardElem.appendChild(cellElem);

@@ -9,7 +9,7 @@ export function Player(name, type) {
       Math.floor(Math.random() * board.getBoardWidth()),
     ];
     if (board.getCellHit(coords)) {
-      return chooseRandomCoords(board);
+      return chooseRandomCoords(board);  // TODO: Make it where it chooses from available cells instead
     } else {
       return coords;
     }

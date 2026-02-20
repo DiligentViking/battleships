@@ -55,12 +55,16 @@ export function Gameboard() {
 
     receiveAttack(coords) {
       const [y, x] = coords;
-      const shipID = board[y][x].shipID;
+      const cell = board[y][x];
+      const shipID = cell.shipID;
+
+      if (cell.hit) throw new Error("Cell already hit");
+
       if (shipID !== null) {
         ships[shipID].hit();
         if (ships[shipID].isSunk()) numSunk++;
       }
-      board[y][x].hit = true;
+      cell.hit = true;
     },
 
     areAllShipsSunk() {

@@ -2,8 +2,8 @@ import { Player } from "./models/player.js";
 import { View } from "./ui/view.js";
 import { Controller } from "./ui/controller.js";
 
-const player1 = Player("real");
-const player2 = Player("computer");
+const player1 = Player(1, "real");
+const player2 = Player(2, "computer");
 
 const view = View(document.querySelector(".game-area"));
 

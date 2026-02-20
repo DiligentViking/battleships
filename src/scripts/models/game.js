@@ -10,7 +10,12 @@ export function Game(player1, player2) {
     },
 
     getState() {
-      return { turn };
+      const attacker = turn === 1 ? player2 : player1;
+      const receiver = turn === 1 ? player1 : player2;
+
+      const winner = receiver.gameboard.areAllShipsSunk() ? attacker.getName() : null;
+
+      return { turn, winner };
     },
   };
 }

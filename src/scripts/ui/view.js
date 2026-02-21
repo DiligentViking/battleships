@@ -75,8 +75,8 @@ export function View(root) {
       }
     },
 
-    showWinner(playerNum) {
-      const playerResultElem = playerNum === 1 ? p1Result : p2Result;
+    showWinner(winNum) {
+      const playerResultElem = winNum === 1 ? p1Result : p2Result;
       playerResultElem.textContent = "you win";
     },
   };

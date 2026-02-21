@@ -75,9 +75,17 @@ export function Controller(player1, player2, game, view) {
 
       view.renderBoard(receiverBoard, receiverName);
 
+      const status = game.getState();
+      if (status.winner) {
+        const winNum = status.winner === player1.getName() ? 1 : 2;
+        view.showWinner(winNum);
+        return;
+      }
+
       if (receiver.getType() === "computer") {
-        const newReceiver = player1.getName() === receiverName ? player2.getName() : player1.getName();
-        attackCell(newReceiver);
+        const newReceiver =
+          player1.getName() === receiverName ? player2 : player1;
+        attackCell(newReceiver.getName());
       }
     }
 
@@ -89,6 +97,8 @@ export function Controller(player1, player2, game, view) {
 
       attackCell(receiverName, coords);
     }
+
+    if (player1.getType() === "computer") attackCell(player2.getName());
 
     p1Board.addEventListener("click", onBoardClick);
     p2Board.addEventListener("click", onBoardClick);

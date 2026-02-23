@@ -3,12 +3,10 @@ export function Ship(length) {
     length,
     hits: 0,
 
-    hit() {
-      this.hits++;
-    },
+    isSunk: () => this.hits === this.length,
 
-    isSunk() {
-      return this.hits === this.length;
+    hit: () => {
+      this.hits++;
     },
   };
 }

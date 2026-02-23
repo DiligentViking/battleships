@@ -15,31 +15,25 @@ export function Gameboard() {
   }
 
   return {
-    _getDebugInfo() {
-      return {
-        ships: deepCopy(ships),
-        numSunk,
-      };
-    },
+    _getDebugInfo: () => ({
+      ships: deepCopy(ships),
+      numSunk,
+    }),
 
-    getBoard() {
-      return deepCopy(board);
-    },
+    getBoard: () => deepCopy(board),
 
-    getBoardHeight() {
-      return board.length;
-    },
+    getBoardHeight: () => board.length,
 
-    getBoardWidth() {
-      return board[0].length;
-    },
+    getBoardWidth: () => board[0].length,
 
-    getCellHit(coords) {
+    getCellHit: (coords) => {
       const [y, x] = coords;
       return board[y][x].hit;
     },
 
-    placeShip(shipID, shipLength, coords) {
+    areAllShipsSunk: () => numSunk === ships.length,
+
+    placeShip: (shipID, shipLength, coords) => {
       const [y, x] = coords;
       for (let i = 0; i < shipLength; i++) {
         if (board[y][x + i]?.shipID !== null) {
@@ -52,7 +46,7 @@ export function Gameboard() {
       ships.push(Ship(shipLength));
     },
 
-    receiveAttack(coords) {
+    receiveAttack: (coords) => {
       const [y, x] = coords;
       const cell = board[y][x];
       const shipID = cell.shipID;
@@ -64,10 +58,6 @@ export function Gameboard() {
         if (ships[shipID].isSunk()) numSunk++;
       }
       cell.hit = true;
-    },
-
-    areAllShipsSunk() {
-      return numSunk === ships.length;
     },
   };
 }

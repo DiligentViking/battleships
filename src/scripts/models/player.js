@@ -9,7 +9,7 @@ export function Player(name, type) {
       Math.floor(Math.random() * board.getBoardWidth()),
     ];
     if (board.getCellHit(coords)) {
-      return chooseRandomCoords(board);  // TODO: Make it where it chooses from available cells instead
+      return chooseRandomCoords(board); // TODO: Make it where it chooses from available cells instead
     } else {
       return coords;
     }
@@ -18,15 +18,11 @@ export function Player(name, type) {
   return {
     gameboard,
 
-    getName() {
-      return name;
-    },
+    getName: () => name,
 
-    getType() {
-      return type;
-    },
+    getType: () => type,
 
-    attack(enemyGameboard, coords) {
+    attack: (enemyGameboard, coords) => {
       if (type === "computer") {
         coords = chooseRandomCoords(enemyGameboard);
       }

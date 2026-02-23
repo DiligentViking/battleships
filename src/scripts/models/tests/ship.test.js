@@ -4,7 +4,7 @@ test("increases hits", () => {
   const ship = Ship(3);
   ship.hit();
   ship.hit();
-  expect(ship.hits).toBe(2);
+  expect(ship._getDebugInfo().hits).toBe(2);
 });
 
 test("is sunk if hits equals length", () => {

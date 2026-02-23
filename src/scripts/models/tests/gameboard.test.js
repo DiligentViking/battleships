@@ -5,7 +5,7 @@ test("adds a ship", () => {
 
   gameboard.placeShip(0, 3, [1, 5]);
   const ships = gameboard._getDebugInfo().ships;
-  expect(ships[0].length).toBe(3);
+  expect(ships[0].getLength()).toBe(3);
 });
 
 test("places a ship horizontally at a coordinate", () => {
@@ -35,7 +35,7 @@ test("increments ship hits when a ship cell is hit", () => {
 
   gameboard.receiveAttack([1, 3]);
   const ships = gameboard._getDebugInfo().ships;
-  expect(ships[0].hits).toBe(1);
+  expect(ships[0]._getDebugInfo().hits).toBe(1);
 });
 test("marks ship cell when the cell is hit", () => {
   const gameboard = Gameboard();

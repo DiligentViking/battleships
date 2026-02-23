@@ -1,12 +1,17 @@
 export function Ship(length) {
-  return {
-    length,
-    hits: 0,
+  let hits = 0;
 
-    isSunk: () => this.hits === this.length,
+  return {
+    _getDebugInfo: () => ({
+      hits,
+    }),
+
+    getLength: () => length,
+
+    isSunk: () => hits === length,
 
     hit: () => {
-      this.hits++;
+      hits++;
     },
   };
 }

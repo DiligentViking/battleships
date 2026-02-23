@@ -61,8 +61,6 @@ export function Controller(player1, player2, game, view) {
   }
 
   function runGame() {
-    const { p1Board, p2Board } = view.eventElems;
-
     function attackCell(receiverName, coords = null) {
       try {
         game.attack(receiverName, coords);
@@ -97,6 +95,8 @@ export function Controller(player1, player2, game, view) {
 
       attackCell(receiverName, coords);
     }
+
+    const { p1Board, p2Board } = view.eventElems;
 
     if (player1.getType() === "computer") attackCell(player2.getName());
 

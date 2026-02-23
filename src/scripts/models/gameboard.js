@@ -15,12 +15,11 @@ export function Gameboard() {
   }
 
   return {
-    getShips() {
-      return deepCopy(ships);
-    },
-
-    getNumSunk() {
-      return numSunk;
+    _getDebugInfo() {
+      return {
+        ships: deepCopy(ships),
+        numSunk,
+      };
     },
 
     getBoard() {

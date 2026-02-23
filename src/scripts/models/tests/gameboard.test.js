@@ -4,7 +4,7 @@ test("adds a ship", () => {
   const gameboard = Gameboard();
 
   gameboard.placeShip(0, 3, [1, 5]);
-  const ships = gameboard.getShips();
+  const ships = gameboard._getDebugInfo().ships;
   expect(ships[0].length).toBe(3);
 });
 
@@ -34,7 +34,7 @@ test("increments ship hits when a ship cell is hit", () => {
   gameboard.placeShip(0, 3, [1, 2]);
 
   gameboard.receiveAttack([1, 3]);
-  const ships = gameboard.getShips();
+  const ships = gameboard._getDebugInfo().ships;
   expect(ships[0].hits).toBe(1);
 });
 test("marks ship cell when the cell is hit", () => {

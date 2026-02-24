@@ -39,6 +39,7 @@ export function Player(name, type) {
         coords = chooseRandomCoords1(enemyGameboard);
       }
       enemyGameboard.receiveAttack(coords);
+      return coords;
     },
   };
 }

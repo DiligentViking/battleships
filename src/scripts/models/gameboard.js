@@ -26,6 +26,11 @@ export function Gameboard() {
 
     getBoardWidth: () => board[0].length,
 
+    getCell: (coords) => {
+      const [y, x] = coords;
+      return { ...board[y][x] };
+    },
+
     getCellHit: (coords) => {
       const [y, x] = coords;
       return board[y][x].hit;

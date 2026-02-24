@@ -62,16 +62,19 @@ export function Controller(player1, player2, game, view) {
 
   function runGame() {
     function attackCell(receiverName, coords = null) {
+      console.log(receiverName + 'is the receiver')
       try {
-        game.attack(receiverName, coords);
+        coords = game.attack(receiverName, coords);
       } catch (err) {
         console.error(err);
+        return;
       }
 
       const receiver = player1.getName() === receiverName ? player1 : player2;
-      const receiverBoard = receiver.gameboard.getBoard();
+      const cellData = receiver.gameboard.getCell(coords);
 
-      view.renderBoard(receiverBoard, receiverName);
+      console.log(cellData);
+      view.updateCell(receiverName, coords, cellData);  // after this i can remove getBoard
 
       const status = game.getState();
       if (status.winner) {

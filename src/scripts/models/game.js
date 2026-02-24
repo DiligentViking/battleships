@@ -22,9 +22,11 @@ export function Game(player1, player2) {
       const attacker = turn === 1 ? player1 : player2;
       const receiver = turn === 1 ? player2 : player1;
 
-      attacker.attack(receiver.gameboard, coords);
+      coords = attacker.attack(receiver.gameboard, coords);
 
       turn = turn === 1 ? 2 : 1;
+
+      return coords;
     },
   };
 }

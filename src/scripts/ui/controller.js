@@ -8,31 +8,60 @@ export function Controller(player1, player2, game, view) {
     runPlayerSetup();
   }
 
+  // function runPlayerSetup(numShips = 6) {
+  //   const { placeShipInput } = view.eventElems;
+  //   let count = 0;
+
+  //   placeShipInput.addEventListener("keyup", (e) => {
+  //     if (e.key !== "Enter") return;
+
+  //     const shipID = count;
+  //     const shipLength = count + 1;
+  //     const coords = view.validatePlaceShipInput();
+
+  //     player1.gameboard.placeShip(shipID, shipLength, coords);
+  //     view.renderBoard(player1.gameboard.getBoard(), player1.getName());
+
+  //     count++;
+
+  //     view.showPlaceShipIcon(count);
+
+  //     if (count === numShips) {
+  //       view.hideShipPlacer();
+  //       if (player2.getType() === "computer") {
+  //         runComputerSetup();
+  //       }
+  //     }
+  //   });
+  // }
+
   function runPlayerSetup(numShips = 6) {
-    const { placeShipInput } = view.eventElems;
     let count = 0;
 
-    placeShipInput.addEventListener("keyup", (e) => {
-      if (e.key !== "Enter") return;
-
+    while (count !== numShips) {
       const shipID = count;
       const shipLength = count + 1;
-      const coords = view.validatePlaceShipInput();
+      const coords = [
+        Math.floor(Math.random() * player1.gameboard.getBoardHeight()),
+        Math.floor(Math.random() * player1.gameboard.getBoardWidth()),
+      ];
 
-      player1.gameboard.placeShip(shipID, shipLength, coords);
+      try {
+        player1.gameboard.placeShip(shipID, shipLength, coords);
+      } catch {
+        continue;
+      }
+
       view.renderBoard(player1.gameboard.getBoard(), player1.getName());
 
       count++;
+    }
 
-      view.showPlaceShipIcon(count);
+    view.hideShipPlacer();
 
-      if (count === numShips) {
-        view.hideShipPlacer();
-        if (player2.getType() === "computer") {
-          runComputerSetup();
-        }
-      }
-    });
+    if (player2.getType() === "computer") {
+      runComputerSetup();
+    }
   }
 
   function runComputerSetup(numShips = 6) {
@@ -62,7 +91,7 @@ export function Controller(player1, player2, game, view) {
 
   function runGame() {
     function attackCell(receiverName, coords = null) {
-      console.log(receiverName + 'is the receiver')
+      console.log(receiverName + "is the receiver");
       try {
         coords = game.attack(receiverName, coords);
       } catch (err) {
@@ -74,7 +103,7 @@ export function Controller(player1, player2, game, view) {
       const cellData = receiver.gameboard.getCell(coords);
 
       console.log(cellData);
-      view.updateCell(receiverName, coords, cellData);  // after this i can remove getBoard
+      view.updateCell(receiverName, coords, cellData); // after this i can remove getBoard
 
       const status = game.getState();
       if (status.winner) {

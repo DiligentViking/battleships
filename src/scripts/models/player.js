@@ -3,7 +3,7 @@ import { Gameboard } from "./gameboard.js";
 export function Player(name, type) {
   const gameboard = Gameboard();
 
-  function chooseRandomCoords(board) {
+  function chooseRandomCoords1(board) {
     const coords = [
       Math.floor(Math.random() * board.getBoardHeight()),
       Math.floor(Math.random() * board.getBoardWidth()),
@@ -13,6 +13,17 @@ export function Player(name, type) {
     } else {
       return coords;
     }
+  }
+
+  function chooseRandomCoords(board) {
+    const choices = [];
+    board.getBoard().forEach((row, i) =>
+      row.forEach((cell, j) => {
+        if (!cell.hit) choices.push([i, j]);
+      }),
+    );
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    console.log(choices[randomIndex]);
   }
 
   return {
@@ -25,6 +36,7 @@ export function Player(name, type) {
     attack: (enemyGameboard, coords) => {
       if (type === "computer") {
         coords = chooseRandomCoords(enemyGameboard);
+        coords = chooseRandomCoords1(enemyGameboard);
       }
       enemyGameboard.receiveAttack(coords);
     },

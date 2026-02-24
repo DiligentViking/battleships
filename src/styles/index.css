@@ -1,44 +1,140 @@
+/* ====== Base Reset ====== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  height: 98vh;
+  min-height: 100vh;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 20% 20%, #0ff2 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, #f0f2 0%, transparent 40%), #050510;
+  color: #0ff;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.hide {
-  visibility: hidden;
-}
-
+/* ====== Layout ====== */
 .game-area {
   display: flex;
-  gap: 100px;
-}
-
-.ship-placer {
-  position: absolute;
-  top: -45px;
+  gap: 4rem;
+  padding: 2rem;
 }
 
 .p1-area,
 .p2-area {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
+/* ====== Boards ====== */
 .p1-board,
 .p2-board {
   display: grid;
-  grid-template-columns: repeat(10, 25px);
-  grid-template-rows: repeat(10, 25px);
+  grid-template-columns: repeat(10, 40px);
+  grid-template-rows: repeat(10, 40px);
+  gap: 4px;
+  padding: 1rem;
+  border-radius: 12px;
+
+  background: linear-gradient(145deg, #0a0a1a, #111133);
+  border: 2px solid #0ff;
+  box-shadow:
+    0 0 15px #0ff,
+    inset 0 0 20px #0ff3;
 }
 
-.p1-board > button,
-.p2-board > button {
-  padding-left: 2px;
+/* ====== Cells ====== */
+.p1-board button,
+.p2-board button {
+  background: #0b0b1f;
+  border: 1px solid #0ff4;
+  color: #0ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
 }
 
+.p1-board button:hover,
+.p2-board button:hover {
+  background: #0ff2;
+  box-shadow: 0 0 8px #0ff;
+}
+
+/* ====== Hit / Miss Styling ====== */
+button:has(:not(:empty)) {
+  font-weight: bold;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Miss */
+button:where(:not(:empty)):contains("m") {
+  color: #4fc3ff;
+  text-shadow: 0 0 6px #4fc3ff;
+}
+
+/* Hit */
+button:where(:not(:empty)):contains("x") {
+  color: #ff3b6b;
+  text-shadow: 0 0 8px #ff3b6b;
+}
+
+/* Ships */
+button:not(:empty):not(:contains("m")):not(:contains("x")) {
+  text-shadow: 0 0 6px #0ff;
+}
+
+/* ====== Ship Placer ====== */
+.ship-placer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ship-placer label {
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px #0ff;
+}
+
+.ship-placer input {
+  background: #000814;
+  border: 1px solid #0ff;
+  padding: 0.4rem 0.6rem;
+  color: #0ff;
+  outline: none;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.ship-placer input:focus {
+  box-shadow: 0 0 10px #0ff;
+}
+
+.hide {
+  display: none;
+}
+
+/* ====== Results ====== */
 .p1-result,
 .p2-result {
-  position: absolute;
-  top: -40px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #f0f;
+  text-shadow:
+    0 0 8px #f0f,
+    0 0 16px #f0f;
 }

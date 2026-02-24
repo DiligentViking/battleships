@@ -1,9 +1,29 @@
 export function Controller(player1, player2, game, view) {
+  //---Helpers---
+
+  function updateCells(player, coordsList) {
+    const playerName = player.getName();
+    for (const coords of coordsList) {
+      const cellData = player.gameboard.getCell(coords);
+      view.updateCell(playerName, coords, cellData);
+    }
+  }
+
+  //---Flow---
+
   function init() {
     view.initBoardPlayerNames(player1.getName(), player2.getName());
 
-    view.renderBoard(player1.gameboard.getBoard(), player1.getName());
-    view.renderBoard(player2.gameboard.getBoard(), player2.getName());
+    view.renderBoard(
+      player1.getName(),
+      player1.gameboard.getBoardHeight(),
+      player1.gameboard.getBoardWidth(),
+    );
+    view.renderBoard(
+      player2.getName(),
+      player2.gameboard.getBoardHeight(),
+      player2.gameboard.getBoardWidth(),
+    );
 
     runPlayerSetup();
   }
@@ -18,9 +38,10 @@ export function Controller(player1, player2, game, view) {
   //     const shipID = count;
   //     const shipLength = count + 1;
   //     const coords = view.validatePlaceShipInput();
+  //     let coordsList;
 
-  //     player1.gameboard.placeShip(shipID, shipLength, coords);
-  //     view.renderBoard(player1.gameboard.getBoard(), player1.getName());
+  //     coordsList = player1.gameboard.placeShip(shipID, shipLength, coords);
+  //     updateCells(player1, coordsList);
 
   //     count++;
 
@@ -45,14 +66,15 @@ export function Controller(player1, player2, game, view) {
         Math.floor(Math.random() * player1.gameboard.getBoardHeight()),
         Math.floor(Math.random() * player1.gameboard.getBoardWidth()),
       ];
+      let coordsList;
 
       try {
-        player1.gameboard.placeShip(shipID, shipLength, coords);
+        coordsList = player1.gameboard.placeShip(shipID, shipLength, coords);
       } catch {
         continue;
       }
 
-      view.renderBoard(player1.gameboard.getBoard(), player1.getName());
+      updateCells(player1, coordsList);
 
       count++;
     }
@@ -74,14 +96,15 @@ export function Controller(player1, player2, game, view) {
         Math.floor(Math.random() * player2.gameboard.getBoardHeight()),
         Math.floor(Math.random() * player2.gameboard.getBoardWidth()),
       ];
+      let coordsList;
 
       try {
-        player2.gameboard.placeShip(shipID, shipLength, coords);
+        coordsList = player2.gameboard.placeShip(shipID, shipLength, coords);
       } catch {
         continue;
       }
 
-      view.renderBoard(player2.gameboard.getBoard(), player2.getName());
+      updateCells(player2, coordsList);
 
       count++;
     }
@@ -91,7 +114,6 @@ export function Controller(player1, player2, game, view) {
 
   function runGame() {
     function attackCell(receiverName, coords = null) {
-      console.log(receiverName + "is the receiver");
       try {
         coords = game.attack(receiverName, coords);
       } catch (err) {
@@ -102,8 +124,7 @@ export function Controller(player1, player2, game, view) {
       const receiver = player1.getName() === receiverName ? player1 : player2;
       const cellData = receiver.gameboard.getCell(coords);
 
-      console.log(cellData);
-      view.updateCell(receiverName, coords, cellData); // after this i can remove getBoard
+      view.updateCell(receiverName, coords, cellData);
 
       const status = game.getState();
       if (status.winner) {

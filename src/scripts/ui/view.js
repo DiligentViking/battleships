@@ -9,16 +9,6 @@ export function View(root) {
 
   const SHIPICONS = ["🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
 
-  function renderCell(cellData, cellElem) {
-    if (cellData.shipID === null) {
-      cellElem.textContent = cellData.hit ? "m" : " ";
-    } else {
-      cellElem.textContent = cellData.hit
-        ? "x"
-        : (SHIPICONS[cellData.shipID] ?? "S");
-    }
-  }
-
   return {
     eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
 
@@ -58,21 +48,16 @@ export function View(root) {
       p2Board.dataset.playername = player2Name;
     },
 
-    renderBoard(board, playerName) {
+    renderBoard(playerName, height, width) {
       const boardElem =
         p1Board.dataset.playername === playerName ? p1Board : p2Board;
 
       boardElem.textContent = "";
 
-      for (let i = 0; i < board.length; i++) {
-        const row = board[i];
-        for (let j = 0; j < row.length; j++) {
-          const cell = board[i][j];
-
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
           const cellElem = document.createElement("button");
           cellElem.dataset.coords = `${i},${j}`;
-
-          renderCell(cell, cellElem);
 
           boardElem.appendChild(cellElem);
         }
@@ -85,7 +70,13 @@ export function View(root) {
       const [y, x] = coords;
       const cellElem = boardElem.querySelector(`[data-coords="${y},${x}"]`);
 
-      renderCell(cellData, cellElem);
+      if (cellData.shipID === null) {
+        cellElem.textContent = cellData.hit ? "m" : " ";
+      } else {
+        cellElem.textContent = cellData.hit
+          ? "x"
+          : (SHIPICONS[cellData.shipID] ?? "S");
+      }
     },
 
     showWinner(winNum) {

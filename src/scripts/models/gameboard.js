@@ -40,6 +40,8 @@ export function Gameboard() {
 
     placeShip: (shipID, shipLength, coords) => {
       const [y, x] = coords;
+      const coordsList = [];
+      
       for (let i = 0; i < shipLength; i++) {
         if (board[y][x + i]?.shipID !== null) {
           throw new Error("Cell out of bounds or already taken");
@@ -47,8 +49,12 @@ export function Gameboard() {
       }
       for (let i = 0; i < shipLength; i++) {
         board[y][x + i].shipID = shipID;
+        coordsList.push([y, x + i]);
       }
+      
       ships.push(Ship(shipLength));
+
+      return coordsList;
     },
 
     receiveAttack: (coords) => {

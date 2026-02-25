@@ -5,11 +5,13 @@ export function Player(name, type) {
 
   function chooseRandomCoords(board) {
     const choices = [];
-    board.getBoard().forEach((row, i) =>
-      row.forEach((cell, j) => {
-        if (!cell.hit) choices.push([i, j]);
-      }),
-    );
+    for (let i = 0; i < board.getBoardHeight(); i++) {
+      for (let j = 0; j < board.getBoardWidth(); j++) {
+        if (!board.getCellHit([i, j])) {
+          choices.push([i, j]);
+        }
+      }
+    }
     const randomIndex = Math.floor(Math.random() * choices.length);
     return choices[randomIndex];
   }

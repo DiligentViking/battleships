@@ -12,7 +12,7 @@ test("places a ship horizontally at a coordinate", () => {
   const gameboard = Gameboard();
 
   gameboard.placeShip(0, 3, [1, 5]);
-  const board = gameboard.getBoard();
+  const board = gameboard._getDebugInfo().board;
   expect(board[1][5]).not.toBe(0);
   expect(board[1][6]).not.toBe(0);
   expect(board[1][7]).not.toBe(0);
@@ -42,7 +42,7 @@ test("marks ship cell when the cell is hit", () => {
   gameboard.placeShip(0, 3, [1, 2]);
 
   gameboard.receiveAttack([1, 3]);
-  const board = gameboard.getBoard();
+  const board = gameboard._getDebugInfo().board;
   expect(board[1][3]).toEqual({ hit: true, shipID: 0 });
 });
 test("marks empty cell when the cell is hit", () => {
@@ -50,7 +50,7 @@ test("marks empty cell when the cell is hit", () => {
   gameboard.placeShip(0, 3, [1, 2]);
 
   gameboard.receiveAttack([2, 3]);
-  const board = gameboard.getBoard();
+  const board = gameboard._getDebugInfo().board;
   expect(board[2][3]).toEqual({ hit: true, shipID: null });
 });
 

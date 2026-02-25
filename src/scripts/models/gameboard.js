@@ -18,9 +18,8 @@ export function Gameboard() {
     _getDebugInfo: () => ({
       ships: deepCopy(ships),
       numSunk,
+      board: deepCopy(board),
     }),
-
-    getBoard: () => deepCopy(board),
 
     getBoardHeight: () => board.length,
 

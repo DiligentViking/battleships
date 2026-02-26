@@ -1,3 +1,5 @@
+/* ---Base--- */
+
 * {
   margin: 0;
   padding: 0;
@@ -12,24 +14,25 @@ body {
   align-items: center;
 }
 
+/* ---Helpers--- */
+
 .hide {
   visibility: hidden;
 }
+
+/* ---Layout--- */
 
 .game-area {
   display: flex;
   gap: 100px;
 }
 
-.ship-placer {
-  position: absolute;
-  top: -45px;
-}
-
 .p1-area,
 .p2-area {
   position: relative;
 }
+
+/* ---Boards--- */
 
 .p1-board,
 .p2-board {
@@ -41,6 +44,13 @@ body {
 .p1-board > button,
 .p2-board > button {
   padding-left: 2px;
+}
+
+/* ---Other--- */
+
+.ship-placer {
+  position: absolute;
+  top: -45px;
 }
 
 .p1-result,

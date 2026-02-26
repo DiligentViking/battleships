@@ -1,4 +1,33 @@
 /* ---Base--- */
+:root {
+  /* Core Background */
+  --bg-deep: #050510;
+  --bg-panel-dark: #0a0a1a;
+  --bg-panel-light: #111133;
+
+  /* Ambient Glows (Background Radials) */
+  --glow-cyan-soft: #00ffff22;
+  --glow-pink-soft: #ff2bd622;
+
+  /* Player Identity Colors */
+  --p1-primary: #00ffff;
+  --p1-glow: #00ffff33;
+
+  --p2-primary: #ff2bd6;
+  --p2-glow: #ff2bd633;
+
+  /* Cells */
+  --cell-border: #084c5b;
+  --cell-hover: #1fcfcf;
+
+  /* Hit/Miss Feedback */
+  --hit-color: #ff3b3b;
+  --miss-color: #7ec8e3;
+
+  /* Text */
+  --text-primary: #e6faff;
+  --text-muted: #9fd6e3;
+}
 
 * {
   margin: 0;
@@ -7,9 +36,10 @@
 }
 
 body {
-  background-color: black;
-
-  height: 98vh;
+  background:
+    radial-gradient(circle at 20% 20%, var(--glow-cyan-soft) 0%, transparent 45%),
+    radial-gradient(circle at 80% 80%, var(--glow-pink-soft) 0%, transparent 45%), var(--bg-deep);
+  height: 100vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -25,7 +55,7 @@ body {
 /* ---Layout--- */
 
 .game-area {
-  height: inherit;
+  height: 100%;
   width: 70vw;
   max-width: 1000px;
   display: flex;
@@ -45,13 +75,13 @@ body {
 
 .p1-board,
 .p2-board {
-  background: linear-gradient(145deg, #0a0a1a, #111133);
-  border: 2px solid #00ffff;
-  box-shadow: inset 0 0 20px #0ff3;
+  background: linear-gradient(145deg, var(--bg-panel-dark), var(--bg-panel-light));
+  border: 2px solid var(--p1-primary);
+  box-shadow: inset 0 0 20px var(--p1-glow);
   border-radius: 0.5rem;
   padding: 5%;
   position: relative;
-  animation: dPulseBorder 3s infinite;
+  animation: p1PulseBorder 3s infinite;
 
   aspect-ratio: 1 / 1;
   display: grid;
@@ -62,9 +92,9 @@ body {
 
 .p1-board::before,
 .p2-board::before {
-  box-shadow: 0 0 20px 2px #00ffff;
+  box-shadow: 0 0 20px 2px var(--p1-primary);
   border-radius: inherit;
-  animation: dPulseGlow 3s infinite;
+  animation: p1PulseGlow 3s infinite;
 
   content: "";
   position: absolute;
@@ -76,8 +106,10 @@ body {
 
 .cell {
   background-color: inherit;
-  border: 1px solid #084c5b;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--cell-border);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 
   font-size: clamp(0.75rem, 1vw, 2rem);
 
@@ -85,8 +117,8 @@ body {
 }
 
 .cell:hover {
-  border-color: #1fcfcf;
-  box-shadow: 0 0 6px #1fcfcf;
+  border-color: var(--cell-hover);
+  box-shadow: 0 0 6px var(--cell-hover);
   cursor: crosshair;
 }
 
@@ -103,22 +135,22 @@ body {
   top: -40px;
 }
 
-@keyframes dPulseBorder {
+@keyframes p1PulseBorder {
   0% {
-    border-color: #1fcfcf;
+    border-color: var(--cell-hover);
   }
   20% {
-    border-color: #00ffff;
+    border-color: var(--p1-primary);
   }
   60% {
-    border-color: #1fcfcf;
+    border-color: var(--cell-hover);
   }
   100% {
-    border-color: #1fcfcf;
+    border-color: var(--cell-hover);
   }
 }
 
-@keyframes dPulseGlow {
+@keyframes p1PulseGlow {
   0% {
     opacity: 0.6;
   }
@@ -129,6 +161,6 @@ body {
     opacity: 0.6;
   }
   100% {
-    opacity: 0.6
+    opacity: 0.6;
   }
 }

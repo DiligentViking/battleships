@@ -1,4 +1,5 @@
 /* ---Base--- */
+
 :root {
   /* Core Background */
   --bg-deep: #050510;
@@ -18,7 +19,9 @@
 
   /* Cells */
   --cell-border: #084c5b;
-  --cell-hover: #1fcfcf;
+
+  --p1-cell-hover: #24c9c9;
+  --p2-cell-hover: #cc22aa;
 
   /* Hit/Miss Feedback */
   --hit-color: #ff3b3b;
@@ -76,13 +79,10 @@ body {
 .p1-board,
 .p2-board {
   background: linear-gradient(145deg, var(--bg-panel-dark), var(--bg-panel-light));
-  border: 2px solid var(--p1-primary);
-  box-shadow: inset 0 0 20px var(--p1-glow);
   border-radius: 0.5rem;
   padding: 5%;
   position: relative;
-  animation: p1PulseBorder 3s infinite;
-
+  
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
@@ -90,16 +90,33 @@ body {
   gap: max(2px, 1%);
 }
 
+.p1-board {
+  border: 2px solid var(--p1-primary);
+  box-shadow: inset 0 0 20px var(--p1-glow);
+  animation: p1PulseBorder 3s infinite;
+}
+.p2-board {
+  border: 2px solid var(--p2-primary);
+  box-shadow: inset 0 0 20px var(--p2-glow);
+  animation: p2PulseBorder 3s infinite;
+}
+
 .p1-board::before,
 .p2-board::before {
-  box-shadow: 0 0 20px 2px var(--p1-primary);
   border-radius: inherit;
-  animation: p1PulseGlow 3s infinite;
+  animation: pulseGlow 3s infinite;
 
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
+}
+
+.p1-board::before {
+  box-shadow: 0 0 20px 2px var(--p1-primary);
+}
+.p2-board::before {
+  box-shadow: 0 0 20px 2px var(--p2-primary);
 }
 
 /* ---Cells--- */
@@ -117,8 +134,8 @@ body {
 }
 
 .cell:hover {
-  border-color: var(--cell-hover);
-  box-shadow: 0 0 6px var(--cell-hover);
+  border-color: var(--p1-cell-hover);
+  box-shadow: 0 0 6px var(--p1-cell-hover);
   cursor: crosshair;
 }
 
@@ -137,20 +154,35 @@ body {
 
 @keyframes p1PulseBorder {
   0% {
-    border-color: var(--cell-hover);
+    border-color: var(--p1-cell-hover);
   }
   20% {
     border-color: var(--p1-primary);
   }
   60% {
-    border-color: var(--cell-hover);
+    border-color: var(--p1-cell-hover);
   }
   100% {
-    border-color: var(--cell-hover);
+    border-color: var(--p1-cell-hover);
   }
 }
 
-@keyframes p1PulseGlow {
+@keyframes p2PulseBorder {
+  0% {
+    border-color: var(--p2-cell-hover);
+  }
+  20% {
+    border-color: var(--p2-primary);
+  }
+  60% {
+    border-color: var(--p2-cell-hover);
+  }
+  100% {
+    border-color: var(--p2-cell-hover);
+  }
+}
+
+@keyframes pulseGlow {
   0% {
     opacity: 0.6;
   }

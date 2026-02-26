@@ -56,7 +56,8 @@ export function View(root) {
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          const cellElem = document.createElement("button");
+          const cellElem = document.createElement("div");
+          cellElem.classList.add("cell");
           cellElem.dataset.coords = `${i},${j}`;
 
           boardElem.appendChild(cellElem);

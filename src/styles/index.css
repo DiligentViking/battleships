@@ -45,9 +45,10 @@ body {
 
 .p1-board,
 .p2-board {
-  background-color: #0b0b1f;
+  background: linear-gradient(145deg, #0a0a1a, #111133);
   border: 2px solid #00ffff;
-  border-radius: 1rem;
+  box-shadow: inset 0 0 20px #0ff3;
+  border-radius: 0.5rem;
   padding: 5%;
   position: relative;
   animation: dPulseBorder 3s infinite;
@@ -61,25 +62,32 @@ body {
 
 .p1-board::before,
 .p2-board::before {
-  box-shadow: 0 0 30px #00ffff;
+  box-shadow: 0 0 20px 2px #00ffff;
   border-radius: inherit;
   animation: dPulseGlow 3s infinite;
 
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
 }
 
 /* ---Cells--- */
 
-.p1-board > button,
-.p2-board > button {
+.cell {
   background-color: inherit;
   border: 1px solid #084c5b;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
   font-size: clamp(0.75rem, 1vw, 2rem);
 
   padding-left: 2px;
+}
+
+.cell:hover {
+  border-color: #1fcfcf;
+  box-shadow: 0 0 6px #1fcfcf;
+  cursor: crosshair;
 }
 
 /* ---Other--- */

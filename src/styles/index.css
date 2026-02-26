@@ -8,10 +8,10 @@
 
 body {
   height: 98vh;
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  display: flex;
 }
 
 /* ---Helpers--- */
@@ -23,23 +23,33 @@ body {
 /* ---Layout--- */
 
 .game-area {
+  height: inherit;
+  width: 70vw;
+  max-width: 1000px;
   display: flex;
-  gap: 100px;
 }
 
 .p1-area,
 .p2-area {
+  flex: 1;
+  padding: calc(2rem + 1%);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ---Boards--- */
 
 .p1-board,
 .p2-board {
+  aspect-ratio: 1 / 1;
   display: grid;
-  grid-template-columns: repeat(10, 25px);
-  grid-template-rows: repeat(10, 25px);
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
 }
+
+/* ---Cells--- */
 
 .p1-board > button,
 .p2-board > button {

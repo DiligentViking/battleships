@@ -7,6 +7,8 @@
 }
 
 body {
+  background-color: black;
+
   height: 98vh;
   flex-direction: column;
   justify-content: center;
@@ -43,16 +45,40 @@ body {
 
 .p1-board,
 .p2-board {
+  background-color: #0b0b1f;
+  border: 2px solid #00ffff;
+  border-radius: 1rem;
+  padding: 5%;
+  position: relative;
+  animation: dPulseBorder 3s infinite;
+
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
+  gap: max(2px, 1%);
+}
+
+.p1-board::before,
+.p2-board::before {
+  box-shadow: 0 0 30px #00ffff;
+  border-radius: inherit;
+  animation: dPulseGlow 3s infinite;
+
+  content: "";
+  position: absolute;
+  inset: 0;
 }
 
 /* ---Cells--- */
 
 .p1-board > button,
 .p2-board > button {
+  background-color: inherit;
+  border: 1px solid #084c5b;
+
+  font-size: clamp(0.75rem, 1vw, 2rem);
+
   padding-left: 2px;
 }
 
@@ -67,4 +93,34 @@ body {
 .p2-result {
   position: absolute;
   top: -40px;
+}
+
+@keyframes dPulseBorder {
+  0% {
+    border-color: #1fcfcf;
+  }
+  20% {
+    border-color: #00ffff;
+  }
+  60% {
+    border-color: #1fcfcf;
+  }
+  100% {
+    border-color: #1fcfcf;
+  }
+}
+
+@keyframes dPulseGlow {
+  0% {
+    opacity: 0.6;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  60% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.6
+  }
 }

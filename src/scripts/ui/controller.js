@@ -141,7 +141,7 @@ export function Controller(player1, player2, game, view) {
     }
 
     function onBoardClick(e) {
-      if (e.target.tagName !== "BUTTON") return;
+      if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
       const receiverName = this.dataset.playername;

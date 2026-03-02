@@ -9,6 +9,38 @@ export function View(root) {
 
   const SHIPICONS = ["🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
 
+  function createShipSVG(isHull) {
+    if (isHull) {
+      return `
+<svg class="hull" viewBox="0 0 90 80" fill="none">
+  <path
+    d="
+      M15 65
+      C15 30, 45 15, 80 20
+      L80 65
+      Z
+    "
+    stroke="currentColor"
+    stroke-width="6"
+    fill="none"
+    stroke-linejoin="butt"
+    stroke-linecap="butt"
+  />
+</svg>`;
+    } else {
+      return `
+<svg class="body" viewBox="0 0 90 80">
+  <rect
+    x="8"
+    y="12"
+    stroke="currentColor"
+    stroke-width="6"
+    fill="none"
+  />
+</svg>`;
+    }
+  }
+
   return {
     eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
 
@@ -65,7 +97,7 @@ export function View(root) {
       }
     },
 
-    updateCell(playerName, coords, cellData) {
+    updateCell(playerName, coords, cellData, isHull) {
       const boardElem =
         p1Board.dataset.playername === playerName ? p1Board : p2Board;
       const [y, x] = coords;
@@ -74,9 +106,7 @@ export function View(root) {
       if (cellData.shipID === null) {
         cellElem.textContent = cellData.hit ? "m" : " ";
       } else {
-        cellElem.textContent = cellData.hit
-          ? "x"
-          : (SHIPICONS[cellData.shipID] ?? "S");
+        cellElem.innerHTML = createShipSVG(isHull);
       }
     },
 

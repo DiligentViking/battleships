@@ -1,11 +1,19 @@
 export function Controller(player1, player2, game, view) {
   //---Helpers---
 
-  function updateCells(player, coordsList) {
+  function updateCells(player, coordsList) {  // TODO: refactor to make it handle what to display based off the data
     const playerName = player.getName();
-    for (const coords of coordsList) {
+    const hullIsLast = playerName === player1.getName() ? true : false;
+    
+    for (let i = 0; i < coordsList.length; i++) {
+      const coords = coordsList[i];
       const cellData = player.gameboard.getCell(coords);
-      view.updateCell(playerName, coords, cellData);
+
+      let isHull = false;
+      if (hullIsLast && i === coordsList.length - 1) isHull = true;
+      if (!hullIsLast && i === 0) isHull = true;
+
+      view.updateCell(playerName, coords, cellData, isHull);
     }
   }
 

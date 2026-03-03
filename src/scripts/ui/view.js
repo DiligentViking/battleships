@@ -115,7 +115,11 @@ export function View(root) {
     hitCell(playerName, coords) {
       const cellElem = getCellElem(playerName, coords);
 
-      cellElem.classList.add("hit");
+      if (cellElem.classList.contains("ship")) {
+        cellElem.classList.add("hit");
+      } else {
+        cellElem.classList.add("miss");
+      }
     },
 
     showWinner(winNum) {

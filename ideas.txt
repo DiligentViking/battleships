@@ -9,6 +9,8 @@ GAMEPLAY IDEAS:
 
 -Three moves: attack, radar, defend
 
+-i'm thinking there should be more to the placing, too.  Like the ships actually give you something.
+
 __________
 
 NAME IDEAS:
@@ -33,3 +35,13 @@ MUSIC IDEAS:
 -Steeltrap/Graymist/Craberiders: Battle music.
 
 -Path_Few_Have_Taken: Credits? Stats?
+
+__________
+
+OTHER IDEAS:
+
+-Motto: Real-Time Battleships. Redefined.  [copied from BAR]
+
+-perhaps ships should have a subtle black-to-white gradient instead of completely hollow.
+
+-larger (12x12) grid.

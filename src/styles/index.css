@@ -107,7 +107,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  gap: max(2px, 1%);
+  /* gap: 2px; */
 }
 
 .p1-board {
@@ -145,14 +145,15 @@ h3 {
   border: 1px solid var(--cell-border);
   transition:
     border-color 0.2s,
-    box-shadow 0.2s;
+    box-shadow 0.2s,
+    background-color 0.2s;
 
   font-size: clamp(0.75rem, 1vw, 2rem);
 
   padding-left: 2px;
 }
 
-.cell:hover {
+.cell:hover:not(.miss) {
   border-color: var(--p1-cell-hover);
   box-shadow: 0 0 6px var(--p1-cell-hover);
   cursor: crosshair;
@@ -160,7 +161,7 @@ h3 {
 
 /* Ship SVGs */
 
-.cell > svg {
+.ship > svg {
   width: 100%;
   height: 100%;
 
@@ -176,18 +177,20 @@ svg.body > rect {
   height: 64%;
 }
 
-.p2-board > .cell > svg.hull {
+.p2-board > .ship > svg.hull {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
 }
 
 /* Hit/Miss Effects */
 
 .hit {
-  background-color: var(--miss-color);
+  border: 1px solid var(--cell-border);
+  background-color: var(--hit-color);
 }
 
-.hit.ship {
-  background-color: var(--hit-color);
+.miss {
+  /* border: 1px solid #084c5b50; */
+  background-color: var(--miss-color);
 }
 
 /* ---Other--- */

@@ -135,8 +135,6 @@ h3 {
 
 .p1-board,
 .p2-board {
-  border-top: 1px solid transparent;
-  border-left: 1px solid transparent;
   border-bottom: 1px solid var(--cell-border);
   border-right: 1px solid var(--cell-border);
 
@@ -151,8 +149,6 @@ h3 {
 .cell {
   border-top: 1px solid var(--cell-border);
   border-left: 1px solid var(--cell-border);
-  border-bottom: 1px solid transparent;
-  border-right: 1px solid transparent;
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
@@ -167,6 +163,9 @@ h3 {
   border-color: var(--p1-cell-hover);
   box-shadow: 0 0 6px var(--p1-cell-hover);
   cursor: crosshair;
+  box-shadow:
+    inset -1px -1px 0 var(--p1-cell-hover),
+    0 0 6px var(--p1-cell-hover);
 }
 
 /* Ship SVGs */

@@ -22,8 +22,8 @@
 
   --cell-border: #084c5b;
 
-  --hit-color: #ff3b3b;
-  --miss-color: #7ec8e3;
+  --hit-color: #ff3b3b22;
+  --miss-color: #7ec8e322;
 
   --text-primary: #e6faff;
   --text-muted: #9fd6e3;
@@ -142,7 +142,6 @@ h3 {
 /* ---Cells--- */
 
 .cell {
-  background-color: inherit;
   border: 1px solid var(--cell-border);
   transition:
     border-color 0.2s,
@@ -159,9 +158,13 @@ h3 {
   cursor: crosshair;
 }
 
+/* Ship SVGs */
+
 .cell > svg {
   width: 100%;
   height: 100%;
+
+  pointer-events: none;
 }
 
 svg.hull {
@@ -175,6 +178,16 @@ svg.body > rect {
 
 .p2-board > .cell > svg.hull {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
+}
+
+/* Hit/Miss Effects */
+
+.hit {
+  background-color: var(--miss-color);
+}
+
+.hit.ship {
+  background-color: var(--hit-color);
 }
 
 /* ---Other--- */

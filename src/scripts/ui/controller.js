@@ -13,7 +13,7 @@ export function Controller(player1, player2, game, view) {
       if (hullIsLast && i === coordsList.length - 1) isHull = true;
       if (!hullIsLast && i === 0) isHull = true;
 
-      view.updateCell(playerName, coords, cellData, isHull);
+      view.placeShipCell(playerName, coords, cellData.shipID, isHull);
     }
   }
 
@@ -130,9 +130,8 @@ export function Controller(player1, player2, game, view) {
       }
 
       const receiver = player1.getName() === receiverName ? player1 : player2;
-      const cellData = receiver.gameboard.getCell(coords);
 
-      view.updateCell(receiverName, coords, cellData);
+      view.hitCell(receiverName, coords);
 
       const status = game.getState();
       if (status.winner) {

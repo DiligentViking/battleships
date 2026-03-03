@@ -41,6 +41,14 @@ export function View(root) {
     }
   }
 
+  function getCellElem(playerName, coords) {
+    const boardElem =
+      p1Board.dataset.playername === playerName ? p1Board : p2Board;
+    const [y, x] = coords;
+
+    return boardElem.querySelector(`[data-coords="${y},${x}"]`);
+  }
+
   return {
     eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
 
@@ -97,17 +105,17 @@ export function View(root) {
       }
     },
 
-    updateCell(playerName, coords, cellData, isHull) {
-      const boardElem =
-        p1Board.dataset.playername === playerName ? p1Board : p2Board;
-      const [y, x] = coords;
-      const cellElem = boardElem.querySelector(`[data-coords="${y},${x}"]`);
+    placeShipCell(playerName, coords, shipID, isHull) {
+      const cellElem = getCellElem(playerName, coords);
 
-      if (cellData.shipID === null) {
-        cellElem.textContent = cellData.hit ? "m" : " ";
-      } else {
-        cellElem.innerHTML = createShipSVG(isHull);
-      }
+      cellElem.classList.add("ship");
+      cellElem.innerHTML = createShipSVG(isHull);
+    },
+
+    hitCell(playerName, coords) {
+      const cellElem = getCellElem(playerName, coords);
+
+      cellElem.classList.add("hit");
     },
 
     showWinner(winNum) {

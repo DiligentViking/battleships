@@ -92,8 +92,8 @@ h3 {
 
 /* ---Boards--- */
 
-.p1-board,
-.p2-board {
+.p1-board-wrapper,
+.p2-board-wrapper {
   background: linear-gradient(
     145deg,
     var(--bg-panel-dark),
@@ -102,27 +102,21 @@ h3 {
   border-radius: 0.5rem;
   padding: 5%;
   position: relative;
-
-  aspect-ratio: 1 / 1;
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  /* gap: 2px; */
 }
 
-.p1-board {
+.p1-board-wrapper {
   border: 2px solid var(--p1-primary);
   box-shadow: inset 0 0 20px var(--p1-glow);
   animation: p1PulseBorder 3s infinite ease-in-out;
 }
-.p2-board {
+.p2-board-wrapper {
   border: 2px solid var(--p2-primary);
   box-shadow: inset 0 0 20px var(--p2-glow);
   animation: p2PulseBorder 3s infinite ease-in-out;
 }
 
-.p1-board::before,
-.p2-board::before {
+.p1-board-wrapper::before,
+.p2-board-wrapper::before {
   border-radius: inherit;
   animation: pulseGlow 3s infinite ease-in-out;
 
@@ -132,17 +126,33 @@ h3 {
   z-index: -1;
 }
 
-.p1-board::before {
+.p1-board-wrapper::before {
   box-shadow: 0 0 20px 2px var(--p1-primary);
 }
-.p2-board::before {
+.p2-board-wrapper::before {
   box-shadow: 0 0 20px 2px var(--p2-primary);
+}
+
+.p1-board,
+.p2-board {
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-bottom: 1px solid var(--cell-border);
+  border-right: 1px solid var(--cell-border);
+
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
 }
 
 /* ---Cells--- */
 
 .cell {
-  border: 1px solid var(--cell-border);
+  border-top: 1px solid var(--cell-border);
+  border-left: 1px solid var(--cell-border);
+  border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
@@ -184,7 +194,6 @@ svg.body > rect {
 /* Hit/Miss Effects */
 
 .hit {
-  border: 1px solid var(--cell-border);
   background-color: var(--hit-color);
 }
 

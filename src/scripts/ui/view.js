@@ -21,7 +21,7 @@ export function View(root) {
       Z
     "
     stroke="currentColor"
-    stroke-width="6"
+    stroke-width="4"
     fill="none"
     stroke-linejoin="butt"
     stroke-linecap="butt"
@@ -34,7 +34,7 @@ export function View(root) {
     x="8"
     y="12"
     stroke="currentColor"
-    stroke-width="6"
+    stroke-width="4"
     fill="none"
   />
 </svg>`;

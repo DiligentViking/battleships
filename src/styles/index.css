@@ -161,26 +161,35 @@ h3 {
   cursor: crosshair;
 }
 
+.p1-board::before,
+.p2-board::before {
+  border: 1px solid var(--cell-border);
+
+  content: "";
+  pointer-events: none;
+
+  position: absolute;
+  inset: 0;
+}
+
 /* ---Cells--- */
 
 .cell {
-  border: 1px solid transparent;
-
+  font-size: clamp(0.75rem, 1vw, 2rem);
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
     background-color 0.2s;
 
-  font-size: clamp(0.75rem, 1vw, 2rem);
-
   padding-left: 2px;
+  border: 1px solid transparent;
+  z-index: 1;
 }
 
 .cell:hover:not(.miss) {
   border-color: var(--p1-cell-hover);
   box-shadow: 0 0 6px var(--p1-cell-hover);
-  box-shadow:
-    0 0 6px 1px var(--p1-cell-hover);
+  box-shadow: 0 0 6px 1px var(--p1-cell-hover);
 }
 
 /* Ship SVGs */

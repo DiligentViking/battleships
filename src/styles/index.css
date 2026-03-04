@@ -74,9 +74,6 @@ h3 {
 /* ---Layout--- */
 
 .game-area {
-  height: 100%;
-  width: 70%;
-  max-width: 1000px;
   display: flex;
 }
 
@@ -100,7 +97,7 @@ h3 {
     var(--bg-panel-light)
   );
   border-radius: 0.5rem;
-  padding: 5%;
+  padding: 20px;
   position: relative;
 }
 
@@ -155,8 +152,8 @@ h3 {
   position: relative;
 
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(10, 40px);
+  grid-template-rows: repeat(10, 40px);
 }
 
 .p1-board:hover,
@@ -167,6 +164,8 @@ h3 {
 /* ---Cells--- */
 
 .cell {
+  border: 1px solid transparent;
+
   transition:
     border-color 0.2s,
     box-shadow 0.2s,
@@ -181,7 +180,6 @@ h3 {
   border-color: var(--p1-cell-hover);
   box-shadow: 0 0 6px var(--p1-cell-hover);
   box-shadow:
-    0 0 0 1px var(--p1-cell-hover),
     0 0 6px 1px var(--p1-cell-hover);
 }
 

@@ -1,13 +1,15 @@
 export function View(root) {
-  const shipPlacer = root.querySelector(".ship-placer");
-  const placeShipLabel = root.querySelector("label[for='place-ship']");
-  const placeShipInput = root.querySelector("#place-ship");
+  const message = root.querySelector(".message");
+
+  const p1BoardWrapper = root.querySelector(".board-wrapper.p1");
+  const p2BoardWrapper = root.querySelector(".board-wrapper.p2");
   const p1Board = root.querySelector(".board.p1");
   const p2Board = root.querySelector(".board.p2");
-  const p1Result = root.querySelector(".p1-result");
-  const p2Result = root.querySelector(".p2-result");
 
-  const SHIPICONS = ["🛶", "🛥️", "⛵", "🛳️", "⛴️", "🚢"];
+  const shipsContainer = root.querySelector(".ships-container");
+  shipsContainer.style.outline = "2px solid red";
+
+  const deployBtn = root.querySelector(".deploy");
 
   function createShipSVG(isHull) {
     if (isHull) {
@@ -50,38 +52,9 @@ export function View(root) {
   }
 
   return {
-    eventElems: { placeShipInput, p1Board, p2Board }, // Controller only uses these for addEventListener
+    eventElems: { p1Board, p2Board }, // Controller only uses these for addEventListener
 
-    showPlaceShipIcon(shipID) {
-      placeShipLabel.textContent = "Place Ship: " + (SHIPICONS[shipID] ?? "S");
-    },
-
-    validatePlaceShipInput() {
-      const inputCoords = placeShipInput.value;
-
-      const commaDelimited = inputCoords.split(",");
-      const spaceDelimited = inputCoords.split(" ");
-
-      const coords =
-        commaDelimited.length === 2
-          ? [+commaDelimited[0], +commaDelimited[1]]
-          : spaceDelimited.length === 2
-            ? [+spaceDelimited[0], +spaceDelimited[1]]
-            : -1;
-
-      if (coords === -1) throw new Error("Invalid coords format");
-
-      return coords;
-    },
-
-    parseCellCoords(cellElem) {
-      const coordsString = cellElem.dataset.coords;
-      return coordsString.split(",").map((item) => +item);
-    },
-
-    hideShipPlacer() {
-      shipPlacer.classList.add("hide");
-    },
+    //---Player/Board Init---
 
     initBoardPlayerNames(player1Name, player2Name) {
       p1Board.dataset.playername = player1Name;
@@ -105,12 +78,28 @@ export function View(root) {
       }
     },
 
+    //---Setup Phase---
+
+    enterSetupPhase() {
+      message.textContent = "Position Fleet";
+
+      p2BoardWrapper.classList.add("hide");
+      shipsContainer.classList.remove("hide");
+      deployBtn.classList.remove("hide");
+    },
+
+    parseCellCoords(cellElem) {
+      const coordsString = cellElem.dataset.coords;
+      return coordsString.split(",").map((item) => +item);
+    },
     placeShipCell(playerName, coords, shipID, isHull) {
       const cellElem = getCellElem(playerName, coords);
 
       cellElem.classList.add("ship");
       cellElem.innerHTML = createShipSVG(isHull);
     },
+
+    //---Battle Phase---
 
     hitCell(playerName, coords) {
       const cellElem = getCellElem(playerName, coords);
@@ -120,11 +109,6 @@ export function View(root) {
       } else {
         cellElem.classList.add("miss");
       }
-    },
-
-    showWinner(winNum) {
-      const playerResultElem = winNum === 1 ? p1Result : p2Result;
-      playerResultElem.textContent = "you win";
     },
   };
 }

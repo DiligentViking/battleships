@@ -63,6 +63,22 @@ h1,
 h2,
 h3 {
   font-family: "Audiowide", sans-serif;
+  font-weight: normal;
+}
+
+button {
+  background-color: var(--bg-panel-light);
+  color: inherit;
+  font-family: "Oxanium", sans-serif;
+  font-size: inherit;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  border: 2px solid var(--hit-color);
+  padding: 1rem 2rem;
+}
+button:hover {
+  cursor: pointer;
 }
 
 /* ---Helpers--- */
@@ -92,13 +108,19 @@ h3 {
 
 .middle-area {
   display: flex;
-  padding: 42px;
+  margin: 42px;
   gap: 84px;
 }
 
 .bottom-area {
   display: flex;
   justify-content: center;
+}
+
+/* ---Placement Phase--- */
+
+.ships-container {
+  width: 12rem;
 }
 
 /* ---Boards--- */

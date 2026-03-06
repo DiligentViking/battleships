@@ -8,7 +8,7 @@ const player2 = Player("two", "computer");
 
 const game = Game(player1, player2);
 
-const view = View(document.querySelector(".game-area"));
+const view = View(document.querySelector(".app"));
 
 const controller = Controller(player1, player2, game, view);
 

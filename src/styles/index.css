@@ -73,12 +73,11 @@ h3 {
 
 /* ---Layout--- */
 
-.game-area {
+.app {
   display: flex;
 }
 
-.p1-area,
-.p2-area {
+.area {
   flex: 1;
   padding: calc(2rem + 1%);
   position: relative;
@@ -89,8 +88,7 @@ h3 {
 
 /* ---Boards--- */
 
-.p1-board-wrapper,
-.p2-board-wrapper {
+.board-wrapper {
   background: linear-gradient(
     145deg,
     var(--bg-panel-dark),
@@ -101,19 +99,18 @@ h3 {
   position: relative;
 }
 
-.p1-board-wrapper {
+.board-wrapper.p1 {
   border: 2px solid var(--p1-primary);
   box-shadow: inset 0 0 20px var(--p1-glow);
   animation: p1PulseBorder 3s infinite ease-in-out;
 }
-.p2-board-wrapper {
+.board-wrapper.p2 {
   border: 2px solid var(--p2-primary);
   box-shadow: inset 0 0 20px var(--p2-glow);
   animation: p2PulseBorder 3s infinite ease-in-out;
 }
 
-.p1-board-wrapper::before,
-.p2-board-wrapper::before {
+.board-wrapper::before {
   border-radius: inherit;
   animation: pulseGlow 3s infinite ease-in-out;
 
@@ -123,15 +120,14 @@ h3 {
   z-index: -1;
 }
 
-.p1-board-wrapper::before {
+.board-wrapper.p1::before {
   box-shadow: 0 0 20px 2px var(--p1-primary);
 }
-.p2-board-wrapper::before {
+.board-wrapper.p2::before {
   box-shadow: 0 0 20px 2px var(--p2-primary);
 }
 
-.p1-board,
-.p2-board {
+.board {
   background:
     repeating-linear-gradient(
       to right,
@@ -156,13 +152,11 @@ h3 {
   grid-template-rows: repeat(10, 40px);
 }
 
-.p1-board:hover,
-.p2-board:hover {
+.board:hover {
   cursor: crosshair;
 }
 
-.p1-board::before,
-.p2-board::before {
+.board::before {
   border: 1px solid var(--cell-border);
 
   content: "";
@@ -210,7 +204,7 @@ svg.body > rect {
   height: 64%;
 }
 
-.p2-board > .ship > svg.hull {
+.board.p2 > .ship > svg.hull {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
 }
 

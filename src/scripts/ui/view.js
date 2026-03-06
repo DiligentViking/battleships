@@ -2,8 +2,8 @@ export function View(root) {
   const shipPlacer = root.querySelector(".ship-placer");
   const placeShipLabel = root.querySelector("label[for='place-ship']");
   const placeShipInput = root.querySelector("#place-ship");
-  const p1Board = root.querySelector(".p1-board");
-  const p2Board = root.querySelector(".p2-board");
+  const p1Board = root.querySelector(".board.p1");
+  const p2Board = root.querySelector(".board.p2");
   const p1Result = root.querySelector(".p1-result");
   const p2Result = root.querySelector(".p2-result");
 

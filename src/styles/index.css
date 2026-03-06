@@ -73,7 +73,7 @@ h3 {
 
 /* ---Layout--- */
 
-.app {
+.middle-area {
   display: flex;
   padding: 42px;
   gap: 84px;

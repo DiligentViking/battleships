@@ -75,14 +75,8 @@ h3 {
 
 .app {
   display: flex;
-}
-
-.area {
-  padding: calc(2rem + 1%);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 42px;
+  gap: 84px;
 }
 
 /* ---Boards--- */

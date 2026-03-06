@@ -68,15 +68,37 @@ h3 {
 /* ---Helpers--- */
 
 .hide {
-  visibility: hidden;
+  display: none;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
 
 /* ---Layout--- */
+
+.top-area {
+  display: flex;
+  justify-content: center;
+}
 
 .middle-area {
   display: flex;
   padding: 42px;
   gap: 84px;
+}
+
+.bottom-area {
+  display: flex;
+  justify-content: center;
 }
 
 /* ---Boards--- */
@@ -101,6 +123,30 @@ h3 {
   border: 2px solid var(--p2-primary);
   box-shadow: inset 0 0 20px var(--p2-glow);
   animation: p2PulseBorder 3s infinite ease-in-out;
+}
+
+@keyframes p1PulseBorder {
+  0% {
+    border-color: var(--p1-cell-hover);
+  }
+  50% {
+    border-color: var(--p1-primary);
+  }
+  100% {
+    border-color: var(--p1-cell-hover);
+  }
+}
+
+@keyframes p2PulseBorder {
+  0% {
+    border-color: var(--p2-cell-hover);
+  }
+  50% {
+    border-color: var(--p2-primary);
+  }
+  100% {
+    border-color: var(--p2-cell-hover);
+  }
 }
 
 .board-wrapper::before {
@@ -208,53 +254,4 @@ svg.body > rect {
 
 .miss {
   background-color: var(--miss-color);
-}
-
-/* ---Other--- */
-
-.ship-placer {
-  position: absolute;
-  top: -45px;
-}
-
-.p1-result,
-.p2-result {
-  position: absolute;
-  top: -40px;
-}
-
-@keyframes p1PulseBorder {
-  0% {
-    border-color: var(--p1-cell-hover);
-  }
-  50% {
-    border-color: var(--p1-primary);
-  }
-  100% {
-    border-color: var(--p1-cell-hover);
-  }
-}
-
-@keyframes p2PulseBorder {
-  0% {
-    border-color: var(--p2-cell-hover);
-  }
-  50% {
-    border-color: var(--p2-primary);
-  }
-  100% {
-    border-color: var(--p2-cell-hover);
-  }
-}
-
-@keyframes pulseGlow {
-  0% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0.5;
-  }
 }

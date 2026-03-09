@@ -38,6 +38,10 @@ export function Controller(player1, player2, game, view) {
 
   function runPlayerSetup(numShips = 6) {
     view.enterSetupPhase();
+
+    for (let i = 0; i < numShips; i++) {
+      view.addPlaceableShip(i);
+    }
   }
 
   // function runPlayerSetup(numShips = 6) {

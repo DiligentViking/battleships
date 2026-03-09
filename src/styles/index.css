@@ -63,7 +63,8 @@ h1,
 h2,
 h3 {
   font-family: "Audiowide", sans-serif;
-  font-weight: normal;
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
 button {
@@ -119,8 +120,20 @@ button:hover {
 
 /* ---Placement Phase--- */
 
-.ships-container {
-  width: 12rem;
+.fleet-container {
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ship-container {
+  display: flex;
+}
+
+.ship-segment {
+  height: 40px;
+  width: 40px;
 }
 
 /* ---Boards--- */

@@ -6,8 +6,7 @@ export function View(root) {
   const p1Board = root.querySelector(".board.p1");
   const p2Board = root.querySelector(".board.p2");
 
-  const shipsContainer = root.querySelector(".ships-container");
-  shipsContainer.style.outline = "2px solid red";
+  const fleetContainer = root.querySelector(".fleet-container");
 
   const deployBtn = root.querySelector(".deploy");
 
@@ -84,14 +83,34 @@ export function View(root) {
       message.textContent = "Position Fleet";
 
       p2BoardWrapper.classList.add("hide");
-      shipsContainer.classList.remove("hide");
+      fleetContainer.classList.remove("hide");
       deployBtn.classList.remove("hide");
+    },
+
+    addPlaceableShip(shipID, shipLength = shipID + 1) {
+      const shipContainer = document.createElement("div");
+      shipContainer.classList.add("ship-container");
+      shipContainer.dataset.shipid = shipID;
+
+      for (let i = 0; i < shipLength; i++) {
+        const shipSegment = document.createElement("div");
+        shipSegment.dataset.segmentnum = i;
+        shipSegment.classList.add("ship-segment");
+
+        const isHull = i === shipLength - 1 ? true : false;
+        shipSegment.innerHTML = createShipSVG(isHull);
+
+        shipContainer.appendChild(shipSegment);
+      }
+
+      fleetContainer.appendChild(shipContainer);
     },
 
     parseCellCoords(cellElem) {
       const coordsString = cellElem.dataset.coords;
       return coordsString.split(",").map((item) => +item);
     },
+
     placeShipCell(playerName, coords, shipID, isHull) {
       const cellElem = getCellElem(playerName, coords);
 

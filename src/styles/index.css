@@ -120,8 +120,11 @@ button:hover {
 
 /* ---Placement Phase--- */
 
-.fleet-container {
+.fleet-wrapper {
   width: 240px;
+}
+
+.fleet-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -142,6 +145,11 @@ button:hover {
 
 .preview.invalid {
   outline: 2px solid red;
+}
+
+.fleet-wrapper > .buttons {
+  margin-top: 3rem;
+  display: flex;
 }
 
 /* ---Boards--- */

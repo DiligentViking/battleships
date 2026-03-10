@@ -45,3 +45,5 @@ OTHER IDEAS:
 -perhaps ships should have a subtle black-to-white gradient instead of completely hollow.
 
 -larger (12x12) grid.
+
+-for now i have decided to make them not draggable once on the grid.

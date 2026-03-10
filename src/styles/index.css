@@ -140,6 +140,10 @@ button:hover {
   outline: 2px solid green;
 }
 
+.preview.invalid {
+  outline: 2px solid red;
+}
+
 /* ---Boards--- */
 
 .board-wrapper {

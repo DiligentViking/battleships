@@ -37,7 +37,7 @@ export function Gameboard() {
 
     areAllShipsSunk: () => numSunk === ships.length,
 
-    placeShip: (shipID, shipLength, coords, preview = false) => {
+    placeShip: (shipID, shipLength, coords) => {
       const [y, x] = coords;
       const coordsList = [];
 
@@ -51,11 +51,25 @@ export function Gameboard() {
         coordsList.push([y, x + i]);
       }
 
-      if (!preview) {
-        ships.push(Ship(shipLength));
-      }
+      ships.push(Ship(shipLength));
 
       return coordsList;
+    },
+
+    getPreview: (shipLength, coords) => {
+      const [y, x] = coords;
+      const coordsList = [];
+      let valid = true;
+
+      for (let i = 0; i < shipLength; i++) {
+        if (board[y][x + i]?.shipID !== null) {
+          valid = false;
+          break;
+        }
+        coordsList.push([y, x + i]);
+      }
+
+      return { coordsList, valid };
     },
 
     receiveAttack: (coords) => {

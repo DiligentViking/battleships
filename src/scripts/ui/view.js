@@ -111,18 +111,32 @@ export function View(root) {
       return coordsString.split(",").map((item) => +item);
     },
 
-    placePreviewCell(playerName, coords, valid) {
-      const cellElem = getCellElem(playerName, coords);
+    updatePreview(playerName, coordsList, valid) {
+      for (let i = 0; i < coordsList.length; i++) {
+        const coords = coordsList[i];
+        const cellElem = getCellElem(playerName, coords);
 
-      cellElem.classList.add("preview");
-      if (!valid) cellElem.classList.add("invalid");
+        cellElem.classList.add("preview");
+        if (!valid) cellElem.classList.add("invalid");
+      }
     },
 
-    placeShipCell(playerName, coords, shipID, isHull) {
-      const cellElem = getCellElem(playerName, coords);
+    placeShip(playerName, coordsList) {
+      const hullIsLast =
+        p1Board.dataset.playername === playerName ? true : false;
 
-      cellElem.classList.add("ship");
-      cellElem.innerHTML = createShipSVG(isHull);
+      for (let i = 0; i < coordsList.length; i++) {
+        const coords = coordsList[i];
+
+        let isHull = false;
+        if (hullIsLast && i === coordsList.length - 1) isHull = true;
+        if (!hullIsLast && i === 0) isHull = true;
+
+        const cellElem = getCellElem(playerName, coords);
+
+        cellElem.classList.add("ship");
+        cellElem.innerHTML = createShipSVG(isHull);
+      }
     },
 
     //---Battle Phase---

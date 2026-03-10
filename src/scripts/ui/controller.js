@@ -1,34 +1,4 @@
 export function Controller(player1, player2, game, view) {
-  //---Helpers---
-
-  function updateCells(player, coordsList) {
-    const playerName = player.getName();
-    const hullIsLast = playerName === player1.getName() ? true : false;
-
-    for (let i = 0; i < coordsList.length; i++) {
-      const coords = coordsList[i];
-      const cellData = player.gameboard.getCell(coords);
-
-      let isHull = false;
-      if (hullIsLast && i === coordsList.length - 1) isHull = true;
-      if (!hullIsLast && i === 0) isHull = true;
-
-      view.placeShipCell(playerName, coords, cellData.shipID, isHull);
-    }
-  }
-
-  function updatePreview(player, coordsList, valid) {
-    const playerName = player.getName();
-
-    for (let i = 0; i < coordsList.length; i++) {
-      const coords = coordsList[i];
-
-      view.placePreviewCell(playerName, coords, valid);
-    }
-  }
-
-  //---Flow---
-
   function init() {
     view.initBoardPlayerNames(player1.getName(), player2.getName());
 
@@ -74,13 +44,10 @@ export function Controller(player1, player2, game, view) {
 
       const coords = view.parseCellCoords(e.target);
 
-      const coordsList = player1.gameboard.placeShip(
-        heldShipID,
-        heldShipID + 1,
-        coords,
-        true
-      );
-      updatePreview(player1, coordsList);
+      const result = player1.gameboard.getPreview(heldShipID + 1, coords);
+      const { coordsList, valid } = result;
+
+      view.updatePreview(player1.getName(), coordsList, valid);
     });
 
     p1Board.addEventListener("mouseup", (e) => {
@@ -94,7 +61,8 @@ export function Controller(player1, player2, game, view) {
         heldShipID + 1,
         coords,
       );
-      updateCells(player1, coordsList);
+
+      view.placeShip(player1.getName(), coordsList);
 
       heldShipID = null;
     });

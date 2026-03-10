@@ -37,10 +37,10 @@ export function Gameboard() {
 
     areAllShipsSunk: () => numSunk === ships.length,
 
-    placeShip: (shipID, shipLength, coords) => {
+    placeShip: (shipID, shipLength, coords, preview = false) => {
       const [y, x] = coords;
       const coordsList = [];
-      
+
       for (let i = 0; i < shipLength; i++) {
         if (board[y][x + i]?.shipID !== null) {
           throw new Error("Cell out of bounds or already taken");
@@ -50,8 +50,10 @@ export function Gameboard() {
         board[y][x + i].shipID = shipID;
         coordsList.push([y, x + i]);
       }
-      
-      ships.push(Ship(shipLength));
+
+      if (!preview) {
+        ships.push(Ship(shipLength));
+      }
 
       return coordsList;
     },

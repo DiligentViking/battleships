@@ -136,6 +136,10 @@ button:hover {
   width: 40px;
 }
 
+.preview {
+  outline: 2px solid green;
+}
+
 /* ---Boards--- */
 
 .board-wrapper {

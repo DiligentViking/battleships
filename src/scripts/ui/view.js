@@ -1,7 +1,7 @@
 export function View(root) {
   const message = root.querySelector(".message");
 
-  const p1BoardWrapper = root.querySelector(".board-wrapper.p1");
+  // const p1BoardWrapper = root.querySelector(".board-wrapper.p1");
   const p2BoardWrapper = root.querySelector(".board-wrapper.p2");
   const p1Board = root.querySelector(".board.p1");
   const p2Board = root.querySelector(".board.p2");
@@ -51,7 +51,7 @@ export function View(root) {
   }
 
   return {
-    eventElems: { p1Board, p2Board }, // Controller only uses these for addEventListener
+    eventElems: { p1Board, p2Board, fleetContainer }, // Controller only uses these for addEventListener
 
     //---Player/Board Init---
 
@@ -94,8 +94,8 @@ export function View(root) {
 
       for (let i = 0; i < shipLength; i++) {
         const shipSegment = document.createElement("div");
-        shipSegment.dataset.segmentnum = i;
         shipSegment.classList.add("ship-segment");
+        shipSegment.dataset.segmentnum = i;
 
         const isHull = i === shipLength - 1 ? true : false;
         shipSegment.innerHTML = createShipSVG(isHull);
@@ -109,6 +109,13 @@ export function View(root) {
     parseCellCoords(cellElem) {
       const coordsString = cellElem.dataset.coords;
       return coordsString.split(",").map((item) => +item);
+    },
+
+    placePreviewCell(playerName, coords, valid) {
+      const cellElem = getCellElem(playerName, coords);
+
+      cellElem.classList.add("preview");
+      if (!valid) cellElem.classList.add("invalid");
     },
 
     placeShipCell(playerName, coords, shipID, isHull) {

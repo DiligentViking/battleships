@@ -66,6 +66,10 @@ export function Controller(player1, player2, game, view) {
 
       heldShipID = null;
     });
+
+    p1Board.addEventListener("mouseleave", () => {
+      view.removePreviousPreview();
+    });
   }
 
   // function runPlayerSetup(numShips = 6) {

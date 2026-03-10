@@ -111,7 +111,16 @@ export function View(root) {
       return coordsString.split(",").map((item) => +item);
     },
 
+    removePreviousPreview() {
+      const cells = document.querySelectorAll(".preview");
+
+      for (const cell of cells) {
+        cell.classList.remove("preview", "invalid");
+      }
+    },
+
     updatePreview(playerName, coordsList, valid) {
+      this.removePreviousPreview();
       for (let i = 0; i < coordsList.length; i++) {
         const coords = coordsList[i];
         const cellElem = getCellElem(playerName, coords);
@@ -122,6 +131,8 @@ export function View(root) {
     },
 
     placeShip(playerName, coordsList) {
+      this.removePreviousPreview();
+
       const hullIsLast =
         p1Board.dataset.playername === playerName ? true : false;
 

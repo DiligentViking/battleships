@@ -122,6 +122,7 @@ button:hover {
 
 .fleet-wrapper {
   width: 240px;
+  position: relative;
 }
 
 .fleet-container {
@@ -148,7 +149,8 @@ button:hover {
 }
 
 .fleet-wrapper > .buttons {
-  margin-top: 3rem;
+  position: absolute;
+  bottom: 2rem;
   display: flex;
 }
 

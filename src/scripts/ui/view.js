@@ -106,6 +106,11 @@ export function View(root) {
       fleetContainer.appendChild(shipContainer);
     },
 
+    removePlaceableShip(shipID) {
+      const shipContainer = document.querySelector(`[data-shipid="${shipID}"]`);
+      shipContainer.remove();
+    },
+
     parseCellCoords(cellElem) {
       const coordsString = cellElem.dataset.coords;
       return coordsString.split(",").map((item) => +item);

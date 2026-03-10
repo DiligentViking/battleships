@@ -63,6 +63,7 @@ export function Controller(player1, player2, game, view) {
       );
 
       view.placeShip(player1.getName(), coordsList);
+      view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
     });

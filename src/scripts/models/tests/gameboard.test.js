@@ -13,9 +13,9 @@ test("places a ship horizontally at a coordinate", () => {
 
   gameboard.placeShip(0, 3, [1, 5]);
   const board = gameboard._getDebugInfo().board;
-  expect(board[1][5]).not.toBe(0);
-  expect(board[1][6]).not.toBe(0);
-  expect(board[1][7]).not.toBe(0);
+  expect(board[1][5].shipID).toBe(0);
+  expect(board[1][6].shipID).toBe(0);
+  expect(board[1][7].shipID).toBe(0);
 });
 test("does not place ship out of bounds", () => {
   const gameboard = Gameboard();
@@ -27,6 +27,17 @@ test("does not place ship in already taken cells", () => {
 
   gameboard.placeShip(0, 3, [1, 4]);
   expect(() => gameboard.placeShip(2, 5, [1, 2])).toThrow(Error);
+});
+
+test("removes ship from board", () => {
+  const gameboard = Gameboard();
+  gameboard.placeShip(0, 3, [1, 5]);
+
+  gameboard.unplaceShip(0);
+  const board = gameboard._getDebugInfo().board;
+  expect(board[1][5].shipID).toBeNull();
+  expect(board[1][6].shipID).toBeNull();
+  expect(board[1][7].shipID).toBeNull();
 });
 
 test("increments ship hits when a ship cell is hit", () => {

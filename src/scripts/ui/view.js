@@ -130,8 +130,8 @@ export function View(root) {
         const coords = coordsList[i];
         const cellElem = getCellElem(playerName, coords);
 
-        cellElem.classList.add("preview");
-        if (!valid) cellElem.classList.add("invalid");
+        cellElem?.classList.add("preview");
+        if (!valid) cellElem?.classList.add("invalid");
       }
     },
 

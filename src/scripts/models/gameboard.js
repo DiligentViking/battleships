@@ -64,12 +64,21 @@ export function Gameboard() {
       for (let i = 0; i < shipLength; i++) {
         if (board[y][x + i]?.shipID !== null) {
           valid = false;
-          break;
         }
-        coordsList.push([y, x + i]);
+        coordsList[shipLength] = [y, x + i];
       }
 
       return { coordsList, valid };
+    },
+
+    unplaceShip: (shipID) => {
+      for (const row of board) {
+        for (const cell of row) {
+          if (cell.shipID === shipID) {
+            cell.shipID = null;
+          }
+        }
+      }
     },
 
     receiveAttack: (coords) => {

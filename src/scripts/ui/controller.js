@@ -23,6 +23,8 @@ export function Controller(player1, player2, game, view) {
       view.addPlaceableShip(i);
     }
 
+    // Drag Events
+
     const { p1Board, fleetContainer } = view.eventElems;
     let heldShipID = null;
 
@@ -70,6 +72,23 @@ export function Controller(player1, player2, game, view) {
 
     p1Board.addEventListener("mouseleave", () => {
       view.removePreviousPreview();
+    });
+
+    // Button Events
+
+    const { resetBtn, randomBtn } = view.eventElems;
+
+    resetBtn.addEventListener("click", () => {
+      view.renderBoard(
+        player1.getName(),
+        player1.gameboard.getBoardHeight(),
+        player1.gameboard.getBoardWidth(),
+      );
+
+      for (let i = 0; i < numShips; i++) {
+        view.removePlaceableShip(i);
+        view.addPlaceableShip(i);
+      }
     });
   }
 

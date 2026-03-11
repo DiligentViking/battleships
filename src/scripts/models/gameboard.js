@@ -65,7 +65,7 @@ export function Gameboard() {
         if (board[y][x + i]?.shipID !== null) {
           valid = false;
         }
-        coordsList[shipLength] = [y, x + i];
+        coordsList.push([y, x + i]);
       }
 
       return { coordsList, valid };

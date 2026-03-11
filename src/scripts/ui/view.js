@@ -8,6 +8,8 @@ export function View(root) {
 
   const fleetContainer = root.querySelector(".fleet-container");
 
+  const resetBtn = root.querySelector(".reset");
+  const randomBtn = root.querySelector(".random");
   const deployBtn = root.querySelector(".deploy");
 
   function createShipSVG(isHull) {
@@ -51,7 +53,7 @@ export function View(root) {
   }
 
   return {
-    eventElems: { p1Board, p2Board, fleetContainer }, // Controller only uses these for addEventListener
+    eventElems: { p1Board, p2Board, fleetContainer, resetBtn, randomBtn, deployBtn }, // Controller only uses these for addEventListener
 
     //---Player/Board Init---
 
@@ -108,7 +110,7 @@ export function View(root) {
 
     removePlaceableShip(shipID) {
       const shipContainer = document.querySelector(`[data-shipid="${shipID}"]`);
-      shipContainer.remove();
+      shipContainer?.remove();
     },
 
     parseCellCoords(cellElem) {

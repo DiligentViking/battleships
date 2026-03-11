@@ -79,6 +79,8 @@ export function Controller(player1, player2, game, view) {
     const { resetBtn, randomBtn } = view.eventElems;
 
     resetBtn.addEventListener("click", () => {
+      player1.gameboard.unplaceAllShips();
+
       view.renderBoard(
         player1.getName(),
         player1.gameboard.getBoardHeight(),
@@ -88,6 +90,47 @@ export function Controller(player1, player2, game, view) {
       for (let i = 0; i < numShips; i++) {
         view.removePlaceableShip(i);
         view.addPlaceableShip(i);
+      }
+    });
+
+    randomBtn.addEventListener("click", () => {
+      player1.gameboard.unplaceAllShips();
+
+      view.renderBoard(
+        player1.getName(),
+        player1.gameboard.getBoardHeight(),
+        player1.gameboard.getBoardWidth(),
+      );
+
+      for (let i = 0; i < numShips; i++) {
+        view.removePlaceableShip(i);
+        view.addPlaceableShip(i);
+      }
+
+      let count = 0;
+      let fire = 0;
+
+      while (count !== numShips) {
+        if (fire++ > 1000) break;
+
+        const shipID = count;
+        const shipLength = count + 1;
+        const coords = [
+          Math.floor(Math.random() * player1.gameboard.getBoardHeight()),
+          Math.floor(Math.random() * player1.gameboard.getBoardWidth()),
+        ];
+        let coordsList;
+
+        try {
+          coordsList = player1.gameboard.placeShip(shipID, shipLength, coords);
+        } catch {
+          continue;
+        }
+
+        view.removePlaceableShip(shipID);
+        view.placeShip(player1.getName(), coordsList);
+
+        count++;
       }
     });
   }

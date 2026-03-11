@@ -71,12 +71,10 @@ export function Gameboard() {
       return { coordsList, valid };
     },
 
-    unplaceShip: (shipID) => {
+    unplaceAllShips: () => {
       for (const row of board) {
         for (const cell of row) {
-          if (cell.shipID === shipID) {
-            cell.shipID = null;
-          }
+          cell.shipID = null;
         }
       }
     },

@@ -1,6 +1,9 @@
 export function Controller(player1, player2, game, view) {
   //---Helpers---
 
+  const NUM_SHIPS = 6;
+  const SHIP_LENGTHS = [1, 2, 3, 4, 5, 6];
+
   function resetSetup(numShips) {
     player1.gameboard.unplaceAllShips();
 
@@ -21,7 +24,7 @@ export function Controller(player1, player2, game, view) {
 
     while (count !== numShips) {
       const shipID = count;
-      const shipLength = count + 1;
+      const shipLength = SHIP_LENGTHS[shipID];
       const coords = [
         Math.floor(Math.random() * player.gameboard.getBoardHeight()),
         Math.floor(Math.random() * player.gameboard.getBoardWidth()),
@@ -60,10 +63,10 @@ export function Controller(player1, player2, game, view) {
     runPlayerSetup();
   }
 
-  function runPlayerSetup(numShips = 6) {
+  function runPlayerSetup() {
     view.enterSetupPhase();
 
-    for (let i = 0; i < numShips; i++) {
+    for (let i = 0; i < NUM_SHIPS; i++) {
       view.addPlaceableShip(i);
     }
 
@@ -104,7 +107,7 @@ export function Controller(player1, player2, game, view) {
 
       const coordsList = player1.gameboard.placeShip(
         heldShipID,
-        heldShipID + 1,
+        SHIP_LENGTHS[heldShipID],
         coords,
       );
 
@@ -123,12 +126,12 @@ export function Controller(player1, player2, game, view) {
     const { resetBtn, randomBtn, deployBtn } = view.eventElems;
 
     resetBtn.addEventListener("click", () => {
-      resetSetup(numShips);
+      resetSetup(NUM_SHIPS);
     });
 
     randomBtn.addEventListener("click", () => {
-      resetSetup(numShips);
-      autoPlaceShips(player1, numShips);
+      resetSetup(NUM_SHIPS);
+      autoPlaceShips(player1, NUM_SHIPS);
     });
 
     deployBtn.addEventListener("click", () => {
@@ -142,8 +145,8 @@ export function Controller(player1, player2, game, view) {
     });
   }
 
-  function runComputerSetup(numShips = 6) {
-    autoPlaceShips(player2, numShips);
+  function runComputerSetup() {
+    autoPlaceShips(player2, NUM_SHIPS);
   }
 
   function runGame() {

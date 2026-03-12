@@ -2,13 +2,15 @@ import { Ship } from "./ship.js";
 import { deepCopy } from "./utils.js";
 
 export function Gameboard() {
+  const BOARD_SIZE = 10;
+
   const ships = [];
   let numSunk = 0;
 
   const board = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < BOARD_SIZE; i++) {
     const row = [];
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < BOARD_SIZE; j++) {
       row.push({ shipID: null, hit: false });
     }
     board.push(row);

@@ -6,6 +6,7 @@ export function View(root) {
   const p1Board = root.querySelector(".board.p1");
   const p2Board = root.querySelector(".board.p2");
 
+  const fleetWrapper = root.querySelector(".fleet-wrapper");
   const fleetContainer = root.querySelector(".fleet-container");
 
   const resetBtn = root.querySelector(".reset");
@@ -85,7 +86,7 @@ export function View(root) {
       message.textContent = "Position Fleet";
 
       p2BoardWrapper.classList.add("hide");
-      fleetContainer.classList.remove("hide");
+      fleetWrapper.classList.remove("hide");
       deployBtn.classList.remove("hide");
     },
 
@@ -158,6 +159,14 @@ export function View(root) {
     },
 
     //---Battle Phase---
+
+    enterBattlePhase() {
+      message.textContent = "Battle";
+
+      p2BoardWrapper.classList.remove("hide");
+      fleetWrapper.classList.add("hide");
+      deployBtn.classList.add("hide");
+    },
 
     hitCell(playerName, coords) {
       const cellElem = getCellElem(playerName, coords);

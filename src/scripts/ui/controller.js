@@ -16,6 +16,31 @@ export function Controller(player1, player2, game, view) {
     }
   }
 
+  function autoPlaceShips(player, numShips) {
+    let count = 0;
+
+    while (count !== numShips) {
+      const shipID = count;
+      const shipLength = count + 1;
+      const coords = [
+        Math.floor(Math.random() * player.gameboard.getBoardHeight()),
+        Math.floor(Math.random() * player.gameboard.getBoardWidth()),
+      ];
+      let coordsList;
+
+      try {
+        coordsList = player.gameboard.placeShip(shipID, shipLength, coords);
+      } catch {
+        continue;
+      }
+
+      view.removePlaceableShip(shipID);
+      view.placeShip(player.getName(), coordsList);
+
+      count++;
+    }
+  }
+
   //---Flow---
 
   function init() {
@@ -95,7 +120,7 @@ export function Controller(player1, player2, game, view) {
 
     // Button Events
 
-    const { resetBtn, randomBtn } = view.eventElems;
+    const { resetBtn, randomBtn, deployBtn } = view.eventElems;
 
     resetBtn.addEventListener("click", () => {
       resetSetup(numShips);
@@ -103,56 +128,22 @@ export function Controller(player1, player2, game, view) {
 
     randomBtn.addEventListener("click", () => {
       resetSetup(numShips);
+      autoPlaceShips(player1, numShips);
+    });
 
-      let count = 0;
-
-      while (count !== numShips) {
-        const shipID = count;
-        const shipLength = count + 1;
-        const coords = [
-          Math.floor(Math.random() * player1.gameboard.getBoardHeight()),
-          Math.floor(Math.random() * player1.gameboard.getBoardWidth()),
-        ];
-        let coordsList;
-
-        try {
-          coordsList = player1.gameboard.placeShip(shipID, shipLength, coords);
-        } catch {
-          continue;
-        }
-
-        view.removePlaceableShip(shipID);
-        view.placeShip(player1.getName(), coordsList);
-
-        count++;
+    deployBtn.addEventListener("click", () => {
+      if (player2.getType() === "computer") {
+        runComputerSetup();
       }
+
+      view.enterBattlePhase();
+
+      runGame();
     });
   }
 
   function runComputerSetup(numShips = 6) {
-    let count = 0;
-
-    while (count !== numShips) {
-      const shipID = count;
-      const shipLength = count + 1;
-      const coords = [
-        Math.floor(Math.random() * player2.gameboard.getBoardHeight()),
-        Math.floor(Math.random() * player2.gameboard.getBoardWidth()),
-      ];
-      let coordsList;
-
-      try {
-        coordsList = player2.gameboard.placeShip(shipID, shipLength, coords);
-      } catch {
-        continue;
-      }
-
-      updateCells(player2, coordsList);
-
-      count++;
-    }
-
-    runGame();
+    autoPlaceShips(player2, numShips);
   }
 
   function runGame() {
@@ -170,7 +161,8 @@ export function Controller(player1, player2, game, view) {
 
       const status = game.getState();
       if (status.winner) {
-        // const winNum = status.winner === player1.getName() ? 1 : 2;
+        const winNum = status.winner === player1.getName() ? 1 : 2;
+        console.log(`${winNum}, wins.`)
         return;
       }
 

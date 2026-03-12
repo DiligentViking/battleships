@@ -72,6 +72,8 @@ export function Gameboard() {
     },
 
     unplaceAllShips: () => {
+      ships.length = 0;
+
       for (const row of board) {
         for (const cell of row) {
           cell.shipID = null;

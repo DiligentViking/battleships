@@ -9,8 +9,7 @@ export function Controller(player1, player2, game, view) {
 
     view.renderBoard(
       player1.getName(),
-      player1.gameboard.getBoardHeight(),
-      player1.gameboard.getBoardWidth(),
+      player1.gameboard.getBoardSize()
     );
 
     for (let i = 0; i < numShips; i++) {
@@ -26,8 +25,8 @@ export function Controller(player1, player2, game, view) {
       const shipID = count;
       const shipLength = SHIP_LENGTHS[shipID];
       const coords = [
-        Math.floor(Math.random() * player.gameboard.getBoardHeight()),
-        Math.floor(Math.random() * player.gameboard.getBoardWidth()),
+        Math.floor(Math.random() * player.gameboard.getBoardSize()),
+        Math.floor(Math.random() * player.gameboard.getBoardSize()),
       ];
       let coordsList;
 
@@ -51,13 +50,11 @@ export function Controller(player1, player2, game, view) {
 
     view.renderBoard(
       player1.getName(),
-      player1.gameboard.getBoardHeight(),
-      player1.gameboard.getBoardWidth(),
+      player1.gameboard.getBoardSize()
     );
     view.renderBoard(
       player2.getName(),
-      player2.gameboard.getBoardHeight(),
-      player2.gameboard.getBoardWidth(),
+      player1.gameboard.getBoardSize()
     );
 
     runPlayerSetup();

@@ -23,9 +23,7 @@ export function Gameboard() {
       board: deepCopy(board),
     }),
 
-    getBoardHeight: () => board.length,
-
-    getBoardWidth: () => board[0].length,
+    getBoardSize: () => BOARD_SIZE,
 
     getCell: (coords) => {
       const [y, x] = coords;

@@ -72,13 +72,13 @@ export function View(root) {
       p2Board.dataset.playername = player2Name;
     },
 
-    renderBoard(playerName, height, width) {
+    renderBoard(playerName, boardSize) {
       const boardElem = getBoardFromPlayerName(playerName);
 
       boardElem.textContent = "";
 
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
+      for (let i = 0; i < boardSize; i++) {
+        for (let j = 0; j < boardSize; j++) {
           const cellElem = document.createElement("div");
           cellElem.classList.add("cell");
           cellElem.dataset.coords = `${i},${j}`;

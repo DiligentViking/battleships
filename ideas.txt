@@ -47,3 +47,5 @@ OTHER IDEAS:
 -larger (12x12) grid.
 
 -for now i have decided to make them not draggable once on the grid.
+
+-i COULD make a constant which makes boards equal size, because why does the code calculate them individually like they may have different sizes?  But that could be an idea: A challenge where you fight the AI whose board size increases.

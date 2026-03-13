@@ -5,8 +5,8 @@ export function Player(name, type) {
 
   function chooseRandomCoords(board) {
     const choices = [];
-    for (let i = 0; i < board.getBoardHeight(); i++) {
-      for (let j = 0; j < board.getBoardWidth(); j++) {
+    for (let i = 0; i < board.getBoardSize(); i++) {
+      for (let j = 0; j < board.getBoardSize(); j++) {
         if (!board.getCellHit([i, j])) {
           choices.push([i, j]);
         }

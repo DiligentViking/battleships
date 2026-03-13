@@ -1,5 +1,20 @@
 import { Gameboard } from "../gameboard";
 
+test("gives ship existence in coordinate", () => {
+  const gameboard = Gameboard();
+  gameboard.placeShip(0, 3, [3, 3]);
+
+  expect(gameboard.getCellHasShip([3, 3])).toBe(true);
+  expect(gameboard.getCellHasShip([6, 7])).toBe(false);
+});
+
+test("gives sunk status of ship-containing cell", () => {
+  const gameboard = Gameboard();
+  gameboard.placeShip(0, 4, [5, 1]);
+
+  expect(gameboard.getCellShipIsSunk([5, 1])).toBe(false);
+})
+
 test("adds a ship", () => {
   const gameboard = Gameboard();
 
@@ -29,15 +44,20 @@ test("does not place ship in already taken cells", () => {
   expect(() => gameboard.placeShip(2, 5, [1, 2])).toThrow(Error);
 });
 
-test("removes ship from board", () => {
+test("removes ships from board", () => {
   const gameboard = Gameboard();
   gameboard.placeShip(0, 3, [1, 5]);
+  gameboard.placeShip(1, 2, [3, 4]);
 
-  gameboard.unplaceShip(0);
+  gameboard.unplaceAllShips();
   const board = gameboard._getDebugInfo().board;
-  expect(board[1][5].shipID).toBeNull();
-  expect(board[1][6].shipID).toBeNull();
-  expect(board[1][7].shipID).toBeNull();
+  for (const row of board) {
+    for (const cell of row) {
+      expect(cell.shipID).toBeNull();
+    }
+  }
+  const ships = gameboard._getDebugInfo().ships;
+  expect(ships.length).toEqual(0);
 });
 
 test("increments ship hits when a ship cell is hit", () => {

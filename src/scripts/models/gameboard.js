@@ -25,14 +25,16 @@ export function Gameboard() {
 
     getBoardSize: () => BOARD_SIZE,
 
-    getCell: (coords) => {
+    getCellHasShip: (coords) => {
       const [y, x] = coords;
-      return { ...board[y][x] };
+      return board[y][x].shipID !== null ? true : false;
     },
 
-    getCellHit: (coords) => {
+    getCellShipIsSunk: (coords) => {
       const [y, x] = coords;
-      return board[y][x].hit;
+      const shipID = board[y][x].shipID;
+      const ship = ships[shipID];
+      return ship.isSunk();
     },
 
     areAllShipsSunk: () => numSunk === ships.length,

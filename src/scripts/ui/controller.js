@@ -118,7 +118,7 @@ export function Controller(player1, player2, game, view) {
     });
 
     p1Board.addEventListener("mouseleave", () => {
-      view.removePreviousPreview();
+      view.removePreviousPreview(player1.getName());
     });
 
     // Button Events

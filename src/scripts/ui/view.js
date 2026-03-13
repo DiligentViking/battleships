@@ -1,7 +1,6 @@
 export function View(root) {
   const message = root.querySelector(".message");
 
-  // const p1BoardWrapper = root.querySelector(".board-wrapper.p1");
   const p2BoardWrapper = root.querySelector(".board-wrapper.p2");
   const p1Board = root.querySelector(".board.p1");
   const p2Board = root.querySelector(".board.p2");
@@ -12,6 +11,10 @@ export function View(root) {
   const resetBtn = root.querySelector(".reset");
   const randomBtn = root.querySelector(".random");
   const deployBtn = root.querySelector(".deploy");
+
+  function getBoardFromPlayerName(playerName) {
+    return p1Board.dataset.playername === playerName ? p1Board : p2Board;
+  }
 
   function createShipSVG(isHull) {
     if (isHull) {
@@ -46,15 +49,21 @@ export function View(root) {
   }
 
   function getCellElem(playerName, coords) {
-    const boardElem =
-      p1Board.dataset.playername === playerName ? p1Board : p2Board;
+    const boardElem = getBoardFromPlayerName(playerName);
     const [y, x] = coords;
 
     return boardElem.querySelector(`[data-coords="${y},${x}"]`);
   }
 
   return {
-    eventElems: { p1Board, p2Board, fleetContainer, resetBtn, randomBtn, deployBtn }, // Controller only uses these for addEventListener
+    eventElems: {
+      p1Board,
+      p2Board,
+      fleetContainer,
+      resetBtn,
+      randomBtn,
+      deployBtn,
+    }, // Controller only uses these for addEventListener
 
     //---Player/Board Init---
 
@@ -64,8 +73,7 @@ export function View(root) {
     },
 
     renderBoard(playerName, height, width) {
-      const boardElem =
-        p1Board.dataset.playername === playerName ? p1Board : p2Board;
+      const boardElem = getBoardFromPlayerName(playerName);
 
       boardElem.textContent = "";
 
@@ -119,8 +127,9 @@ export function View(root) {
       return coordsString.split(",").map((item) => +item);
     },
 
-    removePreviousPreview() {
-      const cells = document.querySelectorAll(".preview");
+    removePreviousPreview(playerName) {
+      const boardElem = getBoardFromPlayerName(playerName);
+      const cells = boardElem.querySelectorAll(".preview");
 
       for (const cell of cells) {
         cell.classList.remove("preview", "invalid");
@@ -128,7 +137,7 @@ export function View(root) {
     },
 
     updatePreview(playerName, coordsList, valid) {
-      this.removePreviousPreview();
+      this.removePreviousPreview(playerName);
       for (let i = 0; i < coordsList.length; i++) {
         const coords = coordsList[i];
         const cellElem = getCellElem(playerName, coords);
@@ -139,7 +148,7 @@ export function View(root) {
     },
 
     placeShip(playerName, coordsList) {
-      this.removePreviousPreview();
+      this.removePreviousPreview(playerName);
 
       const hullIsLast =
         p1Board.dataset.playername === playerName ? true : false;

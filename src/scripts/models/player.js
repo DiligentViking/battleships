@@ -3,18 +3,7 @@ import { Gameboard } from "./gameboard.js";
 export function Player(name, type) {
   const gameboard = Gameboard();
 
-  function chooseRandomCoords(board) {
-    const choices = [];
-    for (let i = 0; i < board.getBoardSize(); i++) {
-      for (let j = 0; j < board.getBoardSize(); j++) {
-        if (!board.getCellHit([i, j])) {
-          choices.push([i, j]);
-        }
-      }
-    }
-    const randomIndex = Math.floor(Math.random() * choices.length);
-    return choices[randomIndex];
-  }
+  const targets = [];
 
   return {
     gameboard,
@@ -23,9 +12,18 @@ export function Player(name, type) {
 
     getType: () => type,
 
+    initComputerTargets: (enemyBoardSize) => {
+      for (let i = 0; i < enemyBoardSize; i++) {
+        for (let j = 0; j < enemyBoardSize; j++) {
+          targets.push([i, j]);
+        }
+      }
+    },
+
     attack: (enemyGameboard, coords) => {
       if (type === "computer") {
-        coords = chooseRandomCoords(enemyGameboard);
+        const randomTarget = Math.floor(Math.random() * targets.length);
+        coords = targets.splice(randomTarget, 1)[0];
       }
       enemyGameboard.receiveAttack(coords);
       return coords;

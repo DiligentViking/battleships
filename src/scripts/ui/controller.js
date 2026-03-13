@@ -7,10 +7,7 @@ export function Controller(player1, player2, game, view) {
   function resetSetup(numShips) {
     player1.gameboard.unplaceAllShips();
 
-    view.renderBoard(
-      player1.getName(),
-      player1.gameboard.getBoardSize()
-    );
+    view.renderBoard(player1.getName(), player1.gameboard.getBoardSize());
 
     for (let i = 0; i < numShips; i++) {
       view.removePlaceableShip(i);
@@ -48,14 +45,15 @@ export function Controller(player1, player2, game, view) {
   function init() {
     view.initBoardPlayerNames(player1.getName(), player2.getName());
 
-    view.renderBoard(
-      player1.getName(),
-      player1.gameboard.getBoardSize()
-    );
-    view.renderBoard(
-      player2.getName(),
-      player1.gameboard.getBoardSize()
-    );
+    if (player1.getType() === "computer") {
+      player1.initComputerTargets(player2.gameboard.getBoardSize());
+    }
+    if (player2.getType() === "computer") {
+      player2.initComputerTargets(player1.gameboard.getBoardSize());
+    }
+
+    view.renderBoard(player1.getName(), player1.gameboard.getBoardSize());
+    view.renderBoard(player2.getName(), player1.gameboard.getBoardSize());
 
     runPlayerSetup();
   }
@@ -162,7 +160,7 @@ export function Controller(player1, player2, game, view) {
       const status = game.getState();
       if (status.winner) {
         const winNum = status.winner === player1.getName() ? 1 : 2;
-        console.log(`${winNum}, wins.`)
+        console.log(`${winNum}, wins.`);
         return;
       }
 

@@ -49,3 +49,8 @@ OTHER IDEAS:
 -for now i have decided to make them not draggable once on the grid.
 
 -i COULD make a constant which makes boards equal size, because why does the code calculate them individually like they may have different sizes?  But that could be an idea: A challenge where you fight the AI whose board size increases.
+
+-make it where you can see what cell you hit if it is the hull or not.
+-But for now I will keep it as you can't tell.
+
+-idea: instead of proceeding in one direction, how about it alternates choosing to proceed up or down on that axis until it hits a dead end.  Because the average would be in the middle, right?  Although one can also take into account the ship’s place on the board.

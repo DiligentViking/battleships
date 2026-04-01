@@ -3,6 +3,7 @@ export function Controller(player1, player2, game, view) {
 
   const NUM_SHIPS = 6;
   const SHIP_LENGTHS = [1, 2, 3, 4, 5, 6];
+  // const SHIP_LENGTHS = [1, 1, 1, 1, 1, 1];
 
   function resetSetup(numShips) {
     player1.gameboard.unplaceAllShips();
@@ -138,6 +139,9 @@ export function Controller(player1, player2, game, view) {
 
       runGame();
     });
+
+    randomBtn.click();  // dev
+    deployBtn.click();  // dev
   }
 
   function runComputerSetup() {

@@ -4,7 +4,7 @@ import { View } from "./ui/view.js";
 import { Controller } from "./ui/controller.js";
 
 const player1 = Player("one", "real");
-const player2 = Player("two", "computer", "smart");
+const player2 = Player("two", "computer", 1);
 
 const game = Game(player1, player2);
 

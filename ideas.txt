@@ -56,3 +56,8 @@ OTHER IDEAS:
 -But for now I will keep it as you can't tell.
 
 -idea: instead of proceeding in one direction, how about it alternates choosing to proceed up or down on that axis until it hits a dead end.  Because the average would be in the middle, right?  Although one can also take into account the ship’s place on the board.
+
+-another ai skill improvement is (when it is searching for targets) to make it space out its shots like 4 squares between each one (even human players don't realize this right away) (like anything larger than 1-block ships is more easily hit this way).
+
+-and maybe not too close to edges because there is less chance of something being against the edge (because ships with length more than one have to extend out from the edge, unless it is aligned with it).
+-but this can be countered by manually placing ships at edges.

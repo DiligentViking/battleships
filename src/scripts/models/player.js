@@ -62,10 +62,10 @@ export function Player(name, type, smartness = 0) {
             };
             const coords = adjacentCells[smartLogic.direction];
 
-            const valid =
-              enemyGameboard.getCellExists(coords) &&
-              !enemyGameboard.getCellHit(coords);
-            if (!valid) {
+            const targetIndex = remainingCells.findIndex(
+              (item) => item[0] === coords[0] && item[1] === coords[1],
+            );
+            if (targetIndex === -1) {
               smartLogic.prevCell = smartLogic.startCell;
 
               const oppositeDirections = {
@@ -80,6 +80,7 @@ export function Player(name, type, smartness = 0) {
             }
 
             enemyGameboard.receiveAttack(coords);
+            remainingCells.splice(targetIndex, 1);
 
             if (enemyGameboard.getCellShipIsSunk(smartLogic.startCell)) {
               smartLogic.startCell = null;
@@ -91,7 +92,7 @@ export function Player(name, type, smartness = 0) {
 
             return coords;
           } else if (smartLogic.startCell) {
-            let direction, coords, valid;
+            let direction, coords, targetIndex;
             do {
               // Pop a direction
               [direction, coords] = chooseRandomItem(
@@ -102,12 +103,13 @@ export function Player(name, type, smartness = 0) {
               smartLogic.adjacentCells[direction] = null;
 
               // Check if valid target
-              valid =
-                enemyGameboard.getCellExists(coords) &&
-                !enemyGameboard.getCellHit(coords);
-            } while (!valid);
+              targetIndex = remainingCells.findIndex(
+                (item) => item[0] === coords[0] && item[1] === coords[1],
+              );
+            } while (targetIndex === -1);
 
             enemyGameboard.receiveAttack(coords);
+            remainingCells.splice(targetIndex, 1);
 
             if (enemyGameboard.getCellHasShip(coords)) {
               if (!enemyGameboard.getCellShipIsSunk(coords)) {

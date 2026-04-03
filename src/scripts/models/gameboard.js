@@ -25,16 +25,6 @@ export function Gameboard() {
 
     getBoardSize: () => BOARD_SIZE,
 
-    getCellExists: (coords) => {
-      const [y, x] = coords;
-      return board[y]?.[x] ? true : false;
-    },
-
-    getCellHit: (coords) => {
-      const [y, x] = coords;
-      return board[y][x].hit;
-    },
-
     getCellHasShip: (coords) => {
       const [y, x] = coords;
       return board[y][x].shipID !== null ? true : false;

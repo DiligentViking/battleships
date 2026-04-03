@@ -86,6 +86,16 @@ export function Player(name, type, smartness = 0) {
               smartLogic.startCell = null;
               smartLogic.prevCell = null;
               smartLogic.direction = null;
+            } else if (!enemyGameboard.getCellHasShip(coords)) {
+              smartLogic.prevCell = smartLogic.startCell;
+
+              const oppositeDirections = {
+                top: "bottom",
+                right: "left",
+                bottom: "top",
+                left: "right",
+              };
+              smartLogic.direction = oppositeDirections[smartLogic.direction];
             } else {
               smartLogic.prevCell = coords;
             }

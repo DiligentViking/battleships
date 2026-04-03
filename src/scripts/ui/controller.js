@@ -35,11 +35,9 @@ export function Controller(player1, player2, game, view) {
       ];
       let coordsList;
 
-      try {
-        coordsList = player.gameboard.placeShip(shipID, shipLength, coords);
-      } catch {
-        continue;
-      }
+      const result = player.gameboard.placeShip(shipID, shipLength, coords);
+      if (result === 1) continue;
+      coordsList = result;
 
       view.removePlaceableShip(shipID);
       view.placeShip(player.getName(), coordsList);

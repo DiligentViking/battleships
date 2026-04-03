@@ -46,28 +46,28 @@ export function Gameboard() {
       for (let i = 0; i < shipLength; i++) {
         const cellToCheck = board[y][x + i];
         if (cellToCheck?.shipID !== null) {
-          throw new Error("Cell out of bounds or already taken");
+          return 1;
         }
       }
 
       for (let i = 0; i < shipLength; i++) {
         const surroundingCells = [
-          board[y + 1][x + i],
-          board[y + 1][x + i + 1],
-          board[y][x + i + 1],
-          board[y - 1][x + i + 1],
-          board[y - 1][x + i],
-          board[y - 1][x + i - 1],
-          board[y][x + i - 1],
-          board[y + 1][x + i - 1],
+          board[y + 1]?.[x + i],
+          board[y + 1]?.[x + i + 1],
+          board[y]?.[x + i + 1],
+          board[y - 1]?.[x + i + 1],
+          board[y - 1]?.[x + i],
+          board[y - 1]?.[x + i - 1],
+          board[y]?.[x + i - 1],
+          board[y + 1]?.[x + i - 1],
         ];
         for (const cell of surroundingCells) {
           if (
-            cell.shipID !== null &&
-            cell.shipID !== undefined &&
-            cell.shipID !== shipID
+            cell?.shipID !== null &&
+            cell?.shipID !== undefined &&
+            cell?.shipID !== shipID
           ) {
-            throw new Error("Cell cannot be close to another ship");
+            return 1;
           }
         }
       }

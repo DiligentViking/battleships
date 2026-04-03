@@ -25,6 +25,16 @@ export function Gameboard() {
 
     getBoardSize: () => BOARD_SIZE,
 
+    getCellExists: (coords) => {
+      const [y, x] = coords;
+      return board[y]?.[x] ? true : false;
+    },
+
+    getCellHit: (coords) => {
+      const [y, x] = coords;
+      return board[y][x].hit;
+    },
+
     getCellHasShip: (coords) => {
       const [y, x] = coords;
       return board[y][x].shipID !== null ? true : false;
@@ -52,14 +62,14 @@ export function Gameboard() {
 
       for (let i = 0; i < shipLength; i++) {
         const surroundingCells = [
-          board[y + 1]?.[x + i],
-          board[y + 1]?.[x + i + 1],
-          board[y]?.[x + i + 1],
-          board[y - 1]?.[x + i + 1],
           board[y - 1]?.[x + i],
-          board[y - 1]?.[x + i - 1],
-          board[y]?.[x + i - 1],
+          board[y - 1]?.[x + i + 1],
+          board[y]?.[x + i + 1],
+          board[y + 1]?.[x + i + 1],
+          board[y + 1]?.[x + i],
           board[y + 1]?.[x + i - 1],
+          board[y]?.[x + i - 1],
+          board[y - 1]?.[x + i - 1],
         ];
         for (const cell of surroundingCells) {
           if (

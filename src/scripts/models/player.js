@@ -36,7 +36,7 @@ export function Player(name, type, smartness = 0) {
       }
     },
 
-    attack: (enemyGameboard, coords) => {
+    attack(enemyGameboard, coords) {
       if (type === "computer") {
         if (smartness === 0) {
           const coords = chooseRandomItem(remainingCells);
@@ -48,11 +48,49 @@ export function Player(name, type, smartness = 0) {
           // if cellA has a ship, proceed; if not, repeat above step
           // pop one of the four cardinal directions and attack cellB
           // if cellB has a ship, proceed; if not, repeat above step
-          // continue attacking cells in the direction you found, until you hit a wall or empty cell
+          // continue attacking cells in the direction you found, until you hit a wall or empty/hit cell
           // go backwards attacking cells in the direction you found
           // if after any attack the ship is sunk, stop and restart algorithm
 
-          if (smartLogic.startCell) {
+          if (smartLogic.direction) {
+            const [y, x] = smartLogic.prevCell;
+            const adjacentCells = {
+              top: [y - 1, x],
+              right: [y, x + 1],
+              bottom: [y + 1, x],
+              left: [y, x - 1],
+            };
+            const coords = adjacentCells[smartLogic.direction];
+
+            const valid =
+              enemyGameboard.getCellExists(coords) &&
+              !enemyGameboard.getCellHit(coords);
+            if (!valid) {
+              smartLogic.prevCell = smartLogic.startCell;
+
+              const oppositeDirections = {
+                top: "bottom",
+                right: "left",
+                bottom: "top",
+                left: "right",
+              };
+              smartLogic.direction = oppositeDirections[smartLogic.direction];
+
+              return this.attack(enemyGameboard);
+            }
+
+            enemyGameboard.receiveAttack(coords);
+
+            if (enemyGameboard.getCellShipIsSunk(smartLogic.startCell)) {
+              smartLogic.startCell = null;
+              smartLogic.prevCell = null;
+              smartLogic.direction = null;
+            } else {
+              smartLogic.prevCell = coords;
+            }
+
+            return coords;
+          } else if (smartLogic.startCell) {
             let direction, coords, valid;
             do {
               // Pop a direction
@@ -78,6 +116,7 @@ export function Player(name, type, smartness = 0) {
               } else {
                 smartLogic.startCell = null;
                 smartLogic.prevCell = null;
+                smartLogic.direction = null;
               }
             }
 
@@ -98,6 +137,7 @@ export function Player(name, type, smartness = 0) {
               } else {
                 smartLogic.startCell = null;
                 smartLogic.prevCell = null;
+                smartLogic.direction = null;
               }
             }
 

@@ -61,3 +61,11 @@ OTHER IDEAS:
 
 -and maybe not too close to edges because there is less chance of something being against the edge (because ships with length more than one have to extend out from the edge, unless it is aligned with it).
 -but this can be countered by manually placing ships at edges.
+
+-and make it not attack adjacent cells!
+
+-it would also be realistic if the ai knew which ships were sunk or not.
+
+-Maybe a mode where you can make your own ai and pit it against others' ai?
+-The challenge is to make it a challenge for them to figure out how to set it to be awesome.
+-This is a unique idea!!  It has promise.

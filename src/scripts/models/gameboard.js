@@ -16,6 +16,47 @@ export function Gameboard() {
     board.push(row);
   }
 
+  function checkValidPlacement(shipID, shipLength, coords) {
+    const [y, x] = coords;
+    const coordsList = [];
+    let valid = true;
+
+    for (let i = 0; i < shipLength; i++) {
+      const cellToCheck = board[y][x + i];
+      if (cellToCheck?.shipID !== null) {
+        valid = false;
+      }
+    }
+
+    for (let i = 0; i < shipLength; i++) {
+      const surroundingCells = [
+        board[y - 1]?.[x + i],
+        board[y - 1]?.[x + i + 1],
+        board[y]?.[x + i + 1],
+        board[y + 1]?.[x + i + 1],
+        board[y + 1]?.[x + i],
+        board[y + 1]?.[x + i - 1],
+        board[y]?.[x + i - 1],
+        board[y - 1]?.[x + i - 1],
+      ];
+      for (const cell of surroundingCells) {
+        if (
+          cell?.shipID !== null &&
+          cell?.shipID !== undefined &&
+          cell?.shipID !== shipID
+        ) {
+          valid = false;
+        }
+      }
+    }
+
+    for (let i = 0; i < shipLength; i++) {
+      coordsList.push([y, x + i]);
+    }
+
+    return { coordsList, valid };
+  }
+
   return {
     _getDebugInfo: () => ({
       ships: deepCopy(ships),
@@ -41,60 +82,26 @@ export function Gameboard() {
 
     placeShip: (shipID, shipLength, coords) => {
       const [y, x] = coords;
-      const coordsList = [];
 
-      for (let i = 0; i < shipLength; i++) {
-        const cellToCheck = board[y][x + i];
-        if (cellToCheck?.shipID !== null) {
-          return 1;
-        }
-      }
+      const { coordsList, valid } = checkValidPlacement(
+        shipID,
+        shipLength,
+        coords,
+      );
 
-      for (let i = 0; i < shipLength; i++) {
-        const surroundingCells = [
-          board[y - 1]?.[x + i],
-          board[y - 1]?.[x + i + 1],
-          board[y]?.[x + i + 1],
-          board[y + 1]?.[x + i + 1],
-          board[y + 1]?.[x + i],
-          board[y + 1]?.[x + i - 1],
-          board[y]?.[x + i - 1],
-          board[y - 1]?.[x + i - 1],
-        ];
-        for (const cell of surroundingCells) {
-          if (
-            cell?.shipID !== null &&
-            cell?.shipID !== undefined &&
-            cell?.shipID !== shipID
-          ) {
-            return 1;
-          }
-        }
-      }
+      if (!valid) return { coordsList, valid };
 
       for (let i = 0; i < shipLength; i++) {
         board[y][x + i].shipID = shipID;
-        coordsList.push([y, x + i]);
       }
 
       ships.push(Ship(shipLength));
 
-      return coordsList;
+      return { coordsList, valid };
     },
 
-    getPreview: (shipLength, coords) => {
-      const [y, x] = coords;
-      const coordsList = [];
-      let valid = true;
-
-      for (let i = 0; i < shipLength; i++) {
-        if (board[y][x + i]?.shipID !== null) {
-          valid = false;
-        }
-        coordsList.push([y, x + i]);
-      }
-
-      return { coordsList, valid };
+    getPreview: (shipID, shipLength, coords) => {
+      return checkValidPlacement(shipID, shipLength, coords);
     },
 
     unplaceAllShips: () => {

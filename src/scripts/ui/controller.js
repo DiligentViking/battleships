@@ -33,11 +33,14 @@ export function Controller(player1, player2, game, view) {
         Math.floor(Math.random() * player.gameboard.getBoardSize()),
         Math.floor(Math.random() * player.gameboard.getBoardSize()),
       ];
-      let coordsList;
 
-      const result = player.gameboard.placeShip(shipID, shipLength, coords);
-      if (result === 1) continue;
-      coordsList = result;
+      const { coordsList, valid } = player.gameboard.placeShip(
+        shipID,
+        shipLength,
+        coords,
+      );
+
+      if (!valid) continue;
 
       view.removePlaceableShip(shipID);
       view.placeShip(player.getName(), coordsList);
@@ -94,7 +97,11 @@ export function Controller(player1, player2, game, view) {
 
       const coords = view.parseCellCoords(e.target);
 
-      const result = player1.gameboard.getPreview(heldShipID + 1, coords);
+      const result = player1.gameboard.getPreview(
+        heldShipID,
+        heldShipID + 1,
+        coords,
+      );
       const { coordsList, valid } = result;
 
       view.updatePreview(player1.getName(), coordsList, valid);
@@ -106,11 +113,15 @@ export function Controller(player1, player2, game, view) {
 
       const coords = view.parseCellCoords(e.target);
 
-      const coordsList = player1.gameboard.placeShip(
+      const result = player1.gameboard.placeShip(
         heldShipID,
-        SHIP_LENGTHS[heldShipID],
+        heldShipID + 1,
         coords,
       );
+      const { coordsList, valid } = result;
+
+      console.log(valid);
+      if (!valid) return;
 
       view.placeShip(player1.getName(), coordsList);
       view.removePlaceableShip(heldShipID);

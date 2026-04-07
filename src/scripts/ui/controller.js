@@ -78,6 +78,7 @@ export function Controller(player1, player2, game, view) {
 
     const { p1Board, fleetContainer } = view.eventElems;
     let heldShipID = null;
+    let heldSegmentNum = null;
 
     document.addEventListener("dragstart", (e) => e.preventDefault());
 
@@ -86,9 +87,8 @@ export function Controller(player1, player2, game, view) {
 
       const shipSegment = e.target.parentNode;
 
+      heldSegmentNum = +shipSegment.dataset.segmentnum;
       heldShipID = +shipSegment.parentNode.dataset.shipid;
-
-      console.log(heldShipID);
     });
 
     p1Board.addEventListener("mouseover", (e) => {
@@ -96,6 +96,7 @@ export function Controller(player1, player2, game, view) {
       if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
+      coords[1] = coords[1] - heldSegmentNum;
 
       const result = player1.gameboard.getPreview(
         heldShipID,
@@ -112,6 +113,7 @@ export function Controller(player1, player2, game, view) {
       if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
+      coords[1] = coords[1] - heldSegmentNum;
 
       const result = player1.gameboard.placeShip(
         heldShipID,
@@ -120,7 +122,6 @@ export function Controller(player1, player2, game, view) {
       );
       const { coordsList, valid } = result;
 
-      console.log(valid);
       if (!valid) return;
 
       view.placeShip(player1.getName(), coordsList);

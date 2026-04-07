@@ -14,6 +14,7 @@ export function Player(name, type, smartness = 0) {
       left: null,
     },
     direction: null,
+    targetShipCoordsList: [],
   };
 
   function makeDumbAIMove(enemyGameboard) {
@@ -22,7 +23,7 @@ export function Player(name, type, smartness = 0) {
     return coords;
   }
 
-  function makeSmartAIMove(enemyGameboard) {
+  function makeSmartAIMove(enemyGameboard, superSmart = false) {
     // PSUEDO-CODE:
     // attack a random cellA
     // if cellA has a ship, proceed; if not, repeat above step
@@ -46,10 +47,14 @@ export function Player(name, type, smartness = 0) {
       remainingCells.splice(targetIndex, 1);
 
       if (enemyGameboard.getCellShipIsSunk(smartLogic.startCell)) {
+        smartLogic.targetShipCoordsList.push(targetCoords);
+        if (superSmart)
+          removeShipSurroundingCells(smartLogic.targetShipCoordsList);
         resetSmartLogicState();
       } else if (!enemyGameboard.getCellHasShip(targetCoords)) {
         switchDirections();
       } else {
+        smartLogic.targetShipCoordsList.push(targetCoords);
         smartLogic.prevCell = targetCoords;
       }
 
@@ -72,10 +77,13 @@ export function Player(name, type, smartness = 0) {
       remainingCells.splice(targetIndex, 1);
 
       if (enemyGameboard.getCellHasShip(targetCoords)) {
+        smartLogic.targetShipCoordsList.push(targetCoords);
         if (!enemyGameboard.getCellShipIsSunk(targetCoords)) {
           smartLogic.prevCell = targetCoords;
           smartLogic.direction = direction;
         } else {
+          if (superSmart)
+            removeShipSurroundingCells(smartLogic.targetShipCoordsList);
           resetSmartLogicState();
         }
       }
@@ -87,9 +95,14 @@ export function Player(name, type, smartness = 0) {
       enemyGameboard.receiveAttack(targetCoords);
 
       if (enemyGameboard.getCellHasShip(targetCoords)) {
+        smartLogic.targetShipCoordsList.push(targetCoords);
         if (!enemyGameboard.getCellShipIsSunk(targetCoords)) {
           smartLogic.startCell = targetCoords;
           smartLogic.adjacentCells = getAdjacentCells(targetCoords);
+        } else {
+          if (superSmart)
+            removeShipSurroundingCells(smartLogic.targetShipCoordsList);
+          resetSmartLogicState();
         }
       }
 
@@ -101,6 +114,7 @@ export function Player(name, type, smartness = 0) {
     smartLogic.startCell = null;
     smartLogic.prevCell = null;
     smartLogic.direction = null;
+    smartLogic.targetShipCoordsList = [];
   }
 
   function switchDirections() {
@@ -131,6 +145,27 @@ export function Player(name, type, smartness = 0) {
     };
   }
 
+  function removeShipSurroundingCells(coordsList) {
+    for (const coords of coordsList) {
+      const [y, x] = coords;
+      const surroundingCells = [
+        [y - 1, x],
+        [y - 1, x + 1],
+        [y, x + 1],
+        [y + 1, x + 1],
+        [y + 1, x],
+        [y + 1, x - 1],
+        [y, x - 1],
+        [y - 1, x - 1],
+      ];
+      for (const cell of surroundingCells) {
+        const targetIndex = findIndexOfRemainingCell(cell);
+        if (targetIndex === -1) continue;
+        remainingCells.splice(targetIndex, 1);
+      }
+    }
+  }
+
   function chooseRandomItem(array) {
     const randomIndex = Math.floor(Math.random() * array.length);
     return array.splice(randomIndex, 1)[0];
@@ -155,6 +190,7 @@ export function Player(name, type, smartness = 0) {
       if (type === "computer") {
         if (smartness === 0) return makeDumbAIMove(enemyGameboard);
         if (smartness === 1) return makeSmartAIMove(enemyGameboard);
+        if (smartness === 2) return makeSmartAIMove(enemyGameboard, true);
       } else {
         enemyGameboard.receiveAttack(coords);
         return coords;

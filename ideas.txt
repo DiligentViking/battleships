@@ -69,3 +69,8 @@ OTHER IDEAS:
 -Maybe a mode where you can make your own ai and pit it against others' ai?
 -The challenge is to make it a challenge for them to figure out how to set it to be awesome.
 -This is a unique idea!!  It has promise.
+
+-Maybe it shows you the orientations of the enemy ships.
+-This would also be useful for making the ai a little smarter as well. (if there are more vertical ships remaining, it first guesses up/down when it hits a cell.)
+
+-When I am testing the more experimental upgrades to the ai, I need to track and keep averages of how many moves it takes for it to win.

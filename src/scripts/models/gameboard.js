@@ -25,14 +25,16 @@ export function Gameboard() {
 
     getBoardSize: () => BOARD_SIZE,
 
-    getCell: (coords) => {
+    getCellHasShip: (coords) => {
       const [y, x] = coords;
-      return { ...board[y][x] };
+      return board[y][x].shipID !== null ? true : false;
     },
 
-    getCellHit: (coords) => {
+    getCellShipIsSunk: (coords) => {
       const [y, x] = coords;
-      return board[y][x].hit;
+      const shipID = board[y][x].shipID;
+      const ship = ships[shipID];
+      return ship.isSunk();
     },
 
     areAllShipsSunk: () => numSunk === ships.length,
@@ -42,10 +44,34 @@ export function Gameboard() {
       const coordsList = [];
 
       for (let i = 0; i < shipLength; i++) {
-        if (board[y][x + i]?.shipID !== null) {
-          throw new Error("Cell out of bounds or already taken");
+        const cellToCheck = board[y][x + i];
+        if (cellToCheck?.shipID !== null) {
+          return 1;
         }
       }
+
+      for (let i = 0; i < shipLength; i++) {
+        const surroundingCells = [
+          board[y - 1]?.[x + i],
+          board[y - 1]?.[x + i + 1],
+          board[y]?.[x + i + 1],
+          board[y + 1]?.[x + i + 1],
+          board[y + 1]?.[x + i],
+          board[y + 1]?.[x + i - 1],
+          board[y]?.[x + i - 1],
+          board[y - 1]?.[x + i - 1],
+        ];
+        for (const cell of surroundingCells) {
+          if (
+            cell?.shipID !== null &&
+            cell?.shipID !== undefined &&
+            cell?.shipID !== shipID
+          ) {
+            return 1;
+          }
+        }
+      }
+
       for (let i = 0; i < shipLength; i++) {
         board[y][x + i].shipID = shipID;
         coordsList.push([y, x + i]);

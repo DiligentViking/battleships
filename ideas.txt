@@ -36,6 +36,8 @@ MUSIC IDEAS:
 
 -Path_Few_Have_Taken: Credits? Stats?
 
+-or maybe use some of the astapool tracks. like that interstellar_space one is good and dark and builds up.
+
 __________
 
 OTHER IDEAS:
@@ -50,4 +52,25 @@ OTHER IDEAS:
 
 -i COULD make a constant which makes boards equal size, because why does the code calculate them individually like they may have different sizes?  But that could be an idea: A challenge where you fight the AI whose board size increases.
 
--diagonal ships
+-make it where you can see what cell you hit if it is the hull or not.
+-But for now I will keep it as you can't tell.
+
+-idea: instead of proceeding in one direction, how about it alternates choosing to proceed up or down on that axis until it hits a dead end.  Because the average would be in the middle, right?  Although one can also take into account the ship’s place on the board.
+
+-another ai skill improvement is (when it is searching for targets) to make it space out its shots like 4 squares between each one (even human players don't realize this right away) (like anything larger than 1-block ships is more easily hit this way).
+
+-and maybe not too close to edges because there is less chance of something being against the edge (because ships with length more than one have to extend out from the edge, unless it is aligned with it).
+-but this can be countered by manually placing ships at edges.
+
+-and make it not attack adjacent cells!
+
+-it would also be realistic if the ai knew which ships were sunk or not.
+
+-Maybe a mode where you can make your own ai and pit it against others' ai?
+-The challenge is to make it a challenge for them to figure out how to set it to be awesome.
+-This is a unique idea!!  It has promise.
+
+-Maybe it shows you the orientations of the enemy ships.
+-This would also be useful for making the ai a little smarter as well. (if there are more vertical ships remaining, it first guesses up/down when it hits a cell.)
+
+-When I am testing the more experimental upgrades to the ai, I need to track and keep averages of how many moves it takes for it to win.

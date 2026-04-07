@@ -3,11 +3,12 @@ export function Controller(player1, player2, game, view) {
 
   const NUM_SHIPS = 6;
   const SHIP_LENGTHS = [1, 2, 3, 4, 5, 6];
+  // const SHIP_LENGTHS = [1, 1, 1, 1, 1, 1];
 
-  function resetSetup(numShips) {
-    player1.gameboard.unplaceAllShips();
+  function resetSetup(player, numShips) {
+    player.gameboard.unplaceAllShips();
 
-    view.renderBoard(player1.getName(), player1.gameboard.getBoardSize());
+    view.renderBoard(player.getName(), player.gameboard.getBoardSize());
 
     for (let i = 0; i < numShips; i++) {
       view.removePlaceableShip(i);
@@ -17,8 +18,15 @@ export function Controller(player1, player2, game, view) {
 
   function autoPlaceShips(player, numShips) {
     let count = 0;
+    let f = 0;
 
     while (count !== numShips) {
+      if (f++ > 200) {
+        console.log("FIREBREAK");
+        resetSetup(player, numShips);
+        count = 0;
+        f = 0;
+      }
       const shipID = count;
       const shipLength = SHIP_LENGTHS[shipID];
       const coords = [
@@ -27,11 +35,9 @@ export function Controller(player1, player2, game, view) {
       ];
       let coordsList;
 
-      try {
-        coordsList = player.gameboard.placeShip(shipID, shipLength, coords);
-      } catch {
-        continue;
-      }
+      const result = player.gameboard.placeShip(shipID, shipLength, coords);
+      if (result === 1) continue;
+      coordsList = result;
 
       view.removePlaceableShip(shipID);
       view.placeShip(player.getName(), coordsList);
@@ -121,11 +127,11 @@ export function Controller(player1, player2, game, view) {
     const { resetBtn, randomBtn, deployBtn } = view.eventElems;
 
     resetBtn.addEventListener("click", () => {
-      resetSetup(NUM_SHIPS);
+      resetSetup(player1, NUM_SHIPS);
     });
 
     randomBtn.addEventListener("click", () => {
-      resetSetup(NUM_SHIPS);
+      resetSetup(player1, NUM_SHIPS);
       autoPlaceShips(player1, NUM_SHIPS);
     });
 
@@ -138,6 +144,9 @@ export function Controller(player1, player2, game, view) {
 
       runGame();
     });
+
+    randomBtn.click(); // dev
+    deployBtn.click(); // dev
   }
 
   function runComputerSetup() {

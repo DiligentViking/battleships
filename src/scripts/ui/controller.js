@@ -145,8 +145,8 @@ export function Controller(player1, player2, game, view) {
       runGame();
     });
 
-    randomBtn.click(); // dev
-    deployBtn.click(); // dev
+    // randomBtn.click(); // dev
+    // deployBtn.click(); // dev
   }
 
   function runComputerSetup() {
@@ -195,6 +195,23 @@ export function Controller(player1, player2, game, view) {
 
     p1Board.addEventListener("click", onBoardClick);
     p2Board.addEventListener("click", onBoardClick);
+
+    // Autoplay (dev)
+    function autoplay() {
+      let x = 0;
+      let y = 0;
+      setInterval(() => {
+        p2Board.querySelector(`.cell[data-coords="${x},${y}"]`).click();
+        x++;
+        if (x === 10) {
+          x = 0;
+          y++;
+        }
+      }, 750);
+    }
+
+    autoplay;
+    // autoplay(); // dev
   }
 
   return {

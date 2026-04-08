@@ -88,9 +88,10 @@ export function Controller(player1, player2, game, view) {
       if (!e.target.parentNode.classList.contains("ship-segment")) return;
 
       const shipSegment = e.target.parentNode;
-
       heldSegmentNum = +shipSegment.dataset.segmentnum;
       heldShipID = +shipSegment.parentNode.dataset.shipid;
+
+      view.selectShip(heldShipID);
     }
 
     function onBoardMouseover(e) {

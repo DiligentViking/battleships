@@ -59,27 +59,71 @@ body {
   display: flex;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   font-family: "Audiowide", sans-serif;
   font-weight: 300;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  color: var(--text-primary);
+
+  text-shadow:
+    0 0 6px var(--p1-glow),
+    0 0 12px var(--p1-glow);
+
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  opacity: 0.9;
+}
+
+h3 {
+  font-size: 1.1rem;
+  opacity: 0.75;
 }
 
 button {
-  background-color: var(--bg-panel-light);
-  color: inherit;
-  font-family: "Oxanium", sans-serif;
-  font-size: inherit;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  background: linear-gradient(
+    145deg,
+    var(--bg-panel-light),
+    var(--bg-panel-dark)
+  );
 
-  border: 2px solid var(--hit-color);
-  padding: 1rem 2rem;
+  color: var(--text-primary);
+
+  border: 1px solid var(--cell-border);
+  border-radius: 0.5rem;
+
+  padding: 0.8rem 1.6rem;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+
+  box-shadow:
+    inset 0 0 6px #000,
+    0 0 8px transparent;
 }
+
 button:hover {
-  cursor: pointer;
+  transform: translateY(-2px);
+
+  border-color: var(--p1-primary);
+
+  box-shadow:
+    inset 0 0 6px #000,
+    0 0 12px var(--p1-glow);
+}
+
+button:active {
+  transform: translateY(0);
+
+  box-shadow:
+    inset 0 0 12px #000,
+    0 0 4px var(--p1-glow);
 }
 
 /* ---Helpers--- */
@@ -121,21 +165,54 @@ button:hover {
 /* ---Placement Phase--- */
 
 .fleet-wrapper {
-  width: 240px;
-  position: relative;
+  width: 260px;
+
+  background: linear-gradient(
+    145deg,
+    var(--bg-panel-dark),
+    var(--bg-panel-light)
+  );
+
+  border: 1px solid var(--cell-border);
+  border-radius: 0.75rem;
+
+  padding: 1rem;
+
+  box-shadow:
+    inset 0 0 20px #000,
+    0 0 12px var(--glow-cyan-soft);
 }
 
 .fleet-container {
   height: 350px;
+
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  align-items: start;
-  gap: 1rem;
+
+  gap: 0.75rem;
 }
 
 .ship-container {
   display: flex;
+  gap: 2px;
+
+  padding: 4px;
+  border-radius: 0.4rem;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.ship-container:hover {
+  transform: scale(1.05);
+
+  background-color: #ffffff08;
+
+  box-shadow:
+    0 0 10px var(--p1-glow);
 }
 
 .vertical > .ship-container {
@@ -147,20 +224,80 @@ button:hover {
 .ship-segment {
   height: 40px;
   width: 40px;
+
+  border: 1px solid var(--cell-border);
+  border-radius: 0.25rem;
+
+  background: linear-gradient(
+    145deg,
+    #0c0c22,
+    #050510
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+.ship-container:hover .ship-segment {
+  border-color: var(--p1-primary);
+
+  box-shadow:
+    inset 0 0 6px var(--p1-glow),
+    0 0 6px var(--p1-glow);
 }
 
 .preview {
-  outline: 2px solid green;
+  background-color: #00ffcc22;
+
+  box-shadow:
+    inset 0 0 10px #00ffcc55,
+    0 0 10px #00ffcc55;
+
+  border: 1px solid #00ffcc;
 }
 
 .preview.invalid {
-  outline: 2px solid red;
+  background-color: #ff3b3b33;
+
+  box-shadow:
+    inset 0 0 10px #ff3b3b66,
+    0 0 10px #ff3b3b66;
+
+  border: 1px solid #ff3b3b;
+}
+
+.board.placement-phase.no-default-cell-glow > .cell:hover {
+  border-color: transparent;
+  box-shadow:
+    inset 0 0 6px var(--p1-glow),
+    0 0 6px var(--p1-glow);
 }
 
 .fleet-wrapper > .buttons {
-  position: absolute;
-  bottom: 2rem;
+  position: static;
+  margin-top: 1rem;
+
   display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+button.deploy {
+  border-color: var(--p1-primary);
+  box-shadow: 0 0 10px var(--p1-glow);
+}
+
+button.reset {
+  border-color: #ff5555;
+}
+
+button.random {
+  border-color: #ffaa00;
 }
 
 /* ---Boards--- */

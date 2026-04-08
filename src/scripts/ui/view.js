@@ -96,6 +96,8 @@ export function View(root) {
       p2BoardWrapper.classList.add("hide");
       fleetWrapper.classList.remove("hide");
       deployBtn.classList.remove("hide");
+
+      p1Board.classList.add("placement-phase");
     },
 
     addPlaceableShip(shipID, shipLength = shipID + 1) {
@@ -120,6 +122,10 @@ export function View(root) {
     removePlaceableShip(shipID) {
       const shipContainer = document.querySelector(`[data-shipid="${shipID}"]`);
       shipContainer?.remove();
+    },
+
+    selectShip() {
+      p1Board.classList.add("no-default-cell-glow");
     },
 
     parseCellCoords(cellElem) {
@@ -191,6 +197,8 @@ export function View(root) {
       p2BoardWrapper.classList.remove("hide");
       fleetWrapper.classList.add("hide");
       deployBtn.classList.add("hide");
+
+      p1Board.classList.remove("placement-phase");
     },
 
     hitCell(playerName, coords) {

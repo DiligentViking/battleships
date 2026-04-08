@@ -16,6 +16,43 @@ export function View(root) {
     return p1Board.dataset.playername === playerName ? p1Board : p2Board;
   }
 
+  // ---FLIP Helpers---
+
+  function getFleetPositions() {
+    const ships = fleetContainer.querySelectorAll(".ship-container");
+    const map = new Map();
+
+    ships.forEach((el) => {
+      map.set(el, el.getBoundingClientRect());
+    });
+
+    return map;
+  }
+
+  function animateFleet(oldPositions) {
+    const ships = fleetContainer.querySelectorAll(".ship-container");
+
+    ships.forEach((el, index) => {
+      const oldRect = oldPositions.get(el);
+      if (!oldRect) return;
+
+      const newRect = el.getBoundingClientRect();
+
+      const dx = oldRect.left - newRect.left;
+      const dy = oldRect.top - newRect.top;
+
+      if (dx === 0 && dy === 0) return;
+
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      el.style.transition = "transform 0s";
+
+      requestAnimationFrame(() => {
+        el.style.transform = "";
+        el.style.transition = `transform 300ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 40}ms`;
+      });
+    });
+  }
+
   function createShipSVG(isHull) {
     if (isHull) {
       return `
@@ -96,8 +133,6 @@ export function View(root) {
       p2BoardWrapper.classList.add("hide");
       fleetWrapper.classList.remove("hide");
       deployBtn.classList.remove("hide");
-
-      p1Board.classList.add("placement-phase");
     },
 
     addPlaceableShip(shipID, shipLength = shipID + 1) {
@@ -120,12 +155,17 @@ export function View(root) {
     },
 
     removePlaceableShip(shipID) {
-      const shipContainer = document.querySelector(`[data-shipid="${shipID}"]`);
-      shipContainer?.remove();
-    },
+      const oldPositions = getFleetPositions();
 
-    selectShip() {
-      p1Board.classList.add("no-default-cell-glow");
+      const shipContainer = fleetContainer.querySelector(
+        `[data-shipid="${shipID}"]`,
+      );
+
+      shipContainer?.remove();
+
+      requestAnimationFrame(() => {
+        animateFleet(oldPositions);
+      });
     },
 
     parseCellCoords(cellElem) {
@@ -197,8 +237,6 @@ export function View(root) {
       p2BoardWrapper.classList.remove("hide");
       fleetWrapper.classList.add("hide");
       deployBtn.classList.add("hide");
-
-      p1Board.classList.remove("placement-phase");
     },
 
     hitCell(playerName, coords) {

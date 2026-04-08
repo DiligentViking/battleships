@@ -220,6 +220,7 @@ button:active {
 
   display: flex;
   align-items: center;
+  align-content: center;
   flex-wrap: wrap;
 
   gap: 0.75rem;
@@ -227,6 +228,8 @@ button:active {
 
 .fleet-container.vertical {
   flex-direction: column;
+  justify-content: start;
+  align-content: center;
 }
 
 .ship-container {

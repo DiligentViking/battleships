@@ -82,3 +82,7 @@ OTHER IDEAS:
 -One could be to have them change the layout (like other's solutions).
 -Another could be to have a horizontal preview box on top and a vertical one to the side.
 -Perhaps the best one could be when you click the vertical button all of them change.
+
+-And there are a few more ways one could be smart too.  Like when determining the direction after hitting a cell, he could see if a remaining ship is valid all the way through in that direction.
+
+-To make it like normal battleships, have it where you can keep on moving when you hit a cell.

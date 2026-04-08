@@ -34,15 +34,18 @@ export function Player(name, type, smartness = 0) {
     // if after any attack the ship is sunk, stop and restart algorithm
 
     if (smartLogic.direction) {
-      const adjacentCells = getAdjacentCells(smartLogic.prevCell);
+      const adjacentCells = getAdjacentCells(
+        enemyGameboard,
+        smartLogic.prevCell,
+      );
       const targetCoords = adjacentCells[smartLogic.direction];
 
-      const targetIndex = findIndexOfRemainingCell(targetCoords);
-      if (targetIndex === -1) {
+      if (targetCoords === null) {
         switchDirections();
         return makeSmartAIMove(enemyGameboard);
       }
 
+      const targetIndex = findIndexOfRemainingCell(targetCoords);
       enemyGameboard.receiveAttack(targetCoords);
       remainingCells.splice(targetIndex, 1);
 
@@ -98,7 +101,10 @@ export function Player(name, type, smartness = 0) {
         smartLogic.targetShipCoordsList.push(targetCoords);
         if (!enemyGameboard.getCellShipIsSunk(targetCoords)) {
           smartLogic.startCell = targetCoords;
-          smartLogic.adjacentCells = getAdjacentCells(targetCoords);
+          smartLogic.adjacentCells = getAdjacentCells(
+            enemyGameboard,
+            targetCoords,
+          );
         } else {
           if (superSmart)
             removeShipSurroundingCells(smartLogic.targetShipCoordsList);
@@ -135,14 +141,25 @@ export function Player(name, type, smartness = 0) {
     );
   }
 
-  function getAdjacentCells(coords) {
+  function getAdjacentCells(enemyGameboard, coords) {
     const [y, x] = coords;
-    return {
+    const adjacentCells = {
       top: [y - 1, x],
       right: [y, x + 1],
       bottom: [y + 1, x],
       left: [y, x - 1],
     };
+
+    for (const [cell, coords] of Object.entries(adjacentCells)) {
+      if (
+        !enemyGameboard.isValidCoord(coords) ||
+        enemyGameboard.isCellHit(coords)
+      ) {
+        adjacentCells[cell] = null;
+      }
+    }
+
+    return adjacentCells;
   }
 
   function removeShipSurroundingCells(coordsList) {

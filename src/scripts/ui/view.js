@@ -147,7 +147,7 @@ export function View(root) {
       }
     },
 
-    placeShip(playerName, coordsList, isVertical) {
+    placeShip(playerName, coordsList) {
       this.removePreviousPreview(playerName);
 
       const hullIsLast =
@@ -157,12 +157,8 @@ export function View(root) {
         const coords = coordsList[i];
 
         let isHull = false;
-        if (isVertical) {
-          if (i === 0) isHull = true;
-        } else {
-          if (hullIsLast && i === coordsList.length - 1) isHull = true;
-          if (!hullIsLast && i === 0) isHull = true;
-        }
+        if (hullIsLast && i === coordsList.length - 1) isHull = true;
+        if (!hullIsLast && i === 0) isHull = true;
 
         const cellElem = getCellElem(playerName, coords);
 
@@ -172,6 +168,18 @@ export function View(root) {
     },
 
     toggleVerticalShips() {
+      const placeableShips = document.querySelectorAll(".ship-container");
+      for (const ship of placeableShips) {
+        if (ship.dataset.shipid === "0") continue;
+        const hullIsLast = ship.lastChild.querySelector(".hull") ? true : false;
+        if (hullIsLast) {
+          ship.firstChild.innerHTML = createShipSVG(true);
+          ship.lastChild.innerHTML = createShipSVG(false);
+        } else {
+          ship.firstChild.innerHTML = createShipSVG(false);
+          ship.lastChild.innerHTML = createShipSVG(true);
+        }
+      }
       fleetContainer.classList.toggle("vertical");
     },
 

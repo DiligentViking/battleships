@@ -63,7 +63,8 @@ export function Gameboard() {
 
     for (let i = 0; i < shipLength; i++) {
       const cellCoord = isVertical ? [y + i, x] : [y, x + i];
-      coordsList.push(cellCoord);
+      if (isVertical) coordsList.unshift(cellCoord);
+      else coordsList.push(cellCoord);
     }
 
     return { coordsList, valid };

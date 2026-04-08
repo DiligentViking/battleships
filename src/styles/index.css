@@ -139,7 +139,7 @@ button:hover {
 }
 
 .vertical > .ship-container {
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: baseline;
   margin-bottom: 0.5rem;
 }

@@ -45,7 +45,7 @@ export function Controller(player1, player2, game, view) {
       if (!valid) continue;
 
       view.removePlaceableShip(shipID);
-      view.placeShip(player.getName(), coordsList, isVertical);
+      view.placeShip(player.getName(), coordsList);
 
       count++;
     }
@@ -82,6 +82,7 @@ export function Controller(player1, player2, game, view) {
     let heldShipID = null;
     let heldSegmentNum = null;
     let isVertical = false;
+    let currentHoverEvent = null;
 
     function onShipMousedown(e) {
       if (!e.target.parentNode.classList.contains("ship-segment")) return;
@@ -95,6 +96,8 @@ export function Controller(player1, player2, game, view) {
     function onBoardMouseover(e) {
       if (heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
+
+      currentHoverEvent = e;
 
       const coords = view.parseCellCoords(e.target);
 
@@ -131,13 +134,14 @@ export function Controller(player1, player2, game, view) {
 
       if (!valid) return;
 
-      view.placeShip(player1.getName(), coordsList, isVertical);
+      view.placeShip(player1.getName(), coordsList);
       view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
     }
 
     function onBoardMouseleave() {
+      currentHoverEvent = null;
       view.removePreviousPreview(player1.getName());
     }
 
@@ -146,7 +150,7 @@ export function Controller(player1, player2, game, view) {
       if (e.key !== "r") return;
       isVertical = isVertical === true ? false : true;
       view.toggleVerticalShips();
-      // onBoardMouseover(e);
+      onBoardMouseover(currentHoverEvent);
     }
 
     document.addEventListener("dragstart", (e) => e.preventDefault());

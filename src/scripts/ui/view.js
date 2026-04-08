@@ -147,7 +147,7 @@ export function View(root) {
       }
     },
 
-    placeShip(playerName, coordsList) {
+    placeShip(playerName, coordsList, isVertical) {
       this.removePreviousPreview(playerName);
 
       const hullIsLast =
@@ -157,14 +157,22 @@ export function View(root) {
         const coords = coordsList[i];
 
         let isHull = false;
-        if (hullIsLast && i === coordsList.length - 1) isHull = true;
-        if (!hullIsLast && i === 0) isHull = true;
+        if (isVertical) {
+          if (i === 0) isHull = true;
+        } else {
+          if (hullIsLast && i === coordsList.length - 1) isHull = true;
+          if (!hullIsLast && i === 0) isHull = true;
+        }
 
         const cellElem = getCellElem(playerName, coords);
 
         cellElem.classList.add("ship");
         cellElem.innerHTML = createShipSVG(isHull);
       }
+    },
+
+    toggleVerticalShips() {
+      fleetContainer.classList.toggle("vertical");
     },
 
     //---Battle Phase---

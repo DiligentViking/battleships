@@ -126,13 +126,22 @@ button:hover {
 }
 
 .fleet-container {
+  height: 350px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-items: start;
   gap: 1rem;
 }
 
 .ship-container {
   display: flex;
+}
+
+.vertical > .ship-container {
+  flex-direction: column-reverse;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
 }
 
 .ship-segment {

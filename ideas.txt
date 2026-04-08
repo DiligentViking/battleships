@@ -74,3 +74,11 @@ OTHER IDEAS:
 -This would also be useful for making the ai a little smarter as well. (if there are more vertical ships remaining, it first guesses up/down when it hits a cell.)
 
 -When I am testing the more experimental upgrades to the ai, I need to track and keep averages of how many moves it takes for it to win.
+
+-if ships cannot be close to each other, it may be a good idea to put them as close as possible to each other because their surrounding spaces overlap instead of taking up more room which helps the other guy.
+-so i guess ship placement matters a little bit.
+
+-UI: Thought through a lot of ideas of how to do the ship placement:
+-One could be to have them change the layout (like other's solutions).
+-Another could be to have a horizontal preview box on top and a vertical one to the side.
+-Perhaps the best one could be when you click the vertical button all of them change.

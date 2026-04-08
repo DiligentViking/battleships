@@ -3,7 +3,7 @@ export function Controller(player1, player2, game, view) {
 
   const NUM_SHIPS = 6;
   const SHIP_LENGTHS = [1, 2, 3, 4, 5, 6];
-  // const SHIP_LENGTHS = [1, 1, 1, 1, 1, 1];
+  // const SHIP_LENGTHS = [1, 1, 1, 1, 1, 1];  // dev
 
   function resetSetup(player, numShips) {
     player.gameboard.unplaceAllShips();
@@ -33,17 +33,19 @@ export function Controller(player1, player2, game, view) {
         Math.floor(Math.random() * player.gameboard.getBoardSize()),
         Math.floor(Math.random() * player.gameboard.getBoardSize()),
       ];
+      const isVertical = Math.round(Math.random()) ? true : false;
 
       const { coordsList, valid } = player.gameboard.placeShip(
         shipID,
         shipLength,
         coords,
+        isVertical,
       );
 
       if (!valid) continue;
 
       view.removePlaceableShip(shipID);
-      view.placeShip(player.getName(), coordsList);
+      view.placeShip(player.getName(), coordsList, isVertical);
 
       count++;
     }
@@ -79,6 +81,7 @@ export function Controller(player1, player2, game, view) {
     const { p1Board, fleetContainer } = view.eventElems;
     let heldShipID = null;
     let heldSegmentNum = null;
+    let isVertical = false;
 
     document.addEventListener("dragstart", (e) => e.preventDefault());
 
@@ -96,12 +99,15 @@ export function Controller(player1, player2, game, view) {
       if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
-      coords[1] = coords[1] - heldSegmentNum;
+
+      if (isVertical) coords[0] = coords[0] - heldSegmentNum;
+      else coords[1] = coords[1] - heldSegmentNum;
 
       const result = player1.gameboard.getPreview(
         heldShipID,
         heldShipID + 1,
         coords,
+        isVertical,
       );
       const { coordsList, valid } = result;
 
@@ -113,18 +119,21 @@ export function Controller(player1, player2, game, view) {
       if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
-      coords[1] = coords[1] - heldSegmentNum;
+
+      if (isVertical) coords[0] = coords[0] - heldSegmentNum;
+      else coords[1] = coords[1] - heldSegmentNum;
 
       const result = player1.gameboard.placeShip(
         heldShipID,
         heldShipID + 1,
         coords,
+        isVertical,
       );
       const { coordsList, valid } = result;
 
       if (!valid) return;
 
-      view.placeShip(player1.getName(), coordsList);
+      view.placeShip(player1.getName(), coordsList, isVertical);
       view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
@@ -132,6 +141,13 @@ export function Controller(player1, player2, game, view) {
 
     p1Board.addEventListener("mouseleave", () => {
       view.removePreviousPreview(player1.getName());
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "d") player1.gameboard._logBoard();
+      if (e.key !== "r") return;
+      view.toggleVerticalShips();
+      isVertical = isVertical === true ? false : true;
     });
 
     // Button Events

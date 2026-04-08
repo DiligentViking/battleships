@@ -16,29 +16,40 @@ export function Gameboard() {
     board.push(row);
   }
 
-  function checkValidPlacement(shipID, shipLength, coords) {
+  function checkValidPlacement(shipID, shipLength, coords, isVertical) {
     const [y, x] = coords;
     const coordsList = [];
     let valid = true;
 
     for (let i = 0; i < shipLength; i++) {
-      const cellToCheck = board[y][x + i];
+      const cellToCheck = isVertical ? board[y + i]?.[x] : board[y][x + i];
       if (cellToCheck?.shipID !== null) {
         valid = false;
       }
     }
 
     for (let i = 0; i < shipLength; i++) {
-      const surroundingCells = [
-        board[y - 1]?.[x + i],
-        board[y - 1]?.[x + i + 1],
-        board[y]?.[x + i + 1],
-        board[y + 1]?.[x + i + 1],
-        board[y + 1]?.[x + i],
-        board[y + 1]?.[x + i - 1],
-        board[y]?.[x + i - 1],
-        board[y - 1]?.[x + i - 1],
-      ];
+      const surroundingCells = isVertical
+        ? [
+            board[y + i - 1]?.[x],
+            board[y + i - 1]?.[x + 1],
+            board[y + i]?.[x + 1],
+            board[y + i + 1]?.[x + 1],
+            board[y + i + 1]?.[x],
+            board[y + i + 1]?.[x - 1],
+            board[y + i]?.[x - 1],
+            board[y + i - 1]?.[x - 1],
+          ]
+        : [
+            board[y - 1]?.[x + i],
+            board[y - 1]?.[x + i + 1],
+            board[y]?.[x + i + 1],
+            board[y + 1]?.[x + i + 1],
+            board[y + 1]?.[x + i],
+            board[y + 1]?.[x + i - 1],
+            board[y]?.[x + i - 1],
+            board[y - 1]?.[x + i - 1],
+          ];
       for (const cell of surroundingCells) {
         if (
           cell?.shipID !== null &&
@@ -51,7 +62,8 @@ export function Gameboard() {
     }
 
     for (let i = 0; i < shipLength; i++) {
-      coordsList.push([y, x + i]);
+      const cellCoord = isVertical ? [y + i, x] : [y, x + i];
+      coordsList.push(cellCoord);
     }
 
     return { coordsList, valid };
@@ -63,6 +75,19 @@ export function Gameboard() {
       numSunk,
       board: deepCopy(board),
     }),
+
+    _logBoard: () => {
+      let output = "";
+      for (const row of board) {
+        output += "|";
+        for (const cell of row) {
+          output += cell.shipID ?? " ";
+          output += "|";
+        }
+        output += "\n";
+      }
+      console.log(output);
+    },
 
     getBoardSize: () => BOARD_SIZE,
 
@@ -80,19 +105,21 @@ export function Gameboard() {
 
     areAllShipsSunk: () => numSunk === ships.length,
 
-    placeShip: (shipID, shipLength, coords) => {
+    placeShip: (shipID, shipLength, coords, isVertical) => {
       const [y, x] = coords;
 
       const { coordsList, valid } = checkValidPlacement(
         shipID,
         shipLength,
         coords,
+        isVertical,
       );
 
       if (!valid) return { coordsList, valid };
 
       for (let i = 0; i < shipLength; i++) {
-        board[y][x + i].shipID = shipID;
+        const cellToPlaceOn = isVertical ? board[y + i]?.[x] : board[y][x + i];
+        cellToPlaceOn.shipID = shipID;
       }
 
       ships.push(Ship(shipLength));
@@ -100,8 +127,8 @@ export function Gameboard() {
       return { coordsList, valid };
     },
 
-    getPreview: (shipID, shipLength, coords) => {
-      return checkValidPlacement(shipID, shipLength, coords);
+    getPreview: (shipID, shipLength, coords, isVertical) => {
+      return checkValidPlacement(shipID, shipLength, coords, isVertical);
     },
 
     unplaceAllShips: () => {

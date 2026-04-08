@@ -83,18 +83,16 @@ export function Controller(player1, player2, game, view) {
     let heldSegmentNum = null;
     let isVertical = false;
 
-    document.addEventListener("dragstart", (e) => e.preventDefault());
-
-    fleetContainer.addEventListener("mousedown", (e) => {
+    function onShipMousedown(e) {
       if (!e.target.parentNode.classList.contains("ship-segment")) return;
 
       const shipSegment = e.target.parentNode;
 
       heldSegmentNum = +shipSegment.dataset.segmentnum;
       heldShipID = +shipSegment.parentNode.dataset.shipid;
-    });
+    }
 
-    p1Board.addEventListener("mouseover", (e) => {
+    function onBoardMouseover(e) {
       if (heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
 
@@ -112,9 +110,9 @@ export function Controller(player1, player2, game, view) {
       const { coordsList, valid } = result;
 
       view.updatePreview(player1.getName(), coordsList, valid);
-    });
+    }
 
-    p1Board.addEventListener("mouseup", (e) => {
+    function onBoardMouseup(e) {
       if (heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
 
@@ -137,18 +135,26 @@ export function Controller(player1, player2, game, view) {
       view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
-    });
+    }
 
-    p1Board.addEventListener("mouseleave", () => {
+    function onBoardMouseleave() {
       view.removePreviousPreview(player1.getName());
-    });
+    }
 
-    window.addEventListener("keydown", (e) => {
+    function onKeydown(e) {
       if (e.key === "d") player1.gameboard._logBoard();
       if (e.key !== "r") return;
-      view.toggleVerticalShips();
       isVertical = isVertical === true ? false : true;
-    });
+      view.toggleVerticalShips();
+      // onBoardMouseover(e);
+    }
+
+    document.addEventListener("dragstart", (e) => e.preventDefault());
+    fleetContainer.addEventListener("mousedown", onShipMousedown);
+    p1Board.addEventListener("mouseover", onBoardMouseover);
+    p1Board.addEventListener("mouseup", onBoardMouseup);
+    p1Board.addEventListener("mouseleave", onBoardMouseleave);
+    window.addEventListener("keydown", onKeydown);
 
     // Button Events
 

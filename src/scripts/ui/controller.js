@@ -83,12 +83,35 @@ export function Controller(player1, player2, game, view) {
     let heldSegmentNum = null;
     let isVertical = false;
     let currentHoverEvent = null;
+    let ghost = null;
+
+    let lastX = 0;
+    let lastY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
 
     function onShipMousedown(e) {
       if (!e.target.classList.contains("ship-segment")) return;
 
       heldSegmentNum = +e.target.dataset.segmentnum;
       heldShipID = +e.target.parentNode.dataset.shipid;
+
+      // --- CREATE GHOST ---
+      const original = e.target.parentNode;
+
+      ghost = original.cloneNode(true);
+      ghost.classList.add("ghost");
+
+      const rect = original.getBoundingClientRect();
+
+      ghost.style.position = "fixed";
+      ghost.style.left = `${rect.left}px`;
+      ghost.style.top = `${rect.top}px`;
+      ghost.style.pointerEvents = "none";
+      ghost.style.opacity = "0.8";
+      ghost.style.transform = "scale(1.05)";
+
+      document.body.appendChild(ghost);
     }
 
     function onBoardMouseover(e) {
@@ -136,6 +159,18 @@ export function Controller(player1, player2, game, view) {
       view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
+
+      if (ghost) {
+        ghost.style.transition =
+          "transform 300ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease";
+        ghost.style.transform = `translate(-50%, -50%) translate(${velocityX * 4}px, ${velocityY * 4}px) scale(0.9)`;
+        ghost.style.opacity = "0";
+
+        setTimeout(() => {
+          ghost.remove();
+          ghost = null;
+        }, 300);
+      }
     }
 
     function onBoardMouseleave() {
@@ -157,6 +192,19 @@ export function Controller(player1, player2, game, view) {
     p1Board.addEventListener("mouseup", onBoardMouseup);
     p1Board.addEventListener("mouseleave", onBoardMouseleave);
     window.addEventListener("keydown", onKeydown);
+    window.addEventListener("mousemove", (e) => {
+      if (!ghost) return;
+
+      ghost.style.left = `${e.clientX}px`;
+      ghost.style.top = `${e.clientY}px`;
+      ghost.style.transform = "translate(-50%, -50%) scale(1.05)";
+
+      velocityX = e.clientX - lastX;
+      velocityY = e.clientY - lastY;
+
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
 
     // Button Events
 

@@ -160,6 +160,12 @@ button:active {
     0 0 6px var(--p1-glow);
 }
 
+.ghost {
+  z-index: 9999;
+  filter: brightness(1.2);
+  transition: transform 0.1s linear;
+}
+
 /* ---Helpers--- */
 
 .hide {

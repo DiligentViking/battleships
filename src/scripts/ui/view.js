@@ -16,7 +16,7 @@ export function View(root) {
     return p1Board.dataset.playername === playerName ? p1Board : p2Board;
   }
 
-  // ---FLIP Helpers---
+  // --- FLIP HELPERS (PER-SEGMENT RIPPLE) ---
 
   function getFleetPositions() {
     const ships = fleetContainer.querySelectorAll(".ship-container");
@@ -32,23 +32,32 @@ export function View(root) {
   function animateFleet(oldPositions) {
     const ships = fleetContainer.querySelectorAll(".ship-container");
 
-    ships.forEach((el, index) => {
-      const oldRect = oldPositions.get(el);
+    ships.forEach((shipEl) => {
+      const oldRect = oldPositions.get(shipEl);
       if (!oldRect) return;
 
-      const newRect = el.getBoundingClientRect();
+      const newRect = shipEl.getBoundingClientRect();
 
       const dx = oldRect.left - newRect.left;
       const dy = oldRect.top - newRect.top;
 
       if (dx === 0 && dy === 0) return;
 
-      el.style.transform = `translate(${dx}px, ${dy}px)`;
-      el.style.transition = "transform 0s";
+      const segments = shipEl.querySelectorAll(".ship-segment");
 
-      requestAnimationFrame(() => {
-        el.style.transform = "";
-        el.style.transition = `transform 300ms cubic-bezier(0.22, 1, 0.36, 1) ${index * 40}ms`;
+      const transition = {
+        normal: "cubic-bezier(0.22, 1, 0.36, 1)",
+        bouncy: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      };
+
+      segments.forEach((seg, i) => {
+        seg.style.transform = `translate(${dx}px, ${dy}px)`;
+        seg.style.transition = "transform 0s";
+
+        requestAnimationFrame(() => {
+          seg.style.transform = "";
+          seg.style.transition = `transform 320ms ${transition.bouncy} ${i * 60}ms`;
+        });
       });
     });
   }
@@ -100,9 +109,7 @@ export function View(root) {
       resetBtn,
       randomBtn,
       deployBtn,
-    }, // Controller only uses these for addEventListener
-
-    //---Player/Board Init---
+    },
 
     initBoardPlayerNames(player1Name, player2Name) {
       p1Board.dataset.playername = player1Name;
@@ -125,7 +132,7 @@ export function View(root) {
       }
     },
 
-    //---Setup Phase---
+    // --- Setup Phase ---
 
     enterSetupPhase() {
       message.textContent = "Position Fleet";
@@ -199,6 +206,19 @@ export function View(root) {
       const hullIsLast =
         p1Board.dataset.playername === playerName ? true : false;
 
+      // Find original fleet ship (for animation source)
+      const fleetShip = fleetContainer.querySelector(
+        `.ship-container[data-shipid="${coordsList.length - 1}"]`,
+      );
+
+      let sourceRects = [];
+      if (fleetShip) {
+        const segments = fleetShip.querySelectorAll(".ship-segment");
+        sourceRects = Array.from(segments).map((seg) =>
+          seg.getBoundingClientRect(),
+        );
+      }
+
       for (let i = 0; i < coordsList.length; i++) {
         const coords = coordsList[i];
 
@@ -208,16 +228,39 @@ export function View(root) {
 
         const cellElem = getCellElem(playerName, coords);
 
+        // Create element but don't animate yet
         cellElem.classList.add("ship");
         cellElem.innerHTML = createShipSVG(isHull);
+
+        const segElem = cellElem.firstElementChild;
+
+        if (sourceRects[i]) {
+          const targetRect = cellElem.getBoundingClientRect();
+          const sourceRect = sourceRects[i];
+
+          const dx = sourceRect.left - targetRect.left;
+          const dy = sourceRect.top - targetRect.top;
+
+          segElem.style.translate = `${dx}px ${dy}px`;
+          segElem.style.scale = "0.8";
+          segElem.style.opacity = "0.25";
+
+          requestAnimationFrame(() => {
+            segElem.style.translate = "";
+            segElem.style.scale = "";
+            segElem.style.opacity = "";
+            segElem.style.transition = `translate 400ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 70}ms, scale 400ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 70}ms, opacity 300ms ease ${i * 70}ms`;
+          });
+        }
       }
     },
 
-    toggleVerticalShips(isVertical) {
+    toggleVerticalShips() {
       const placeableShips = document.querySelectorAll(".ship-container");
       for (const ship of placeableShips) {
         if (ship.dataset.shipid === "0") continue;
-        if (isVertical) {
+        const hullIsLast = ship.lastChild.querySelector(".hull") ? true : false;
+        if (hullIsLast) {
           ship.firstChild.innerHTML = createShipSVG(true);
           ship.lastChild.innerHTML = createShipSVG(false);
         } else {
@@ -228,7 +271,7 @@ export function View(root) {
       fleetContainer.classList.toggle("vertical");
     },
 
-    //---Battle Phase---
+    // --- Battle Phase ---
 
     enterBattlePhase() {
       message.textContent = "Battle";

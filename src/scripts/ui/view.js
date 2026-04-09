@@ -200,6 +200,16 @@ export function View(root) {
       }
     },
 
+    selectShip(shipID) {
+      const prevShipContainer = fleetContainer.querySelector(".floating");
+      prevShipContainer?.classList.remove("floating");
+
+      const shipContainer = fleetContainer.querySelector(
+        `.ship-container[data-shipid="${shipID}"]`,
+      );
+      shipContainer.classList.add("floating");
+    },
+
     placeShip(playerName, coordsList) {
       this.removePreviousPreview(playerName);
 

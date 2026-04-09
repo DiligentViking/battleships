@@ -245,6 +245,33 @@ button:active {
   transform: scale(1.05);
 }
 
+.ship-container.floating > .ship-segment {
+  animation: float 1.2s ease-in-out infinite;
+}
+.ship-container.floating > .ship-segment:nth-child(1) {
+  animation-delay: 0ms;
+}
+.ship-container.floating > .ship-segment:nth-child(2) {
+  animation-delay: 120ms;
+}
+.ship-container.floating > .ship-segment:nth-child(3) {
+  animation-delay: 240ms;
+}
+.ship-container.floating > .ship-segment:nth-child(4) {
+  animation-delay: 360ms;
+}
+.ship-container.floating > .ship-segment:nth-child(5) {
+  animation-delay: 480ms;
+}
+.ship-container.floating > .ship-segment:nth-child(6) {
+  animation-delay: 600ms;
+}
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
 .vertical > .ship-container {
   flex-direction: column;
   align-items: baseline;
@@ -265,10 +292,14 @@ button:active {
     box-shadow 0.2s,
     border-color 0.2s;
 }
-.ship-container:hover .ship-segment {
+.ship-container:hover > .ship-segment,
+.ship-container.floating > .ship-segment {
   box-shadow:
     inset 0 0 6px var(--p1-glow),
     0 0 6px var(--p1-glow);
+  border-color: var(--p1-cell-hover);
+}
+.ship-container:active > .ship-segment {
   border-color: var(--p1-primary);
 }
 
@@ -305,7 +336,7 @@ button:active {
 }
 
 button.deploy {
-  border-color: var(--p1-primary);
+  border-color: #00CFCF;
   box-shadow:
     inset 0 0 8px #000,
     0 0 10px var(--p1-glow);
@@ -314,27 +345,27 @@ button.deploy {
 button.deploy:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 18px var(--p1-primary);
+    0 0 16px #00CFCF;
 }
 
 button.reset {
-  border-color: #ff5555;
+  border-color: #E03A3A;
 }
 
 button.reset:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 16px #ff3b3b88;
+    0 0 14px #E03A3A88;
 }
 
 button.random {
-  border-color: #ffaa00;
+  border-color: #FF8C12;
 }
 
 button.random:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 16px #ffaa0088;
+    0 0 14px #FF8C1288;
 }
 
 /* ---Boards--- */

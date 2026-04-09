@@ -89,6 +89,8 @@ export function Controller(player1, player2, game, view) {
 
       heldSegmentNum = +e.target.dataset.segmentnum;
       heldShipID = +e.target.parentNode.dataset.shipid;
+
+      view.selectShip(heldShipID);
     }
 
     function onBoardMouseover(e) {

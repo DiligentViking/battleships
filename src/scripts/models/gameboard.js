@@ -102,6 +102,11 @@ export function Gameboard() {
       return board[y][x].hit;
     },
 
+    getCellShipID: (coords) => {
+      const [y, x] = coords;
+      return board[y][x].shipID;
+    },
+
     getCellHasShip: (coords) => {
       const [y, x] = coords;
       return board[y][x].shipID !== null ? true : false;
@@ -110,6 +115,8 @@ export function Gameboard() {
     getCellShipIsSunk: (coords) => {
       const [y, x] = coords;
       const shipID = board[y][x].shipID;
+      if (shipID === null) return null;
+
       const ship = ships[shipID];
       return ship.isSunk();
     },

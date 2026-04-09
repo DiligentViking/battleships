@@ -16,8 +16,6 @@ export function View(root) {
     return p1Board.dataset.playername === playerName ? p1Board : p2Board;
   }
 
-  // --- FLIP HELPERS (PER-SEGMENT RIPPLE) ---
-
   function getFleetPositions() {
     const ships = fleetContainer.querySelectorAll(".ship-container");
     const map = new Map();
@@ -62,10 +60,12 @@ export function View(root) {
     });
   }
 
-  function createShipSVG(isHull) {
+  function createShipSVG(isHull, isPlayer2, hide) {
+    const p2Class = isPlayer2 ? "p2" : "";
+    const hideClass = hide ? "hide" : "";
     if (isHull) {
       return `
-<svg class="hull" viewBox="0 0 90 80" fill="none">
+<svg class="hull ${p2Class} ${hideClass}" viewBox="0 0 90 80" fill="none">
   <path
     d="
       M15 65
@@ -82,7 +82,7 @@ export function View(root) {
 </svg>`;
     } else {
       return `
-<svg class="body" viewBox="0 0 90 80">
+<svg class="body ${p2Class} ${hideClass}" viewBox="0 0 90 80">
   <rect
     x="8"
     y="12"
@@ -210,7 +210,7 @@ export function View(root) {
       shipContainer.classList.add("floating");
     },
 
-    placeShip(playerName, coordsList) {
+    placeShip(playerName, coordsList, shipID) {
       this.removePreviousPreview(playerName);
 
       const hullIsLast =
@@ -236,11 +236,15 @@ export function View(root) {
         if (hullIsLast && i === coordsList.length - 1) isHull = true;
         if (!hullIsLast && i === 0) isHull = true;
 
+        let isPlayer2 = playerName === p2Board.dataset.playername;
+        let hideShip = isPlayer2;
+
         const cellElem = getCellElem(playerName, coords);
 
         // Create element but don't animate yet
         cellElem.classList.add("ship");
-        cellElem.innerHTML = createShipSVG(isHull);
+        cellElem.innerHTML = createShipSVG(isHull, isPlayer2, hideShip);
+        cellElem.dataset.shipid = shipID;
 
         const segElem = cellElem.firstElementChild;
 
@@ -298,6 +302,15 @@ export function View(root) {
         cellElem.classList.add("hit");
       } else {
         cellElem.classList.add("miss");
+      }
+    },
+
+    revealShip(receiverName, shipID) {
+      const boardElem = getBoardFromPlayerName(receiverName);
+      const shipCells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+      for (const cell of shipCells) {
+        const shipSVG = cell.querySelector("svg");
+        shipSVG.classList.remove("hide");
       }
     },
   };

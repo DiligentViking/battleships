@@ -37,6 +37,7 @@ MUSIC IDEAS:
 -Path_Few_Have_Taken: Credits? Stats?
 
 -or maybe use some of the astapool tracks. like that interstellar_space one is good and dark and builds up.
+-maybe for The Challenge
 
 __________
 
@@ -86,3 +87,6 @@ OTHER IDEAS:
 -And there are a few more ways one could be smart too.  Like when determining the direction after hitting a cell, he could see if a remaining ship is valid all the way through in that direction.
 
 -To make it like normal battleships, have it where you can keep on moving when you hit a cell.
+
+-I was thinking if I only made the svg's invisible but not undo their display, one could cheat with Ctrl+Shift+C.
+-The real solution however would be to just not allow access to the devtools.

@@ -163,7 +163,11 @@ button:active {
 /* ---Helpers--- */
 
 .hide {
-  display: none;
+  display: none !important;
+}
+
+.show {
+  display: initial !important;
 }
 
 @keyframes pulseGlow {
@@ -267,9 +271,15 @@ button:active {
   animation-delay: 600ms;
 }
 @keyframes float {
-  0%   { transform: translateY(0px); }
-  50%  { transform: translateY(-4px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .vertical > .ship-container {
@@ -336,7 +346,7 @@ button:active {
 }
 
 button.deploy {
-  border-color: #00CFCF;
+  border-color: #00cfcf;
   box-shadow:
     inset 0 0 8px #000,
     0 0 10px var(--p1-glow);
@@ -345,27 +355,27 @@ button.deploy {
 button.deploy:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 16px #00CFCF;
+    0 0 16px #00cfcf;
 }
 
 button.reset {
-  border-color: #E03A3A;
+  border-color: #e03a3a;
 }
 
 button.reset:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 14px #E03A3A88;
+    0 0 14px #e03a3a88;
 }
 
 button.random {
-  border-color: #FF8C12;
+  border-color: #ff8c12;
 }
 
 button.random:hover {
   box-shadow:
     inset 0 0 10px #000,
-    0 0 14px #FF8C1288;
+    0 0 14px #ff8c1288;
 }
 
 /* ---Boards--- */
@@ -510,9 +520,10 @@ svg.body > rect {
   height: 64%;
 }
 
-.board.p2 > .ship > svg.hull {
+.hull.p2 {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
 }
+
 
 /* Hit/Miss Effects */
 

@@ -45,7 +45,7 @@ export function Controller(player1, player2, game, view) {
       if (!valid) continue;
 
       view.removePlaceableShip(shipID);
-      view.placeShip(player.getName(), coordsList);
+      view.placeShip(player.getName(), coordsList, shipID);
 
       count++;
     }
@@ -134,7 +134,7 @@ export function Controller(player1, player2, game, view) {
 
       if (!valid) return;
 
-      view.placeShip(player1.getName(), coordsList);
+      view.placeShip(player1.getName(), coordsList, heldShipID);
       view.removePlaceableShip(heldShipID);
 
       heldShipID = null;
@@ -183,8 +183,8 @@ export function Controller(player1, player2, game, view) {
       runGame();
     });
 
-    // randomBtn.click(); // dev
-    // deployBtn.click(); // dev
+    randomBtn.click(); // dev
+    deployBtn.click(); // dev
   }
 
   function runComputerSetup() {
@@ -193,8 +193,9 @@ export function Controller(player1, player2, game, view) {
 
   function runGame() {
     function attackCell(receiverName, coords = null) {
+      let result;
       try {
-        coords = game.attack(receiverName, coords);
+        result = game.attack(receiverName, coords);
       } catch (err) {
         console.error(err);
         return;
@@ -202,7 +203,8 @@ export function Controller(player1, player2, game, view) {
 
       const receiver = player1.getName() === receiverName ? player1 : player2;
 
-      view.hitCell(receiverName, coords);
+      view.hitCell(receiverName, result.coords);
+      if (result.shipSunk) view.revealShip(receiverName, result.shipID);
 
       const status = game.getState();
       if (status.winner) {

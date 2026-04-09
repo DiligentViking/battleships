@@ -22,11 +22,16 @@ export function Game(player1, player2) {
       const attacker = turn === 1 ? player1 : player2;
       const receiver = turn === 1 ? player2 : player1;
 
-      coords = attacker.attack(receiver.gameboard, coords);
+      const result = {};
+
+      result.coords = attacker.attack(receiver.gameboard, coords);
+
+      result.shipID = receiver.gameboard.getCellShipID(result.coords);
+      result.shipSunk = receiver.gameboard.getCellShipIsSunk(result.coords);
 
       turn = turn === 1 ? 2 : 1;
 
-      return coords;
+      return result;
     },
   };
 }

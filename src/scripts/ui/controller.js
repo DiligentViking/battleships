@@ -85,11 +85,10 @@ export function Controller(player1, player2, game, view) {
     let currentHoverEvent = null;
 
     function onShipMousedown(e) {
-      if (!e.target.parentNode.classList.contains("ship-segment")) return;
+      if (!e.target.classList.contains("ship-segment")) return;
 
-      const shipSegment = e.target.parentNode;
-      heldSegmentNum = +shipSegment.dataset.segmentnum;
-      heldShipID = +shipSegment.parentNode.dataset.shipid;
+      heldSegmentNum = +e.target.dataset.segmentnum;
+      heldShipID = +e.target.parentNode.dataset.shipid;
     }
 
     function onBoardMouseover(e) {
@@ -148,7 +147,7 @@ export function Controller(player1, player2, game, view) {
       if (e.key === "d") player1.gameboard._logBoard();
       if (e.key !== "r") return;
       isVertical = isVertical === true ? false : true;
-      view.toggleVerticalShips();
+      view.toggleVerticalShips(isVertical);
       onBoardMouseover(currentHoverEvent);
     }
 

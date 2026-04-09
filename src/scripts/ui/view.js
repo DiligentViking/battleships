@@ -213,12 +213,11 @@ export function View(root) {
       }
     },
 
-    toggleVerticalShips() {
+    toggleVerticalShips(isVertical) {
       const placeableShips = document.querySelectorAll(".ship-container");
       for (const ship of placeableShips) {
         if (ship.dataset.shipid === "0") continue;
-        const hullIsLast = ship.lastChild.querySelector(".hull") ? true : false;
-        if (hullIsLast) {
+        if (isVertical) {
           ship.firstChild.innerHTML = createShipSVG(true);
           ship.lastChild.innerHTML = createShipSVG(false);
         } else {

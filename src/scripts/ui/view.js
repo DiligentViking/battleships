@@ -297,17 +297,14 @@ export function View(root) {
 
     hitCell(playerName, coords) {
       const cellElem = getCellElem(playerName, coords);
-
-      if (cellElem.classList.contains("ship")) {
-        cellElem.classList.add("hit");
-      } else {
-        cellElem.classList.add("miss");
-      }
+      cellElem.classList.add("hit");
     },
 
     revealShip(receiverName, shipID) {
       const boardElem = getBoardFromPlayerName(receiverName);
-      const shipCells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+      const shipCells = boardElem.querySelectorAll(
+        `.cell[data-shipid="${shipID}"]`,
+      );
       for (const cell of shipCells) {
         const shipSVG = cell.querySelector("svg");
         shipSVG.classList.remove("hide");

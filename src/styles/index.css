@@ -495,7 +495,15 @@ button.random:hover {
   z-index: 1;
 }
 
-.cell:hover:not(.miss) {
+.hit {
+  background-color: var(--miss-color);
+}
+
+.ship.hit {
+  background-color: var(--hit-color);
+}
+
+.cell:hover:not(.hit) {
   border-color: var(--p1-cell-hover);
   box-shadow:
     0 0 6px var(--p1-cell-hover),
@@ -522,15 +530,4 @@ svg.body > rect {
 
 .hull.p2 {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
-}
-
-
-/* Hit/Miss Effects */
-
-.hit {
-  background-color: var(--hit-color);
-}
-
-.miss {
-  background-color: var(--miss-color);
 }

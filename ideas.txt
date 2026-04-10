@@ -90,3 +90,10 @@ OTHER IDEAS:
 
 -I was thinking if I only made the svg's invisible but not undo their display, one could cheat with Ctrl+Shift+C.
 -The real solution however would be to just not allow access to the devtools.
+
+-AI Note: The logic JS I make myself no ai.  AI is only for styling/effects and review.
+
+-Maybe feedback wait is removed for the challenge.
+-Or maybe the challenge is if you take more than 0.5s your are skipped and the ai moves regardless.
+-Or the ai just moves every 0.5s and you can move whenever but you have energy.
+-Perhaps this should just be for the final round of the challenge. (actually will probably just up the smartness even more on the last round)

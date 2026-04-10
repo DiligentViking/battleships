@@ -1,3 +1,5 @@
+import { sleep } from "../models/utils.js";
+
 export function Controller(player1, player2, game, view) {
   //---Helpers---
 
@@ -192,7 +194,10 @@ export function Controller(player1, player2, game, view) {
   }
 
   function runGame() {
-    function attackCell(receiverName, coords = null) {
+    async function attackCell(receiverName, coords = null) {
+      waiting = true;
+      await sleep(500);
+
       let result;
       try {
         result = game.attack(receiverName, coords);
@@ -216,11 +221,14 @@ export function Controller(player1, player2, game, view) {
       if (receiver.getType() === "computer") {
         const newReceiver =
           player1.getName() === receiverName ? player2 : player1;
-        attackCell(newReceiver.getName());
+        await attackCell(newReceiver.getName());
       }
+
+      waiting = false;
     }
 
     function onBoardClick(e) {
+      if (waiting) return;
       if (!e.target.classList.contains("cell")) return;
 
       const coords = view.parseCellCoords(e.target);
@@ -230,6 +238,7 @@ export function Controller(player1, player2, game, view) {
     }
 
     const { p1Board, p2Board } = view.eventElems;
+    let waiting = false;
 
     if (player1.getType() === "computer") attackCell(player2.getName());
 

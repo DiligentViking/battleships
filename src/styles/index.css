@@ -497,6 +497,10 @@ button.random:hover {
 
 .hit {
   background-color: var(--miss-color);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background-color 1s;
 }
 
 .ship.hit {
@@ -530,4 +534,157 @@ svg.body > rect {
 
 .hull.p2 {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
+}
+
+/* ---Hit Effects--- */
+
+.cell {
+  position: relative;
+}
+
+/* Hit/Miss Icons */
+
+.hit-icon,
+.miss-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  pointer-events: none;
+
+  transform: scale(5.5);
+  opacity: 0;
+}
+
+.hit-icon {
+  color: #ff3b3b;
+}
+.miss-icon {
+  color: #7ec8e3;
+}
+
+.icon-animate {
+  animation: iconDrop 750ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes iconDrop {
+  0% {
+    transform: /* translateY(-10px) */ scale(10);
+    opacity: 0;
+  }
+  60% {
+    transform: /* translateY(2px) */ scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: /* translateY(0) */ scale(1);
+    opacity: 0;
+  }
+}
+
+/* Shockwave */
+
+.shockwave {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid;
+  opacity: 0;
+  transform: scale(0.2);
+  pointer-events: none;
+}
+
+.shockwave.hit {
+  border-color: #ff3ba0;
+}
+
+.shockwave.miss {
+  border-color: #2aafdf;
+}
+
+.shockwave-animate {
+  animation: shockwaveExpand 450ms ease-out forwards;
+  animation-delay: 200ms;
+}
+
+@keyframes shockwaveExpand {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Damaged Ship Pulse */
+
+.ship.pulsing {
+  --visible-pulse: transparent;
+  --visible-pulse2: transparent;
+  animation: shipPulse 1.4s ease-in-out infinite;
+}
+
+.ship.hit.pulsing {
+  --visible-pulse: #ff3b3b44;
+  --visible-pulse2: #ff3b3bcc;
+}
+
+@keyframes shipPulse {
+  0% {
+    box-shadow: 0 0 4px var(--visible-pulse);
+  }
+  50% {
+    box-shadow: 0 0 12px var(--visible-pulse2);
+  }
+  100% {
+    box-shadow: 0 0 4px var(--visible-pulse);
+  }
+}
+
+/* Sunk Flash */
+
+.ship-flash {
+  position: absolute;
+  background: radial-gradient(
+    ellipse at center,
+    #ffdadacc 0%,
+    #ff868688 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+
+  --initScaleX: 0.2;
+  --initScaleY: 0.6;
+  --scaleX: 2.6;
+  --scaleY: 0.8;
+}
+
+.ship-flash.vertical {
+  --initScaleX: 0.6;
+  --initScaleY: 0.2;
+  --scaleX: 0.8;
+  --scaleY: 2.6;
+}
+
+.flash-animate {
+  animation: flashSweep 600ms ease forwards;
+}
+
+@keyframes flashSweep {
+  0% {
+    transform: scaleX(var(--initScaleX)) scaleY(var(--initScaleY));
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: scaleX(var(--scaleX)) scaleY(var(--scaleY));
+    opacity: 0;
+  }
 }

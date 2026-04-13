@@ -101,6 +101,107 @@ export function View(root) {
     return boardElem.querySelector(`[data-coords="${y},${x}"]`);
   }
 
+  function afterAnim(elem, callback) {
+    elem.addEventListener("animationend", function func() {
+      callback();
+      elem.removeEventListener("animationend", func);
+    });
+  }
+
+  function spawnImpactEffects(cellElem, isHit) {
+    // Icon
+    const icon = document.createElement("div");
+    icon.className = isHit ? "hit-icon" : "miss-icon";
+    icon.textContent = isHit ? "✖" : "O";
+    cellElem.appendChild(icon);
+
+    requestAnimationFrame(() => {
+      icon.classList.add("icon-animate");
+    });
+    afterAnim(icon, () => {
+      icon.remove();
+    });
+
+    // Shockwave
+    const wave = document.createElement("div");
+    wave.className = `shockwave ${isHit ? "hit" : "miss"}`;
+    cellElem.appendChild(wave);
+
+    requestAnimationFrame(() => {
+      wave.classList.add("shockwave-animate");
+    });
+    afterAnim(wave, () => {
+      wave.remove();
+    });
+  }
+
+  function startShipPulse(boardElem, shipID) {
+    const cells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+
+    cells.forEach((cell, i) => {
+      cell.classList.add("pulsing");
+      cell.style.animationDelay = `${i * 200}ms`;
+    });
+  }
+
+  function stopShipPulse(boardElem, shipID) {
+    const cells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+
+    cells.forEach((cell) => {
+      cell.classList.remove("pulsing");
+      cell.style.animationDelay = "";
+    });
+  }
+
+  function playSunkAnimation(boardElem, shipID) {
+    const cells = Array.from(
+      boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`),
+    );
+
+    if (!cells.length) return;
+
+    // stop pulsing first
+    stopShipPulse(boardElem, shipID);
+
+    // small pause (important)
+    setTimeout(() => {
+      const flash = document.createElement("div");
+      flash.classList.add("ship-flash");
+
+      // position over ship bounds
+      const rects = cells.map((c) => c.getBoundingClientRect());
+      const minX = Math.min(...rects.map((r) => r.left));
+      const maxX = Math.max(...rects.map((r) => r.right));
+      const minY = Math.min(...rects.map((r) => r.top));
+      const maxY = Math.max(...rects.map((r) => r.bottom));
+
+      const boardRect = boardElem.getBoundingClientRect();
+
+      const width = maxX - minX;
+      const height = maxY - minY;
+
+      flash.style.left = `${minX - boardRect.left}px`;
+      flash.style.top = `${minY - boardRect.top}px`;
+      flash.style.width = `${width}px`;
+      flash.style.height = `${height}px`;
+
+      boardElem.appendChild(flash);
+
+      // elongate ellipse whether horizontal or vertical
+      if (height > width) {
+        flash.classList.add("vertical");
+      }
+
+      requestAnimationFrame(() => {
+        flash.classList.add("flash-animate");
+      });
+
+      afterAnim(flash, () => {
+        flash.remove();
+      });
+    }, 80);
+  }
+
   return {
     eventElems: {
       p1Board,
@@ -138,7 +239,7 @@ export function View(root) {
       message.textContent = "Position Fleet";
 
       p2BoardWrapper.classList.add("hide");
-      fleetWrapper.classList.remove("hide");
+      fleetContainer.classList.remove("hide");
       deployBtn.classList.remove("hide");
     },
 
@@ -297,18 +398,36 @@ export function View(root) {
 
     hitCell(playerName, coords) {
       const cellElem = getCellElem(playerName, coords);
+      const boardElem = getBoardFromPlayerName(playerName);
+
+      const hasShip = cellElem.classList.contains("ship");
+
+      spawnImpactEffects(cellElem, hasShip);
+
       cellElem.classList.add("hit");
+
+      if (hasShip) {
+        const shipID = cellElem.dataset.shipid;
+        startShipPulse(boardElem, shipID);
+      }
     },
 
     revealShip(receiverName, shipID) {
       const boardElem = getBoardFromPlayerName(receiverName);
-      const shipCells = boardElem.querySelectorAll(
-        `.cell[data-shipid="${shipID}"]`,
-      );
-      for (const cell of shipCells) {
-        const shipSVG = cell.querySelector("svg");
-        shipSVG.classList.remove("hide");
-      }
+
+      // play sunk animation FIRST
+      playSunkAnimation(boardElem, shipID);
+
+      setTimeout(() => {
+        const shipCells = boardElem.querySelectorAll(
+          `.cell[data-shipid="${shipID}"]`,
+        );
+
+        for (const cell of shipCells) {
+          const shipSVG = cell.querySelector("svg");
+          shipSVG.classList.remove("hide");
+        }
+      }, 200);
     },
   };
 }

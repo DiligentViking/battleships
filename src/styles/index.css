@@ -59,6 +59,11 @@ body {
   display: flex;
 }
 
+html,
+body {
+  overflow: clip;
+}
+
 h1,
 h2,
 h3 {
@@ -492,6 +497,7 @@ button.random:hover {
 
   padding-left: 2px;
   border: 1px solid transparent;
+  position: relative;
   z-index: 1;
 }
 
@@ -511,7 +517,7 @@ button.random:hover {
   border-color: var(--p1-cell-hover);
   box-shadow:
     0 0 6px var(--p1-cell-hover),
-    0 0 6px 1px var(--p1-cell-hover);
+    0 0 6px 1px var(--p1-cell-hover) !important;
 }
 
 /* Ship SVGs */
@@ -537,10 +543,6 @@ svg.body > rect {
 }
 
 /* ---Hit Effects--- */
-
-.cell {
-  position: relative;
-}
 
 /* Hit/Miss Icons */
 
@@ -623,25 +625,25 @@ svg.body > rect {
 /* Damaged Ship Pulse */
 
 .ship.pulsing {
-  --visible-pulse: transparent;
-  --visible-pulse2: transparent;
+  --visible-pulse: none;
+  --visible-pulse2: none;
   animation: shipPulse 1.4s ease-in-out infinite;
 }
 
 .ship.hit.pulsing {
-  --visible-pulse: #ff3b3b44;
-  --visible-pulse2: #ff3b3bcc;
+  --visible-pulse: 0 0 4px #ff3b3b44;
+  --visible-pulse2: 0 0 12px #ff3b3bcc;
 }
 
 @keyframes shipPulse {
   0% {
-    box-shadow: 0 0 4px var(--visible-pulse);
+    box-shadow: var(--visible-pulse);
   }
   50% {
-    box-shadow: 0 0 12px var(--visible-pulse2);
+    box-shadow: var(--visible-pulse2);
   }
   100% {
-    box-shadow: 0 0 4px var(--visible-pulse);
+    box-shadow: var(--visible-pulse);
   }
 }
 

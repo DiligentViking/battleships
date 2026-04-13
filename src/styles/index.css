@@ -599,6 +599,7 @@ svg.body > rect {
   100% {
     transform: /* translateY(0) */ scale(1);
     opacity: 0;
+    filter: blur(0.1px);
   }
 }
 
@@ -642,7 +643,7 @@ svg.body > rect {
 .ship.pulsing {
   --visible-pulse: none;
   --visible-pulse2: none;
-  animation: shipPulse 1.4s ease-in-out infinite;
+  animation: shipPulse 1.2s ease-in-out infinite;
 }
 
 .ship.hit.pulsing {
@@ -660,6 +661,12 @@ svg.body > rect {
   100% {
     box-shadow: var(--visible-pulse);
   }
+}
+
+.ship.pulseblast {
+  --visible-pulse: 0 0 4px #ff3b3b44;
+  --visible-pulse2: 0 0 24px 16px #ff3b3bcc;
+  animation: shipPulse 2s ease;
 }
 
 /* Sunk Flash */

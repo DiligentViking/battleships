@@ -94,6 +94,28 @@ export function View(root) {
     }
   }
 
+  function createHitSVG() {
+    return `
+<?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 3V7M12 17V21M3 12H7M17 12H21M12 12H12.01M19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5C15.866 5 19 8.13401 19 12Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+  }
+
+  function createMissSVG() {
+    return `
+<svg viewBox="0 0 100 100">
+  <circle
+    cx="50"
+    cy="50"
+    r="24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="4"
+  />
+</svg>`;
+  }
+
   function getCellElem(playerName, coords) {
     const boardElem = getBoardFromPlayerName(playerName);
     const [y, x] = coords;
@@ -124,7 +146,7 @@ export function View(root) {
     // Icon
     const icon = document.createElement("div");
     icon.className = isHit ? "hit-icon" : "miss-icon";
-    icon.textContent = isHit ? "✖" : "O";
+    icon.innerHTML = isHit ? createHitSVG() : createMissSVG();
     cellElem.appendChild(icon);
 
     requestAnimationFrame(() => {
@@ -152,7 +174,7 @@ export function View(root) {
 
     cells.forEach((cell, i) => {
       cell.classList.add("pulsing");
-      cell.style.animationDelay = `${i * 200}ms`;
+      cell.style.animationDelay = `${i * 150}ms`;
     });
   }
 
@@ -161,10 +183,26 @@ export function View(root) {
 
     cells.forEach((cell) => {
       afterAnimIteration(cell, () => {
-        console.log(cell.classList);
         cell.classList.remove("pulsing");
+
+        const delay = 600;
+        cell.style.animationDelay = `${delay * Math.round(Math.random() * 10)}ms`;
+        cell.classList.add("pulseblast");
+        setTimeout(() => {
+          afterAnimIteration(cell, () => {
+            cell.classList.remove("pulseblast");
+          });
+        }, delay * 2);
       });
     });
+
+    // const lastCell = cells[cells.length - 1];
+
+    // afterAnimIteration(lastCell, () => {
+    //   cells.forEach((cell) => {
+    //     cell.classList.remove("pulsing");
+    //   });
+    // });
   }
 
   function playSunkAnimation(boardElem, shipID) {
@@ -443,7 +481,7 @@ export function View(root) {
           const shipSVG = cell.querySelector("svg");
           shipSVG.classList.remove("hide");
         }
-      }, 1000);
+      }, 250);
     },
   };
 }

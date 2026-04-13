@@ -167,12 +167,21 @@ button:active {
 
 /* ---Helpers--- */
 
-.hide {
+.remove {
   display: none !important;
 }
 
+.hide {
+  visibility: hidden;
+}
+
 .show {
-  display: initial !important;
+  visibility: visible;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: 0.0001s opacity ease;
 }
 
 @keyframes pulseGlow {
@@ -520,13 +529,19 @@ button.random:hover {
     0 0 6px 1px var(--p1-cell-hover) !important;
 }
 
-/* Ship SVGs */
+/* ---Ship SVGs--- */
 
 .ship > svg {
   width: 100%;
   height: 100%;
   pointer-events: none;
   transform: translate(1px);
+
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+.ship > svg.hide {
+  opacity: 0;
 }
 
 svg.hull {

@@ -107,6 +107,18 @@ export function View(root) {
       elem.removeEventListener("animationend", func);
     });
   }
+  function afterAnimIteration(elem, callback) {
+    elem.addEventListener("animationiteration", function func() {
+      callback();
+      elem.removeEventListener("animationiteration", func);
+    });
+  }
+  function afterTrans(elem, callback) {
+    elem.addEventListener("transitionend", function func() {
+      callback();
+      elem.removeEventListener("transitionend", func);
+    });
+  }
 
   function spawnImpactEffects(cellElem, isHit) {
     // Icon
@@ -148,8 +160,10 @@ export function View(root) {
     const cells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
 
     cells.forEach((cell) => {
-      cell.classList.remove("pulsing");
-      cell.style.animationDelay = "";
+      afterAnimIteration(cell, () => {
+        console.log(cell.classList);
+        cell.classList.remove("pulsing");
+      });
     });
   }
 
@@ -158,48 +172,40 @@ export function View(root) {
       boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`),
     );
 
-    if (!cells.length) return;
+    const flash = document.createElement("div");
+    flash.classList.add("ship-flash");
 
-    // stop pulsing first
-    stopShipPulse(boardElem, shipID);
+    // position over ship bounds
+    const rects = cells.map((c) => c.getBoundingClientRect());
+    const minX = Math.min(...rects.map((r) => r.left));
+    const maxX = Math.max(...rects.map((r) => r.right));
+    const minY = Math.min(...rects.map((r) => r.top));
+    const maxY = Math.max(...rects.map((r) => r.bottom));
 
-    // small pause (important)
-    setTimeout(() => {
-      const flash = document.createElement("div");
-      flash.classList.add("ship-flash");
+    const boardRect = boardElem.getBoundingClientRect();
 
-      // position over ship bounds
-      const rects = cells.map((c) => c.getBoundingClientRect());
-      const minX = Math.min(...rects.map((r) => r.left));
-      const maxX = Math.max(...rects.map((r) => r.right));
-      const minY = Math.min(...rects.map((r) => r.top));
-      const maxY = Math.max(...rects.map((r) => r.bottom));
+    const width = maxX - minX;
+    const height = maxY - minY;
 
-      const boardRect = boardElem.getBoundingClientRect();
+    flash.style.left = `${minX - boardRect.left}px`;
+    flash.style.top = `${minY - boardRect.top}px`;
+    flash.style.width = `${width}px`;
+    flash.style.height = `${height}px`;
 
-      const width = maxX - minX;
-      const height = maxY - minY;
+    boardElem.appendChild(flash);
 
-      flash.style.left = `${minX - boardRect.left}px`;
-      flash.style.top = `${minY - boardRect.top}px`;
-      flash.style.width = `${width}px`;
-      flash.style.height = `${height}px`;
+    // elongate ellipse whether horizontal or vertical
+    if (height > width) {
+      flash.classList.add("vertical");
+    }
 
-      boardElem.appendChild(flash);
+    requestAnimationFrame(() => {
+      flash.classList.add("flash-animate");
+    });
 
-      // elongate ellipse whether horizontal or vertical
-      if (height > width) {
-        flash.classList.add("vertical");
-      }
-
-      requestAnimationFrame(() => {
-        flash.classList.add("flash-animate");
-      });
-
-      afterAnim(flash, () => {
-        flash.remove();
-      });
-    }, 80);
+    afterAnim(flash, () => {
+      flash.remove();
+    });
   }
 
   return {
@@ -392,8 +398,16 @@ export function View(root) {
       message.textContent = "Battle";
 
       p2BoardWrapper.classList.remove("hide");
-      fleetWrapper.classList.add("hide");
-      deployBtn.classList.add("hide");
+
+      fleetWrapper.classList.add("fade-out");
+      afterTrans(fleetWrapper, () => {
+        fleetWrapper.classList.add("remove");
+      });
+
+      deployBtn.classList.add("fade-out");
+      afterTrans(deployBtn, () => {
+        deployBtn.classList.add("remove");
+      });
     },
 
     hitCell(playerName, coords) {
@@ -416,9 +430,11 @@ export function View(root) {
       const boardElem = getBoardFromPlayerName(receiverName);
 
       // play sunk animation FIRST
-      playSunkAnimation(boardElem, shipID);
+      stopShipPulse(boardElem, shipID);
 
       setTimeout(() => {
+        playSunkAnimation(boardElem, shipID);
+
         const shipCells = boardElem.querySelectorAll(
           `.cell[data-shipid="${shipID}"]`,
         );
@@ -427,7 +443,7 @@ export function View(root) {
           const shipSVG = cell.querySelector("svg");
           shipSVG.classList.remove("hide");
         }
-      }, 200);
+      }, 1000);
     },
   };
 }

@@ -338,16 +338,14 @@ button:active {
   background-color: #28a74533;
   box-shadow:
     inset 0 0 10px #28a74566,
-    0 0 10px #28a74566 !important;
-  border: transparent !important;
+    0 0 10px #28a74566;
 }
 
 .preview.invalid {
   background-color: #ff3b3b33;
   box-shadow:
     inset 0 0 10px #ff3b3b66,
-    0 0 10px #ff3b3b66 !important;
-  border: transparent !important;
+    0 0 10px #ff3b3b66;
 }
 
 .fleet-wrapper > .buttons {
@@ -522,7 +520,7 @@ button.random:hover {
   background-color: var(--hit-color);
 }
 
-.cell:hover:not(.hit) {
+.cell:hover:not(.hit):not(.preview) {
   border-color: var(--p1-cell-hover);
   box-shadow:
     0 0 6px var(--p1-cell-hover),

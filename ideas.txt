@@ -97,3 +97,5 @@ OTHER IDEAS:
 -Or maybe the challenge is if you take more than 0.5s your are skipped and the ai moves regardless.
 -Or the ai just moves every 0.5s and you can move whenever but you have energy.
 -Perhaps this should just be for the final round of the challenge. (actually will probably just up the smartness even more on the last round)
+
+-Replays (and a victorious/sad track based on whether the player won/lost)

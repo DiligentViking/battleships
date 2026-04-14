@@ -144,7 +144,7 @@ export function Controller(player1, player2, game, view) {
 
     function onBoardMouseleave() {
       currentHoverEvent = null;
-      view.removePreviousPreview(player1.getName());
+      view.clearPreview(player1.getName());
     }
 
     function onKeydown(e) {
@@ -185,8 +185,8 @@ export function Controller(player1, player2, game, view) {
       runGame();
     });
 
-    randomBtn.click(); // dev
-    deployBtn.click(); // dev
+    // randomBtn.click(); // dev
+    // deployBtn.click(); // dev
   }
 
   function runComputerSetup() {
@@ -247,14 +247,14 @@ export function Controller(player1, player2, game, view) {
 
     // Autoplay (dev)
     function autoplay() {
-      let x = 0;
       let y = 0;
+      let x = 0;
       setInterval(() => {
-        p2Board.querySelector(`.cell[data-coords="${x},${y}"]`).click();
-        x++;
-        if (x === 10) {
-          x = 0;
-          y++;
+        p2Board.querySelector(`.cell[data-coords="${y},${x}"]`).click();
+        y++;
+        if (y === 10) {
+          y = 0;
+          x++;
         }
       }, 750);
     }

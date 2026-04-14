@@ -1,486 +1,454 @@
 export function View(root) {
-  const message = root.querySelector(".message");
+  // ======================
+  // DOM
+  // ======================
 
-  const p2BoardWrapper = root.querySelector(".board-wrapper.p2");
-  const p1Board = root.querySelector(".board.p1");
-  const p2Board = root.querySelector(".board.p2");
+  const DOM = {
+    message: root.querySelector(".message"),
 
-  const fleetWrapper = root.querySelector(".fleet-wrapper");
-  const fleetContainer = root.querySelector(".fleet-container");
+    p2BoardWrapper: root.querySelector(".board-wrapper.p2"),
+    p1Board: root.querySelector(".board.p1"),
+    p2Board: root.querySelector(".board.p2"),
 
-  const resetBtn = root.querySelector(".reset");
-  const randomBtn = root.querySelector(".random");
-  const deployBtn = root.querySelector(".deploy");
+    fleetWrapper: root.querySelector(".fleet-wrapper"),
+    fleetContainer: root.querySelector(".fleet-container"),
 
-  function getBoardFromPlayerName(playerName) {
-    return p1Board.dataset.playername === playerName ? p1Board : p2Board;
+    resetBtn: root.querySelector(".reset"),
+    randomBtn: root.querySelector(".random"),
+    deployBtn: root.querySelector(".deploy"),
+  };
+
+  // ======================
+  // STATE / CACHE
+  // ======================
+
+  const cellMap = {
+    p1: [],
+    p2: [],
+  };
+
+  function getBoardKey(playerName) {
+    return DOM.p1Board.dataset.playername === playerName ? "p1" : "p2";
   }
 
-  function getFleetPositions() {
-    const ships = fleetContainer.querySelectorAll(".ship-container");
-    const map = new Map();
+  function getBoard(playerName) {
+    return getBoardKey(playerName) === "p1" ? DOM.p1Board : DOM.p2Board;
+  }
 
-    ships.forEach((el) => {
-      map.set(el, el.getBoundingClientRect());
+  function getCell(playerName, [y, x]) {
+    return cellMap[getBoardKey(playerName)][y]?.[x];
+  }
+
+  // ======================
+  // UTILS
+  // ======================
+
+  function once(el, event, cb) {
+    const handler = () => {
+      el.removeEventListener(event, handler);
+      cb();
+    };
+    el.addEventListener(event, handler);
+  }
+
+  function parseCellCoords(cell) {
+    return cell.dataset.coords.split(",").map(Number);
+  }
+
+  // ======================
+  // SVG
+  // ======================
+
+  const SVG = {
+    ship(isHull, isP2, hide) {
+      const p2 = isP2 ? "p2" : "";
+      const h = hide ? "hide" : "";
+
+      return isHull
+        ? `<svg class="hull ${p2} ${h}" viewBox="0 0 90 80">
+            <path d="M15 65 C15 30, 45 15, 80 20 L80 65 Z"
+              stroke="currentColor" stroke-width="4" fill="none"/>
+          </svg>`
+        : `<svg class="body ${p2} ${h}" viewBox="0 0 90 80">
+            <rect x="8" y="12"
+              stroke="currentColor" stroke-width="4" fill="none"/>
+          </svg>`;
+    },
+
+    hit() {
+      return `<svg viewBox="0 0 24 24">
+        <path d="M12 3V7M12 17V21M3 12H7M17 12H21M19 12C19 15.8 15.8 19 12 19C8.2 19 5 15.8 5 12C5 8.2 8.2 5 12 5C15.8 5 19 8.2 19 12Z"
+        fill="none" stroke="currentColor" stroke-width="1"/>
+      </svg>`;
+    },
+
+    miss() {
+      return `<svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="30"
+          fill="none" stroke="currentColor" stroke-width="4"/>
+      </svg>`;
+    },
+  };
+
+  // ======================
+  // BOARD
+  // ======================
+
+  function renderBoard(playerName, size) {
+    const board = getBoard(playerName);
+    const key = getBoardKey(playerName);
+
+    board.textContent = "";
+    cellMap[key] = [];
+
+    for (let y = 0; y < size; y++) {
+      cellMap[key][y] = [];
+
+      for (let x = 0; x < size; x++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.coords = `${y},${x}`;
+
+        board.appendChild(cell);
+        cellMap[key][y][x] = cell;
+      }
+    }
+  }
+
+  function clearPreview(playerName) {
+    const board = getBoard(playerName);
+    board
+      .querySelectorAll(".preview")
+      .forEach((c) => c.classList.remove("preview", "invalid"));
+  }
+
+  function updatePreview(playerName, coordsList, valid) {
+    clearPreview(playerName);
+
+    coordsList.forEach((coords) => {
+      const cell = getCell(playerName, coords);
+      if (!cell) return;
+
+      cell.classList.add("preview");
+      if (!valid) cell.classList.add("invalid");
     });
+  }
 
+  // ======================
+  // FLEET
+  // ======================
+
+  function getFleetPositions() {
+    const map = new Map();
+    DOM.fleetContainer
+      .querySelectorAll(".ship-container")
+      .forEach((el) => map.set(el, el.getBoundingClientRect()));
     return map;
   }
 
   function animateFleet(oldPositions) {
-    const ships = fleetContainer.querySelectorAll(".ship-container");
+    DOM.fleetContainer.querySelectorAll(".ship-container").forEach((ship) => {
+      const old = oldPositions.get(ship);
+      if (!old) return;
 
-    ships.forEach((shipEl) => {
-      const oldRect = oldPositions.get(shipEl);
-      if (!oldRect) return;
+      const now = ship.getBoundingClientRect();
+      const dx = old.left - now.left;
+      const dy = old.top - now.top;
 
-      const newRect = shipEl.getBoundingClientRect();
+      if (!dx && !dy) return;
 
-      const dx = oldRect.left - newRect.left;
-      const dy = oldRect.top - newRect.top;
-
-      if (dx === 0 && dy === 0) return;
-
-      const segments = shipEl.querySelectorAll(".ship-segment");
-
-      const transition = {
-        normal: "cubic-bezier(0.22, 1, 0.36, 1)",
-        bouncy: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-      };
-
-      segments.forEach((seg, i) => {
+      ship.querySelectorAll(".ship-segment").forEach((seg, i) => {
         seg.style.transform = `translate(${dx}px, ${dy}px)`;
-        seg.style.transition = "transform 0s";
+        seg.style.transition = "none";
 
         requestAnimationFrame(() => {
           seg.style.transform = "";
-          seg.style.transition = `transform 320ms ${transition.bouncy} ${i * 60}ms`;
+          seg.style.transition = `transform 320ms cubic-bezier(0.34,1.56,0.64,1) ${i * 60}ms`;
         });
       });
     });
   }
 
-  function createShipSVG(isHull, isPlayer2, hide) {
-    const p2Class = isPlayer2 ? "p2" : "";
-    const hideClass = hide ? "hide" : "";
-    if (isHull) {
-      return `
-<svg class="hull ${p2Class} ${hideClass}" viewBox="0 0 90 80" fill="none">
-  <path
-    d="
-      M15 65
-      C15 30, 45 15, 80 20
-      L80 65
-      Z
-    "
-    stroke="currentColor"
-    stroke-width="4"
-    fill="none"
-    stroke-linejoin="butt"
-    stroke-linecap="butt"
-  />
-</svg>`;
-    } else {
-      return `
-<svg class="body ${p2Class} ${hideClass}" viewBox="0 0 90 80">
-  <rect
-    x="8"
-    y="12"
-    stroke="currentColor"
-    stroke-width="4"
-    fill="none"
-  />
-</svg>`;
+  function addPlaceableShip(shipID, length = shipID + 1) {
+    const container = document.createElement("div");
+    container.className = "ship-container";
+    container.dataset.shipid = shipID;
+
+    for (let i = 0; i < length; i++) {
+      const seg = document.createElement("div");
+      seg.className = "ship-segment";
+      seg.dataset.segmentnum = i;
+
+      seg.innerHTML = SVG.ship(i === length - 1);
+      container.appendChild(seg);
     }
+
+    DOM.fleetContainer.appendChild(container);
   }
 
-  function createHitSVG() {
-    return `
-<?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 3V7M12 17V21M3 12H7M17 12H21M12 12H12.01M19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5C15.866 5 19 8.13401 19 12Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
+  function removePlaceableShip(shipID) {
+    const old = getFleetPositions();
+
+    DOM.fleetContainer.querySelector(`[data-shipid="${shipID}"]`)?.remove();
+
+    requestAnimationFrame(() => animateFleet(old));
   }
 
-  function createMissSVG() {
-    return `
-<svg viewBox="0 0 100 100">
-  <circle
-    cx="50"
-    cy="50"
-    r="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="4"
-  />
-</svg>`;
+  function selectShip(shipID) {
+    DOM.fleetContainer.querySelector(".floating")?.classList.remove("floating");
+
+    DOM.fleetContainer
+      .querySelector(`[data-shipid="${shipID}"]`)
+      ?.classList.add("floating");
   }
 
-  function getCellElem(playerName, coords) {
-    const boardElem = getBoardFromPlayerName(playerName);
-    const [y, x] = coords;
-
-    return boardElem.querySelector(`[data-coords="${y},${x}"]`);
+  function toggleVerticalShips() {
+    DOM.fleetContainer.classList.toggle("vertical");
   }
 
-  function afterAnim(elem, callback) {
-    elem.addEventListener("animationend", function func() {
-      callback();
-      elem.removeEventListener("animationend", func);
-    });
-  }
-  function afterAnimIteration(elem, callback) {
-    elem.addEventListener("animationiteration", function func() {
-      callback();
-      elem.removeEventListener("animationiteration", func);
-    });
-  }
-  function afterTrans(elem, callback) {
-    elem.addEventListener("transitionend", function func() {
-      callback();
-      elem.removeEventListener("transitionend", func);
-    });
-  }
+  const Animation = {
+    getFleetSourceRects(shipLength) {
+      const fleetShip = DOM.fleetContainer.querySelector(
+        `.ship-container[data-shipid="${shipLength - 1}"]`,
+      );
 
-  function spawnImpactEffects(cellElem, isHit) {
-    // Icon
-    const icon = document.createElement("div");
-    icon.className = isHit ? "hit-icon" : "miss-icon";
-    icon.innerHTML = isHit ? createHitSVG() : createMissSVG();
-    cellElem.appendChild(icon);
+      if (!fleetShip) return [];
 
-    requestAnimationFrame(() => {
-      icon.classList.add("icon-animate");
-    });
-    afterAnim(icon, () => {
-      icon.remove();
-    });
+      return Array.from(fleetShip.querySelectorAll(".ship-segment")).map(
+        (seg) => seg.getBoundingClientRect(),
+      );
+    },
 
-    // Shockwave
-    const wave = document.createElement("div");
-    wave.className = `shockwave ${isHit ? "hit" : "miss"}`;
-    cellElem.appendChild(wave);
+    animateShipSegments(targetCells, sourceRects) {
+      targetCells.forEach((cell, i) => {
+        const seg = cell.firstElementChild;
+        if (!seg || !sourceRects[i]) return;
 
-    requestAnimationFrame(() => {
-      wave.classList.add("shockwave-animate");
-    });
-    afterAnim(wave, () => {
-      wave.remove();
-    });
-  }
+        const targetRect = cell.getBoundingClientRect();
+        const sourceRect = sourceRects[i];
 
-  function startShipPulse(boardElem, shipID) {
-    const cells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+        const dx = sourceRect.left - targetRect.left;
+        const dy = sourceRect.top - targetRect.top;
 
-    cells.forEach((cell, i) => {
-      cell.classList.add("pulsing");
-      cell.style.animationDelay = `${i * 150}ms`;
-    });
-  }
+        // INVERT
+        seg.style.translate = `${dx}px ${dy}px`;
+        seg.style.scale = "0.8";
+        seg.style.opacity = "0.25";
 
-  function stopShipPulse(boardElem, shipID) {
-    const cells = boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`);
+        // PLAY
+        requestAnimationFrame(() => {
+          seg.style.translate = "";
+          seg.style.scale = "";
+          seg.style.opacity = "";
 
-    cells.forEach((cell) => {
-      afterAnimIteration(cell, () => {
-        cell.classList.remove("pulsing");
-
-        const delay = 600;
-        cell.style.animationDelay = `${delay * Math.round(Math.random() * 10)}ms`;
-        cell.classList.add("pulseblast");
-        setTimeout(() => {
-          afterAnimIteration(cell, () => {
-            cell.classList.remove("pulseblast");
-          });
-        }, delay * 2);
+          seg.style.transition = `
+          translate 400ms cubic-bezier(0.22,1,0.36,1) ${i * 70}ms,
+          scale 400ms cubic-bezier(0.22,1,0.36,1) ${i * 70}ms,
+          opacity 300ms ease ${i * 70}ms
+        `;
+        });
       });
+    },
+  };
+
+  // ======================
+  // SHIP PLACEMENT
+  // ======================
+
+  function placeShip(playerName, coordsList, shipID) {
+    clearPreview(playerName);
+
+    const isP2 = playerName === DOM.p2Board.dataset.playername;
+
+    // 1. Get animation source (fleet positions)
+    const sourceRects = Animation.getFleetSourceRects(coordsList.length);
+
+    const targetCells = [];
+
+    // 2. Render ship onto board
+    coordsList.forEach((coords, i) => {
+      const cell = getCell(playerName, coords);
+      if (!cell) return;
+
+      const isHull = isP2 ? i === 0 : i === coordsList.length - 1;
+
+      cell.classList.add("ship");
+      cell.dataset.shipid = shipID;
+      cell.innerHTML = SVG.ship(isHull, isP2, isP2);
+
+      targetCells.push(cell);
     });
 
-    // const lastCell = cells[cells.length - 1];
-
-    // afterAnimIteration(lastCell, () => {
-    //   cells.forEach((cell) => {
-    //     cell.classList.remove("pulsing");
-    //   });
-    // });
-  }
-
-  function playSunkAnimation(boardElem, shipID) {
-    const cells = Array.from(
-      boardElem.querySelectorAll(`.cell[data-shipid="${shipID}"]`),
-    );
-
-    const flash = document.createElement("div");
-    flash.classList.add("ship-flash");
-
-    // position over ship bounds
-    const rects = cells.map((c) => c.getBoundingClientRect());
-    const minX = Math.min(...rects.map((r) => r.left));
-    const maxX = Math.max(...rects.map((r) => r.right));
-    const minY = Math.min(...rects.map((r) => r.top));
-    const maxY = Math.max(...rects.map((r) => r.bottom));
-
-    const boardRect = boardElem.getBoundingClientRect();
-
-    const width = maxX - minX;
-    const height = maxY - minY;
-
-    flash.style.left = `${minX - boardRect.left}px`;
-    flash.style.top = `${minY - boardRect.top}px`;
-    flash.style.width = `${width}px`;
-    flash.style.height = `${height}px`;
-
-    boardElem.appendChild(flash);
-
-    // elongate ellipse whether horizontal or vertical
-    if (height > width) {
-      flash.classList.add("vertical");
-    }
-
+    // 3. Animate AFTER DOM is ready
     requestAnimationFrame(() => {
-      flash.classList.add("flash-animate");
-    });
-
-    afterAnim(flash, () => {
-      flash.remove();
+      Animation.animateShipSegments(targetCells, sourceRects);
     });
   }
+
+  // ======================
+  // EFFECTS
+  // ======================
+
+  const Effects = {
+    impact(cell, hit) {
+      const icon = document.createElement("div");
+      icon.className = hit ? "hit-icon" : "miss-icon";
+      icon.innerHTML = hit ? SVG.hit() : SVG.miss();
+
+      cell.appendChild(icon);
+      requestAnimationFrame(() => icon.classList.add("icon-animate"));
+      once(icon, "animationend", () => icon.remove());
+
+      const wave = document.createElement("div");
+      wave.className = `shockwave ${hit ? "hit" : "miss"}`;
+
+      cell.appendChild(wave);
+      requestAnimationFrame(() => wave.classList.add("shockwave-animate"));
+      once(wave, "animationend", () => wave.remove());
+    },
+
+    startPulse(board, shipID) {
+      board.querySelectorAll(`[data-shipid="${shipID}"]`).forEach((cell, i) => {
+        cell.classList.add("pulsing");
+        cell.style.animationDelay = `${i * 150}ms`;
+      });
+    },
+
+    stopPulse(board, shipID) {
+      board
+        .querySelectorAll(`[data-shipid="${shipID}"]`)
+        .forEach((cell) =>
+          once(cell, "animationiteration", () =>
+            cell.classList.remove("pulsing"),
+          ),
+        );
+    },
+
+    flash(board, shipID) {
+      const cells = Array.from(
+        board.querySelectorAll(`[data-shipid="${shipID}"]`),
+      );
+
+      if (!cells.length) return;
+
+      const rects = cells.map((c) => c.getBoundingClientRect());
+
+      const minX = Math.min(...rects.map((r) => r.left));
+      const maxX = Math.max(...rects.map((r) => r.right));
+      const minY = Math.min(...rects.map((r) => r.top));
+      const maxY = Math.max(...rects.map((r) => r.bottom));
+
+      const boardRect = board.getBoundingClientRect();
+
+      const flash = document.createElement("div");
+      flash.className = "ship-flash";
+
+      flash.style.left = `${minX - boardRect.left}px`;
+      flash.style.top = `${minY - boardRect.top}px`;
+      flash.style.width = `${maxX - minX}px`;
+      flash.style.height = `${maxY - minY}px`;
+
+      // Orientation (ellipse stretch)
+      if (maxY - minY > maxX - minX) {
+        flash.classList.add("vertical");
+      }
+
+      board.appendChild(flash);
+
+      requestAnimationFrame(() => {
+        flash.classList.add("flash-animate");
+      });
+
+      once(flash, "animationend", () => flash.remove());
+    },
+  };
+
+  // ======================
+  // PUBLIC API
+  // ======================
 
   return {
     eventElems: {
-      p1Board,
-      p2Board,
-      fleetContainer,
-      resetBtn,
-      randomBtn,
-      deployBtn,
+      p1Board: DOM.p1Board,
+      p2Board: DOM.p2Board,
+      fleetContainer: DOM.fleetContainer,
+      resetBtn: DOM.resetBtn,
+      randomBtn: DOM.randomBtn,
+      deployBtn: DOM.deployBtn,
     },
 
-    initBoardPlayerNames(player1Name, player2Name) {
-      p1Board.dataset.playername = player1Name;
-      p2Board.dataset.playername = player2Name;
+    initBoardPlayerNames(p1, p2) {
+      DOM.p1Board.dataset.playername = p1;
+      DOM.p2Board.dataset.playername = p2;
     },
 
-    renderBoard(playerName, boardSize) {
-      const boardElem = getBoardFromPlayerName(playerName);
+    renderBoard,
 
-      boardElem.textContent = "";
+    parseCellCoords,
 
-      for (let i = 0; i < boardSize; i++) {
-        for (let j = 0; j < boardSize; j++) {
-          const cellElem = document.createElement("div");
-          cellElem.classList.add("cell");
-          cellElem.dataset.coords = `${i},${j}`;
-
-          boardElem.appendChild(cellElem);
-        }
-      }
-    },
-
-    // --- Setup Phase ---
-
+    // Setup
     enterSetupPhase() {
-      message.textContent = "Position Fleet";
-
-      p2BoardWrapper.classList.add("hide");
-      fleetContainer.classList.remove("hide");
-      deployBtn.classList.remove("hide");
+      DOM.message.textContent = "Position Fleet";
+      DOM.p2BoardWrapper.classList.add("remove");
+      DOM.fleetContainer.classList.remove("hide");
+      DOM.deployBtn.classList.remove("hide");
     },
 
-    addPlaceableShip(shipID, shipLength = shipID + 1) {
-      const shipContainer = document.createElement("div");
-      shipContainer.classList.add("ship-container");
-      shipContainer.dataset.shipid = shipID;
+    addPlaceableShip,
+    removePlaceableShip,
+    updatePreview,
+    clearPreview,
+    selectShip,
+    placeShip,
+    toggleVerticalShips,
 
-      for (let i = 0; i < shipLength; i++) {
-        const shipSegment = document.createElement("div");
-        shipSegment.classList.add("ship-segment");
-        shipSegment.dataset.segmentnum = i;
-
-        const isHull = i === shipLength - 1 ? true : false;
-        shipSegment.innerHTML = createShipSVG(isHull);
-
-        shipContainer.appendChild(shipSegment);
-      }
-
-      fleetContainer.appendChild(shipContainer);
-    },
-
-    removePlaceableShip(shipID) {
-      const oldPositions = getFleetPositions();
-
-      const shipContainer = fleetContainer.querySelector(
-        `[data-shipid="${shipID}"]`,
-      );
-
-      shipContainer?.remove();
-
-      requestAnimationFrame(() => {
-        animateFleet(oldPositions);
-      });
-    },
-
-    parseCellCoords(cellElem) {
-      const coordsString = cellElem.dataset.coords;
-      return coordsString.split(",").map((item) => +item);
-    },
-
-    removePreviousPreview(playerName) {
-      const boardElem = getBoardFromPlayerName(playerName);
-      const cells = boardElem.querySelectorAll(".preview");
-
-      for (const cell of cells) {
-        cell.classList.remove("preview", "invalid");
-      }
-    },
-
-    updatePreview(playerName, coordsList, valid) {
-      this.removePreviousPreview(playerName);
-      for (let i = 0; i < coordsList.length; i++) {
-        const coords = coordsList[i];
-        const cellElem = getCellElem(playerName, coords);
-
-        cellElem?.classList.add("preview");
-        if (!valid) cellElem?.classList.add("invalid");
-      }
-    },
-
-    selectShip(shipID) {
-      const prevShipContainer = fleetContainer.querySelector(".floating");
-      prevShipContainer?.classList.remove("floating");
-
-      const shipContainer = fleetContainer.querySelector(
-        `.ship-container[data-shipid="${shipID}"]`,
-      );
-      shipContainer.classList.add("floating");
-    },
-
-    placeShip(playerName, coordsList, shipID) {
-      this.removePreviousPreview(playerName);
-
-      const hullIsLast =
-        p1Board.dataset.playername === playerName ? true : false;
-
-      // Find original fleet ship (for animation source)
-      const fleetShip = fleetContainer.querySelector(
-        `.ship-container[data-shipid="${coordsList.length - 1}"]`,
-      );
-
-      let sourceRects = [];
-      if (fleetShip) {
-        const segments = fleetShip.querySelectorAll(".ship-segment");
-        sourceRects = Array.from(segments).map((seg) =>
-          seg.getBoundingClientRect(),
-        );
-      }
-
-      for (let i = 0; i < coordsList.length; i++) {
-        const coords = coordsList[i];
-
-        let isHull = false;
-        if (hullIsLast && i === coordsList.length - 1) isHull = true;
-        if (!hullIsLast && i === 0) isHull = true;
-
-        let isPlayer2 = playerName === p2Board.dataset.playername;
-        let hideShip = isPlayer2;
-
-        const cellElem = getCellElem(playerName, coords);
-
-        // Create element but don't animate yet
-        cellElem.classList.add("ship");
-        cellElem.innerHTML = createShipSVG(isHull, isPlayer2, hideShip);
-        cellElem.dataset.shipid = shipID;
-
-        const segElem = cellElem.firstElementChild;
-
-        if (sourceRects[i]) {
-          const targetRect = cellElem.getBoundingClientRect();
-          const sourceRect = sourceRects[i];
-
-          const dx = sourceRect.left - targetRect.left;
-          const dy = sourceRect.top - targetRect.top;
-
-          segElem.style.translate = `${dx}px ${dy}px`;
-          segElem.style.scale = "0.8";
-          segElem.style.opacity = "0.25";
-
-          requestAnimationFrame(() => {
-            segElem.style.translate = "";
-            segElem.style.scale = "";
-            segElem.style.opacity = "";
-            segElem.style.transition = `translate 400ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 70}ms, scale 400ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 70}ms, opacity 300ms ease ${i * 70}ms`;
-          });
-        }
-      }
-    },
-
-    toggleVerticalShips() {
-      const placeableShips = document.querySelectorAll(".ship-container");
-      for (const ship of placeableShips) {
-        if (ship.dataset.shipid === "0") continue;
-        const hullIsLast = ship.lastChild.querySelector(".hull") ? true : false;
-        if (hullIsLast) {
-          ship.firstChild.innerHTML = createShipSVG(true);
-          ship.lastChild.innerHTML = createShipSVG(false);
-        } else {
-          ship.firstChild.innerHTML = createShipSVG(false);
-          ship.lastChild.innerHTML = createShipSVG(true);
-        }
-      }
-      fleetContainer.classList.toggle("vertical");
-    },
-
-    // --- Battle Phase ---
-
+    // Battle
     enterBattlePhase() {
-      message.textContent = "Battle";
+      DOM.message.textContent = "Battle";
 
-      p2BoardWrapper.classList.remove("hide");
+      DOM.p2BoardWrapper.classList.remove("remove");
+      DOM.p2BoardWrapper.classList.remove("hide");
 
-      fleetWrapper.classList.add("fade-out");
-      afterTrans(fleetWrapper, () => {
-        fleetWrapper.classList.add("remove");
-      });
+      DOM.fleetWrapper.classList.add("fade-out");
+      once(DOM.fleetWrapper, "transitionend", () =>
+        DOM.fleetWrapper.classList.add("remove"),
+      );
 
-      deployBtn.classList.add("fade-out");
-      afterTrans(deployBtn, () => {
-        deployBtn.classList.add("remove");
-      });
+      DOM.deployBtn.classList.add("fade-out");
+      once(DOM.deployBtn, "transitionend", () =>
+        DOM.deployBtn.classList.add("remove"),
+      );
     },
 
     hitCell(playerName, coords) {
-      const cellElem = getCellElem(playerName, coords);
-      const boardElem = getBoardFromPlayerName(playerName);
+      const cell = getCell(playerName, coords);
+      const board = getBoard(playerName);
 
-      const hasShip = cellElem.classList.contains("ship");
+      const hasShip = cell.classList.contains("ship");
 
-      spawnImpactEffects(cellElem, hasShip);
-
-      cellElem.classList.add("hit");
+      Effects.impact(cell, hasShip);
+      cell.classList.add("hit");
 
       if (hasShip) {
-        const shipID = cellElem.dataset.shipid;
-        startShipPulse(boardElem, shipID);
+        Effects.startPulse(board, cell.dataset.shipid);
       }
     },
 
-    revealShip(receiverName, shipID) {
-      const boardElem = getBoardFromPlayerName(receiverName);
+    revealShip(playerName, shipID) {
+      const board = getBoard(playerName);
 
-      // play sunk animation FIRST
-      stopShipPulse(boardElem, shipID);
+      // 1. Stop pulse cleanly
+      Effects.stopPulse(board, shipID);
 
+      // 2. Delay for timing polish
       setTimeout(() => {
-        playSunkAnimation(boardElem, shipID);
+        // 3. Flash effect
+        Effects.flash(board, shipID);
 
-        const shipCells = boardElem.querySelectorAll(
-          `.cell[data-shipid="${shipID}"]`,
-        );
-
-        for (const cell of shipCells) {
-          const shipSVG = cell.querySelector("svg");
-          shipSVG.classList.remove("hide");
-        }
+        // 4. Reveal ship
+        board
+          .querySelectorAll(`[data-shipid="${shipID}"] svg`)
+          .forEach((svg) => svg.classList.remove("hide"));
       }, 250);
     },
   };

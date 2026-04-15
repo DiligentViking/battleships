@@ -1,7 +1,7 @@
 export function View(root) {
-  // ======================
+  // ====================
   // DOM
-  // ======================
+  // ====================
 
   const DOM = {
     message: root.querySelector(".message"),
@@ -18,13 +18,15 @@ export function View(root) {
     deployBtn: root.querySelector(".deploy"),
   };
 
-  // ======================
+  // ====================
   // SOUND SYSTEM
-  // ======================
+  // ====================
 
   const Sound = (() => {
     const sounds = {
       selectShip: new Audio("assets/sfx/select-ship.wav"),
+      selectShip2: new Audio("assets/sfx/select-ship-2.mp3"),
+      selectShip3: new Audio("assets/sfx/select-ship-3.mp3"),
 
       hit: new Audio("assets/sfx/sci-fi-gun.mp3"),
       miss: new Audio("assets/sfx/tribecore-kick.mp3"),
@@ -47,9 +49,9 @@ export function View(root) {
     return { play };
   })();
 
-  // ======================
+  // ====================
   // STATE / CACHE
-  // ======================
+  // ====================
 
   const cellMap = {
     p1: [],
@@ -68,9 +70,9 @@ export function View(root) {
     return cellMap[getBoardKey(playerName)][y]?.[x];
   }
 
-  // ======================
+  // ====================
   // UTILS
-  // ======================
+  // ====================
 
   function once(el, event, cb) {
     const handler = () => {
@@ -84,9 +86,9 @@ export function View(root) {
     return cell.dataset.coords.split(",").map(Number);
   }
 
-  // ======================
+  // ====================
   // SVG
-  // ======================
+  // ====================
 
   const SVG = {
     ship(isHull, isP2, hide) {
@@ -119,9 +121,9 @@ export function View(root) {
     },
   };
 
-  // ======================
+  // ====================
   // BOARD
-  // ======================
+  // ====================
 
   function renderBoard(playerName, size) {
     const board = getBoard(playerName);
@@ -163,9 +165,9 @@ export function View(root) {
     });
   }
 
-  // ======================
+  // ====================
   // FLEET
-  // ======================
+  // ====================
 
   function getFleetPositions() {
     const map = new Map();
@@ -224,19 +226,43 @@ export function View(root) {
   }
 
   function selectShip(shipID) {
-    const prevShipContainer = DOM.fleetContainer.querySelector(".floating")
+    const prevShipSegments = DOM.fleetContainer.querySelectorAll(".floating");
+    if (prevShipSegments[0]?.parentNode.dataset.shipid === `${shipID}`) return;
+    for (let i = 0; i < prevShipSegments.length; i++) {
+      const shipSegment = prevShipSegments[i];
+      setTimeout(() => {
+        shipSegment.classList.remove("glow");
+        // once(shipSegment, "transitionend", () => {
+        //   shipSegment.classList.add("floating");
+        // });
+      }, i * 80);
+      once(shipSegment, "animationiteration", () => {
+        shipSegment.classList.remove("floating");
+        shipSegment.classList.remove("float-up");
+        shipSegment.classList.add("float-down");
+      });
+    }
+
     const shipContainer = DOM.fleetContainer.querySelector(
       `[data-shipid="${shipID}"]`,
     );
+    const shipSegments = shipContainer.children;
+    for (let i = 0; i < shipSegments.length; i++) {
+      setTimeout(() => {
+        Sound.play("selectShip2", null, { volume: 0.1 });
+        setTimeout(() => {
+          Sound.play("selectShip3", null, { volume: 0.1 });
+        }, 10);
 
-    prevShipContainer?.classList.remove("floating");
-    shipContainer.classList.add("floating");
+        const shipSegment = shipSegments[i];
 
-    // for (let i = 0; i < shipContainer.children.length; i++) {
-      // setTimeout(() => {
-        Sound.play("selectShip", null, { volume: 0.1 })
-      // }, i * 75)
-    // }
+        shipSegment.classList.add("glow");
+        shipSegment.classList.add("float-up");
+        once(shipSegment, "transitionend", () => {
+          shipSegment.classList.add("floating");
+        });
+      }, i * 80);
+    }
   }
 
   function toggleVerticalShips() {
@@ -288,9 +314,9 @@ export function View(root) {
     },
   };
 
-  // ======================
+  // ====================
   // SHIP PLACEMENT
-  // ======================
+  // ====================
 
   function placeShip(playerName, coordsList, shipID) {
     clearPreview(playerName);
@@ -322,9 +348,9 @@ export function View(root) {
     });
   }
 
-  // ======================
+  // ====================
   // EFFECTS
-  // ======================
+  // ====================
 
   const Effects = {
     impact(cell, hit) {
@@ -402,9 +428,9 @@ export function View(root) {
     },
   };
 
-  // ======================
+  // ====================
   // PUBLIC API
-  // ======================
+  // ====================
 
   return {
     eventElems: {
@@ -460,7 +486,6 @@ export function View(root) {
     },
 
     hitCell(playerName, coords) {
-      // Sound.play("fire", { volume: 0.3 });
       const cell = getCell(playerName, coords);
       const board = getBoard(playerName);
 

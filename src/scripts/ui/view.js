@@ -19,6 +19,35 @@ export function View(root) {
   };
 
   // ======================
+  // SOUND SYSTEM
+  // ======================
+
+  const Sound = (() => {
+    const sounds = {
+      selectShip: new Audio("assets/sfx/select-ship.wav"),
+
+      hit: new Audio("assets/sfx/sci-fi-gun.mp3"),
+      miss: new Audio("assets/sfx/tribecore-kick.mp3"),
+      sunk: new Audio("assets/sfx/metallic-impact.wav"),
+      fire: new Audio("assets/sfx/sci-fi-cannon.mp3"),
+    };
+
+    function play(name, isComputer, { volume = 1, pitch = 1 } = {}) {
+      if (isComputer) volume = volume * 0.4;
+
+      const base = sounds[name];
+      if (!base) return;
+
+      const s = base.cloneNode();
+      s.volume = volume;
+      s.playbackRate = pitch;
+      s.play().catch(() => {});
+    }
+
+    return { play };
+  })();
+
+  // ======================
   // STATE / CACHE
   // ======================
 
@@ -195,11 +224,19 @@ export function View(root) {
   }
 
   function selectShip(shipID) {
-    DOM.fleetContainer.querySelector(".floating")?.classList.remove("floating");
+    const prevShipContainer = DOM.fleetContainer.querySelector(".floating")
+    const shipContainer = DOM.fleetContainer.querySelector(
+      `[data-shipid="${shipID}"]`,
+    );
 
-    DOM.fleetContainer
-      .querySelector(`[data-shipid="${shipID}"]`)
-      ?.classList.add("floating");
+    prevShipContainer?.classList.remove("floating");
+    shipContainer.classList.add("floating");
+
+    // for (let i = 0; i < shipContainer.children.length; i++) {
+      // setTimeout(() => {
+        Sound.play("selectShip", null, { volume: 0.1 })
+      // }, i * 75)
+    // }
   }
 
   function toggleVerticalShips() {
@@ -291,6 +328,8 @@ export function View(root) {
 
   const Effects = {
     impact(cell, hit) {
+      Sound.play(hit ? "hit" : "miss", { pitch: 0.95 + Math.random() * 0.1 });
+
       const icon = document.createElement("div");
       icon.className = hit ? "hit-icon" : "miss-icon";
       icon.innerHTML = hit ? SVG.hit() : SVG.miss();
@@ -325,10 +364,11 @@ export function View(root) {
     },
 
     flash(board, shipID) {
+      Sound.play("sunk", { volume: 0.7 });
+
       const cells = Array.from(
         board.querySelectorAll(`[data-shipid="${shipID}"]`),
       );
-
       if (!cells.length) return;
 
       const rects = cells.map((c) => c.getBoundingClientRect());
@@ -348,7 +388,6 @@ export function View(root) {
       flash.style.width = `${maxX - minX}px`;
       flash.style.height = `${maxY - minY}px`;
 
-      // Orientation (ellipse stretch)
       if (maxY - minY > maxX - minX) {
         flash.classList.add("vertical");
       }
@@ -421,6 +460,7 @@ export function View(root) {
     },
 
     hitCell(playerName, coords) {
+      // Sound.play("fire", { volume: 0.3 });
       const cell = getCell(playerName, coords);
       const board = getBoard(playerName);
 
@@ -434,18 +474,18 @@ export function View(root) {
       }
     },
 
+    playFireSound(isComputer) {
+      Sound.play("fire", isComputer, { volume: 0.3 });
+    },
+
     revealShip(playerName, shipID) {
       const board = getBoard(playerName);
 
-      // 1. Stop pulse cleanly
       Effects.stopPulse(board, shipID);
 
-      // 2. Delay for timing polish
       setTimeout(() => {
-        // 3. Flash effect
         Effects.flash(board, shipID);
 
-        // 4. Reveal ship
         board
           .querySelectorAll(`[data-shipid="${shipID}"] svg`)
           .forEach((svg) => svg.classList.remove("hide"));

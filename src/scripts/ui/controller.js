@@ -196,7 +196,13 @@ export function Controller(player1, player2, game, view) {
   function runGame() {
     async function attackCell(receiverName, coords = null) {
       waiting = true;
-      await sleep(500);
+      
+      const receiver = player1.getName() === receiverName ? player1 : player2;
+      const isComputer = receiver.getType() === "real";
+
+      view.playFireSound(isComputer);
+
+      await sleep(1000);
 
       let result;
       try {
@@ -205,8 +211,6 @@ export function Controller(player1, player2, game, view) {
         console.error(err);
         return;
       }
-
-      const receiver = player1.getName() === receiverName ? player1 : player2;
 
       view.hitCell(receiverName, result.coords);
       if (result.shipSunk) view.revealShip(receiverName, result.shipID);
@@ -221,6 +225,7 @@ export function Controller(player1, player2, game, view) {
       if (receiver.getType() === "computer") {
         const newReceiver =
           player1.getName() === receiverName ? player2 : player1;
+        await sleep(800 + 200 * Math.random());
         await attackCell(newReceiver.getName());
       }
 

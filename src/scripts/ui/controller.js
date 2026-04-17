@@ -191,11 +191,11 @@ export function Controller(player1, player2, game, view) {
     });
 
     resetBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    resetBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+    resetBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
     randomBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    randomBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+    randomBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
     deployBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    deployBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+    deployBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
 
     // randomBtn.click(); // dev
     // deployBtn.click(); // dev
@@ -215,14 +215,10 @@ export function Controller(player1, player2, game, view) {
       view.playFireSound(isComputer);
 
       await sleep(1000);
+      // await sleep(50);
 
       let result;
-      try {
-        result = game.attack(receiverName, coords);
-      } catch (err) {
-        console.error(err);
-        return;
-      }
+      result = game.attack(receiverName, coords);
 
       view.hitCell(receiverName, result.coords);
       if (result.shipSunk) view.revealShip(receiverName, result.shipID);
@@ -238,6 +234,7 @@ export function Controller(player1, player2, game, view) {
         const newReceiver =
           player1.getName() === receiverName ? player2 : player1;
         await sleep(800 + 200 * Math.random());
+        // await sleep(50);
         await attackCell(newReceiver.getName());
       }
 
@@ -247,6 +244,7 @@ export function Controller(player1, player2, game, view) {
     function onBoardClick(e) {
       if (waiting) return;
       if (!e.target.classList.contains("cell")) return;
+      if (e.target.classList.contains("hit")) return;
 
       const coords = view.parseCellCoords(e.target);
       const receiverName = this.dataset.playername;
@@ -279,7 +277,7 @@ export function Controller(player1, player2, game, view) {
           y = 0;
           x++;
         }
-      }, 750);
+      }, 250);
     }
 
     autoplay;

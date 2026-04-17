@@ -34,18 +34,15 @@ export function Player(name, type, smartness = 0) {
     // if after any attack the ship is sunk, stop and restart algorithm
 
     if (smartLogic.direction) {
-      const adjacentCells = getAdjacentCells(
-        enemyGameboard,
-        smartLogic.prevCell,
-      );
+      const adjacentCells = getAdjacentCells(smartLogic.prevCell);
       const targetCoords = adjacentCells[smartLogic.direction];
+      const targetIndex = findIndexOfRemainingCell(targetCoords);
 
-      if (targetCoords === null) {
+      if (targetIndex === -1) {
         switchDirections();
         return makeSmartAIMove(enemyGameboard);
       }
 
-      const targetIndex = findIndexOfRemainingCell(targetCoords);
       enemyGameboard.receiveAttack(targetCoords);
       remainingCells.splice(targetIndex, 1);
 
@@ -101,10 +98,7 @@ export function Player(name, type, smartness = 0) {
         smartLogic.targetShipCoordsList.push(targetCoords);
         if (!enemyGameboard.getCellShipIsSunk(targetCoords)) {
           smartLogic.startCell = targetCoords;
-          smartLogic.adjacentCells = getAdjacentCells(
-            enemyGameboard,
-            targetCoords,
-          );
+          smartLogic.adjacentCells = getAdjacentCells(targetCoords);
         } else {
           if (superSmart)
             removeShipSurroundingCells(smartLogic.targetShipCoordsList);
@@ -141,7 +135,7 @@ export function Player(name, type, smartness = 0) {
     );
   }
 
-  function getAdjacentCells(enemyGameboard, coords) {
+  function getAdjacentCells(coords) {
     const [y, x] = coords;
     const adjacentCells = {
       top: [y - 1, x],
@@ -149,15 +143,6 @@ export function Player(name, type, smartness = 0) {
       bottom: [y + 1, x],
       left: [y, x - 1],
     };
-
-    for (const [cell, coords] of Object.entries(adjacentCells)) {
-      if (
-        !enemyGameboard.isValidCoord(coords) ||
-        enemyGameboard.isCellHit(coords)
-      ) {
-        adjacentCells[cell] = null;
-      }
-    }
 
     return adjacentCells;
   }

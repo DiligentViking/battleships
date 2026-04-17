@@ -92,16 +92,6 @@ export function Gameboard() {
 
     getBoardSize: () => BOARD_SIZE,
 
-    isValidCoord: (coords) => {
-      const [y, x] = coords;
-      return y >= 0 && y < BOARD_SIZE && x >= 0 && x < BOARD_SIZE;
-    },
-
-    isCellHit: (coords) => {
-      const [y, x] = coords;
-      return board[y][x].hit;
-    },
-
     getCellShipID: (coords) => {
       const [y, x] = coords;
       return board[y][x].shipID;

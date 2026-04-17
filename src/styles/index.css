@@ -299,21 +299,21 @@ button:active {
 }
 
 .ship-segment.float-up {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 .ship-segment.floating {
-  animation: float 1.2s ease-in-out infinite;
+  animation: floating 1.2s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes floating {
   0% {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
   50% {
     transform: translateY(0px);
   }
   100% {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
 }
 
@@ -488,9 +488,9 @@ button.random:hover {
 .cell {
   font-size: clamp(0.75rem, 1vw, 2rem);
   transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background-color 0.2s;
+    border-color 0.25s,
+    box-shadow 0.25s,
+    background-color 0.25s;
 
   padding-left: 2px;
   border: 1px solid transparent;
@@ -501,8 +501,8 @@ button.random:hover {
 .hit {
   background-color: var(--miss-color);
   transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
+    border-color 0.25s,
+    box-shadow 0.25s,
     background-color 1s;
 }
 
@@ -510,7 +510,7 @@ button.random:hover {
   background-color: var(--hit-color);
 }
 
-.cell:hover:not(.hit):not(.preview) {
+.p2.board.battle-phase > .cell:hover:not(.hit) {
   border-color: var(--p1-cell-hover);
   box-shadow:
     0 0 6px var(--p1-cell-hover),

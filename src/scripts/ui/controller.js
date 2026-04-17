@@ -114,6 +114,9 @@ export function Controller(player1, player2, game, view) {
       );
       const { coordsList, valid } = result;
 
+      const soundKey = valid ? "hoverValid" : "hoverInvalid";
+      view.playCellHoverSound(soundKey);
+
       view.updatePreview(player1.getName(), coordsList, valid);
     }
 
@@ -145,6 +148,7 @@ export function Controller(player1, player2, game, view) {
     function onBoardMouseleave() {
       currentHoverEvent = null;
       view.clearPreview(player1.getName());
+      view.clearHoverSoundTimeout();
     }
 
     function onKeydown(e) {
@@ -171,6 +175,7 @@ export function Controller(player1, player2, game, view) {
     });
 
     randomBtn.addEventListener("click", () => {
+      view.playPlaceRandomSound();
       resetSetup(player1, NUM_SHIPS);
       autoPlaceShips(player1, NUM_SHIPS);
     });
@@ -185,6 +190,13 @@ export function Controller(player1, player2, game, view) {
       runGame();
     });
 
+    resetBtn.addEventListener("mouseover", view.playButtonHoverSound);
+    resetBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+    randomBtn.addEventListener("mouseover", view.playButtonHoverSound);
+    randomBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+    deployBtn.addEventListener("mouseover", view.playButtonHoverSound);
+    deployBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout)
+
     // randomBtn.click(); // dev
     // deployBtn.click(); // dev
   }
@@ -196,7 +208,7 @@ export function Controller(player1, player2, game, view) {
   function runGame() {
     async function attackCell(receiverName, coords = null) {
       waiting = true;
-      
+
       const receiver = player1.getName() === receiverName ? player1 : player2;
       const isComputer = receiver.getType() === "real";
 
@@ -249,6 +261,12 @@ export function Controller(player1, player2, game, view) {
 
     p1Board.addEventListener("click", onBoardClick);
     p2Board.addEventListener("click", onBoardClick);
+
+    p2Board.addEventListener("mouseover", (e) => {
+      if (!e.target.classList.contains("cell")) return;
+      if (e.target.classList.contains("hit")) return;
+      view.playCellHoverSound("hoverCell");
+    });
 
     // Autoplay (dev)
     function autoplay() {

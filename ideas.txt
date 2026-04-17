@@ -39,6 +39,9 @@ MUSIC IDEAS:
 -or maybe use some of the astapool tracks. like that interstellar_space one is good and dark and builds up.
 -maybe for The Challenge
 -"Leon Devereux - Surveillance Protocol" for a briefing discussing the rules of the challenge.
+-"Factory Halo" for credits.
+-maybe astapool's Apoastro for credits.
+-astapool's Risk as the second track of the challenge.
 
 __________
 
@@ -100,3 +103,13 @@ OTHER IDEAS:
 -Perhaps this should just be for the final round of the challenge. (actually will probably just up the smartness even more on the last round)
 
 -Replays (and a victorious/sad track based on whether the player won/lost)
+
+-The credits will be an excuse to play a cool soulful cinematic track.
+-Credits Idea: Have the main meat of the credits be a cinematic showing of the code that programmed the game!
+
+-the challenge has 5 levels, each one with slightly smarter ai, beginning ones have less ships.
+-maybe the challenge rules change slightly every time!
+
+-an exploit may be done with the hit ship hum pulse sound. The sound is synced to the first cell's pulsing. So if you hear the pulse before the current cell, that means the ship has cells before the currenct cells. Wait and I guess one can do it with the ship's pulsing anyway (yes he can actually! consider accounting for that)?
+-I may keep this as a feature for very skilled/observent players.
+-Actually it's not synced to the first cell's pulsing. But the real giveaway is the cell's visible pulsing. If there's a delay after you do that first hit, you can tell if there's cells before it. I think players will notice it eventually.

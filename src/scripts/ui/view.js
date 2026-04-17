@@ -22,19 +22,35 @@ export function View(root) {
   // SOUND SYSTEM
   // ====================
 
+  let hoverSoundTimeout;
+  let pulseSoundInterval;
+
+  let prevPulseShipID;
+
   const Sound = (() => {
     const sounds = {
-      selectShip: new Audio("assets/sfx/select-ship.wav"),
+      selectShip1: new Audio("assets/sfx/select-ship-1.mp3"),
       selectShip2: new Audio("assets/sfx/select-ship-2.mp3"),
-      selectShip3: new Audio("assets/sfx/select-ship-3.mp3"),
+      placeWoosh: new Audio("assets/sfx/place-whoosh.mp3"),
+      adjustShip: new Audio("assets/sfx/adjust-ship.mp3"),
+
+      placeRandom: new Audio("assets/sfx/place-random.wav"),
+
+      hoverCell: new Audio("assets/sfx/hover-cell.mp3"),
+      hoverValid: new Audio("assets/sfx/hover-valid.mp3"),
+      hoverInvalid: new Audio("assets/sfx/hover-invalid.mp3"),
+      hoverButton: new Audio("assets/sfx/hover-button.mp3"),
 
       hit: new Audio("assets/sfx/sci-fi-gun.mp3"),
       miss: new Audio("assets/sfx/tribecore-kick.mp3"),
       sunk: new Audio("assets/sfx/metallic-impact.wav"),
       fire: new Audio("assets/sfx/sci-fi-cannon.mp3"),
+
+      floatPulse: new Audio("assets/sfx/float-pulse.wav"),
+      shipPulse: new Audio("assets/sfx/ship-pulse.wav"),
     };
 
-    function play(name, isComputer, { volume = 1, pitch = 1 } = {}) {
+    function play(name, isComputer, { volume = 1, playbackRate = 1 } = {}) {
       if (isComputer) volume = volume * 0.4;
 
       const base = sounds[name];
@@ -42,7 +58,7 @@ export function View(root) {
 
       const s = base.cloneNode();
       s.volume = volume;
-      s.playbackRate = pitch;
+      s.playbackRate = playbackRate;
       s.play().catch(() => {});
     }
 
@@ -191,11 +207,14 @@ export function View(root) {
       ship.querySelectorAll(".ship-segment").forEach((seg, i) => {
         seg.style.transform = `translate(${dx}px, ${dy}px)`;
         seg.style.transition = "none";
+        setTimeout(() => {
+          Sound.play("adjustShip", null, { volume: 0.04 });
 
-        requestAnimationFrame(() => {
-          seg.style.transform = "";
-          seg.style.transition = `transform 320ms cubic-bezier(0.34,1.56,0.64,1) ${i * 60}ms`;
-        });
+          requestAnimationFrame(() => {
+            seg.style.transform = "";
+            seg.style.transition = `transform 320ms cubic-bezier(0.34,1.56,0.64,1)`;
+          });
+        }, i * 60);
       });
     });
   }
@@ -261,8 +280,14 @@ export function View(root) {
         once(shipSegment, "transitionend", () => {
           shipSegment.classList.add("floating");
         });
-      }, i * 80);
+      }, i * 70);
     }
+
+    Sound.play("floatPulse", null, { volume: 0.02, playbackRate: 0.5 });
+    clearInterval(pulseSoundInterval);
+    pulseSoundInterval = setInterval(() => {
+      Sound.play("floatPulse", null, { volume: 0.03, playbackRate: 0.5 });
+    }, 1200);
   }
 
   function toggleVerticalShips() {
@@ -299,17 +324,21 @@ export function View(root) {
         seg.style.opacity = "0.25";
 
         // PLAY
-        requestAnimationFrame(() => {
-          seg.style.translate = "";
-          seg.style.scale = "";
-          seg.style.opacity = "";
+        setTimeout(() => {
+          Sound.play("placeWoosh", null, { volume: 0.25 });
 
-          seg.style.transition = `
-          translate 400ms cubic-bezier(0.22,1,0.36,1) ${i * 70}ms,
-          scale 400ms cubic-bezier(0.22,1,0.36,1) ${i * 70}ms,
-          opacity 300ms ease ${i * 70}ms
-        `;
-        });
+          requestAnimationFrame(() => {
+            seg.style.translate = "";
+            seg.style.scale = "";
+            seg.style.opacity = "";
+
+            seg.style.transition = `
+              translate 400ms cubic-bezier(0.22,1,0.36,1),
+              scale 400ms cubic-bezier(0.22,1,0.36,1),
+              opacity 300ms ease
+          `;
+          });
+        }, i * 70);
       });
     },
   };
@@ -346,6 +375,8 @@ export function View(root) {
     requestAnimationFrame(() => {
       Animation.animateShipSegments(targetCells, sourceRects);
     });
+
+    clearInterval(pulseSoundInterval);
   }
 
   // ====================
@@ -354,7 +385,9 @@ export function View(root) {
 
   const Effects = {
     impact(cell, hit) {
-      Sound.play(hit ? "hit" : "miss", { pitch: 0.95 + Math.random() * 0.1 });
+      Sound.play(hit ? "hit" : "miss", {
+        playbackRate: 0.95 + Math.random() * 0.1,
+      });
 
       const icon = document.createElement("div");
       icon.className = hit ? "hit-icon" : "miss-icon";
@@ -390,7 +423,8 @@ export function View(root) {
     },
 
     flash(board, shipID) {
-      Sound.play("sunk", { volume: 0.7 });
+      Sound.play("sunk", { volume: 0.8 });
+      clearInterval(pulseSoundInterval);
 
       const cells = Array.from(
         board.querySelectorAll(`[data-shipid="${shipID}"]`),
@@ -457,6 +491,7 @@ export function View(root) {
       DOM.p2BoardWrapper.classList.add("remove");
       DOM.fleetContainer.classList.remove("hide");
       DOM.deployBtn.classList.remove("hide");
+      DOM.p1Board.classList.add("placement-phase");
     },
 
     addPlaceableShip,
@@ -483,6 +518,11 @@ export function View(root) {
       once(DOM.deployBtn, "transitionend", () =>
         DOM.deployBtn.classList.add("remove"),
       );
+
+      DOM.p1Board.classList.remove("placement-phase");
+      DOM.p2Board.classList.remove("placement-phase");
+      DOM.p1Board.classList.add("battle-phase");
+      DOM.p2Board.classList.add("battle-phase");
     },
 
     hitCell(playerName, coords) {
@@ -491,16 +531,60 @@ export function View(root) {
 
       const hasShip = cell.classList.contains("ship");
 
+      const shipID = cell.dataset.shipid;
+      const isComputer = getBoardKey(playerName) === "p2";
+
       Effects.impact(cell, hasShip);
       cell.classList.add("hit");
 
-      if (hasShip) {
-        Effects.startPulse(board, cell.dataset.shipid);
-      }
+      if (!hasShip) return;
+      Effects.startPulse(board, shipID);
+
+      if (prevPulseShipID === shipID) return;
+      if (!isComputer) return;
+      prevPulseShipID = shipID;
+      setTimeout(() => {
+        Sound.play("shipPulse", null, { volume: 0.10, playbackRate: 0.5 });
+        pulseSoundInterval = setInterval(() => {
+          Sound.play("shipPulse", null, { volume: 0.12, playbackRate: 0.5 });
+        }, 1200);
+      }, 300);
     },
 
     playFireSound(isComputer) {
       Sound.play("fire", isComputer, { volume: 0.3 });
+    },
+
+    playCellHoverSound(sound) {
+      if (!["hoverValid", "hoverInvalid", "hoverCell"].includes(sound))
+        throw Error(`"${sound}" is not a valid cell hover sound parameter.`);
+
+      const volumeMap = {
+        hoverValid: 0.05,
+        hoverInvalid: 0.14,
+        hoverCell: 0.1,
+      };
+      const volume = volumeMap[sound];
+
+      clearTimeout(hoverSoundTimeout);
+      hoverSoundTimeout = setTimeout(() => {
+        Sound.play(sound, null, { volume });
+      }, 100);
+    },
+
+    playButtonHoverSound() {
+      clearTimeout(hoverSoundTimeout);
+      hoverSoundTimeout = setTimeout(() => {
+        Sound.play("hoverButton", null, { volume: 0.8 });
+      }, 80);
+    },
+
+    clearHoverSoundTimeout() {
+      clearTimeout(hoverSoundTimeout);
+    },
+
+    playPlaceRandomSound() {
+      Sound.play("placeRandom", null, { volume: 0.25 });
     },
 
     revealShip(playerName, shipID) {

@@ -50,9 +50,7 @@ export function View(root) {
       shipPulse: new Audio("assets/sfx/ship-pulse.wav"),
     };
 
-    function play(name, isComputer, { volume = 1, playbackRate = 1 } = {}) {
-      if (isComputer) volume = volume * 0.4;
-
+    function play(name, { volume = 1, playbackRate = 1 } = {}) {
       const base = sounds[name];
       if (!base) return;
 
@@ -208,7 +206,7 @@ export function View(root) {
         seg.style.transform = `translate(${dx}px, ${dy}px)`;
         seg.style.transition = "none";
         setTimeout(() => {
-          Sound.play("adjustShip", null, { volume: 0.04 });
+          Sound.play("adjustShip", { volume: 0.04 });
 
           requestAnimationFrame(() => {
             seg.style.transform = "";
@@ -268,9 +266,9 @@ export function View(root) {
     const shipSegments = shipContainer.children;
     for (let i = 0; i < shipSegments.length; i++) {
       setTimeout(() => {
-        Sound.play("selectShip2", null, { volume: 0.1 });
+        Sound.play("selectShip2", { volume: 0.1 });
         setTimeout(() => {
-          Sound.play("selectShip3", null, { volume: 0.1 });
+          Sound.play("selectShip3", { volume: 0.1 });
         }, 10);
 
         const shipSegment = shipSegments[i];
@@ -283,10 +281,10 @@ export function View(root) {
       }, i * 70);
     }
 
-    Sound.play("floatPulse", null, { volume: 0.02, playbackRate: 0.5 });
+    Sound.play("floatPulse", { volume: 0.02, playbackRate: 0.5 });
     clearInterval(pulseSoundInterval);
     pulseSoundInterval = setInterval(() => {
-      Sound.play("floatPulse", null, { volume: 0.03, playbackRate: 0.5 });
+      Sound.play("floatPulse", { volume: 0.03, playbackRate: 0.5 });
     }, 1200);
   }
 
@@ -325,7 +323,7 @@ export function View(root) {
 
         // PLAY
         setTimeout(() => {
-          Sound.play("placeWoosh", null, { volume: 0.25 });
+          Sound.play("placeWoosh", { volume: 0.25 });
 
           requestAnimationFrame(() => {
             seg.style.translate = "";
@@ -385,7 +383,7 @@ export function View(root) {
 
   const Effects = {
     impact(cell, hit) {
-      Sound.play(hit ? "hit" : "miss", {
+      Sound.play(hit ? "hit" : "miss", { volume: 0.4,
         playbackRate: 0.95 + Math.random() * 0.1,
       });
 
@@ -423,7 +421,7 @@ export function View(root) {
     },
 
     flash(board, shipID) {
-      Sound.play("sunk", { volume: 0.8 });
+      Sound.play("sunk", { volume: 0.7 });
       clearInterval(pulseSoundInterval);
 
       const cells = Array.from(
@@ -544,15 +542,16 @@ export function View(root) {
       if (!isComputer) return;
       prevPulseShipID = shipID;
       setTimeout(() => {
-        Sound.play("shipPulse", null, { volume: 0.10, playbackRate: 0.5 });
+        Sound.play("shipPulse", { volume: 0.1, playbackRate: 0.5 });
         pulseSoundInterval = setInterval(() => {
-          Sound.play("shipPulse", null, { volume: 0.12, playbackRate: 0.5 });
+          Sound.play("shipPulse", { volume: 0.12, playbackRate: 0.5 });
         }, 1200);
       }, 300);
     },
 
     playFireSound(isComputer) {
-      Sound.play("fire", isComputer, { volume: 0.3 });
+      const volume = isComputer ? 0.14 : 0.3;
+      Sound.play("fire", { volume });
     },
 
     playCellHoverSound(sound) {
@@ -568,14 +567,14 @@ export function View(root) {
 
       clearTimeout(hoverSoundTimeout);
       hoverSoundTimeout = setTimeout(() => {
-        Sound.play(sound, null, { volume });
+        Sound.play(sound, { volume });
       }, 100);
     },
 
     playButtonHoverSound() {
       clearTimeout(hoverSoundTimeout);
       hoverSoundTimeout = setTimeout(() => {
-        Sound.play("hoverButton", null, { volume: 0.8 });
+        Sound.play("hoverButton", { volume: 0.8 });
       }, 80);
     },
 
@@ -584,7 +583,7 @@ export function View(root) {
     },
 
     playPlaceRandomSound() {
-      Sound.play("placeRandom", null, { volume: 0.25 });
+      Sound.play("placeRandom", { volume: 0.25 });
     },
 
     revealShip(playerName, shipID) {

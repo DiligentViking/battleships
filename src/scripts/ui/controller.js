@@ -1,61 +1,30 @@
 import { sleep } from "../models/utils.js";
 
 export function Controller(player1, player2, game, view) {
-  //---Helpers---
+  const CONFIG = {
+    NUM_SHIPS: 6,
+    SHIP_LENGTHS: [1, 2, 3, 4, 5, 6],
 
-  const NUM_SHIPS = 6;
-  const SHIP_LENGTHS = [1, 2, 3, 4, 5, 6];
-  // const SHIP_LENGTHS = [1, 1, 1, 1, 1, 1];  // dev
+    HIT_DELAY: 800,
+    COMPUTER_DELAY: 600,
+  };
+  CONFIG.HIT_DELAY = 0; // dev
+  CONFIG.COMPUTER_DELAY = 0; // dev
+  CONFIG.AUTOPLAY_DELAY = 250; // dev
 
-  function resetSetup(player, numShips) {
-    player.gameboard.unplaceAllShips();
+  let cleanupFns = [];
 
-    view.renderBoard(player.getName(), player.gameboard.getBoardSize());
-
-    for (let i = 0; i < numShips; i++) {
-      view.removePlaceableShip(i);
-      view.addPlaceableShip(i);
-    }
-  }
-
-  function autoPlaceShips(player, numShips) {
-    let count = 0;
-    let f = 0;
-
-    while (count !== numShips) {
-      if (f++ > 200) {
-        console.log("FIREBREAK");
-        resetSetup(player, numShips);
-        count = 0;
-        f = 0;
-      }
-      const shipID = count;
-      const shipLength = SHIP_LENGTHS[shipID];
-      const coords = [
-        Math.floor(Math.random() * player.gameboard.getBoardSize()),
-        Math.floor(Math.random() * player.gameboard.getBoardSize()),
-      ];
-      const isVertical = Math.round(Math.random()) ? true : false;
-
-      const { coordsList, valid } = player.gameboard.placeShip(
-        shipID,
-        shipLength,
-        coords,
-        isVertical,
-      );
-
-      if (!valid) continue;
-
-      view.removePlaceableShip(shipID);
-      view.placeShip(player.getName(), coordsList, shipID);
-
-      count++;
-    }
-  }
-
-  //---Flow---
+  // ====================
+  // INIT
+  // ====================
 
   function init() {
+    setupPlayers();
+    renderBoards();
+    startSetupPhase();
+  }
+
+  function setupPlayers() {
     view.initBoardPlayerNames(player1.getName(), player2.getName());
 
     if (player1.getType() === "computer") {
@@ -64,227 +33,319 @@ export function Controller(player1, player2, game, view) {
     if (player2.getType() === "computer") {
       player2.initComputerTargets(player1.gameboard.getBoardSize());
     }
-
-    view.renderBoard(player1.getName(), player1.gameboard.getBoardSize());
-    view.renderBoard(player2.getName(), player1.gameboard.getBoardSize());
-
-    runPlayerSetup();
   }
 
-  function runPlayerSetup() {
-    view.enterSetupPhase();
+  function renderBoards() {
+    const size = player1.gameboard.getBoardSize();
+    view.renderBoard(player1.getName(), size);
+    view.renderBoard(player2.getName(), size);
+  }
 
-    for (let i = 0; i < NUM_SHIPS; i++) {
-      view.addPlaceableShip(i);
+  // ====================
+  // SETUP PHASE
+  // ====================
+
+  function startSetupPhase() {
+    clearListeners();
+
+    const setup = createSetupController();
+    setup.init();
+  }
+
+  function createSetupController() {
+    const state = {
+      heldShipID: null,
+      heldSegment: null,
+      isVertical: false,
+      hoverEvent: null,
+    };
+
+    const { p1Board, fleetContainer, resetBtn, randomBtn, deployBtn } =
+      view.eventElems;
+
+    function init() {
+      view.enterSetupPhase();
+
+      for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
+        view.addPlaceableShip(i);
+      }
+
+      bindEvents();
+
+      randomBtn.click(); // dev
+      deployBtn.click(); // dev
     }
 
-    // Drag Events
+    function bindEvents() {
+      addListener(fleetContainer, "mousedown", onShipGrab);
+      addListener(p1Board, "mouseover", onBoardHover);
+      addListener(p1Board, "mouseup", onBoardDrop);
+      addListener(p1Board, "mouseleave", onLeaveBoard);
+      addListener(window, "keydown", onKeyRotate);
 
-    const { p1Board, fleetContainer } = view.eventElems;
-    let heldShipID = null;
-    let heldSegmentNum = null;
-    let isVertical = false;
-    let currentHoverEvent = null;
+      addListener(resetBtn, "click", reset);
+      addListener(randomBtn, "click", randomize);
+      addListener(deployBtn, "click", deploy);
 
-    function onShipMousedown(e) {
+      bindButtonHover(resetBtn);
+      bindButtonHover(randomBtn);
+      bindButtonHover(deployBtn);
+
+      addListener(document, "dragstart", (e) => e.preventDefault());
+    }
+
+    function onShipGrab(e) {
       if (!e.target.classList.contains("ship-segment")) return;
 
-      heldSegmentNum = +e.target.dataset.segmentnum;
-      heldShipID = +e.target.parentNode.dataset.shipid;
+      state.heldSegment = +e.target.dataset.segmentnum;
+      state.heldShipID = +e.target.parentNode.dataset.shipid;
 
-      view.selectShip(heldShipID);
+      view.selectShip(state.heldShipID);
     }
 
-    function onBoardMouseover(e) {
-      if (heldShipID === null) return;
+    function onBoardHover(e) {
+      if (state.heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
 
-      currentHoverEvent = e;
+      state.hoverEvent = e;
 
-      const coords = view.parseCellCoords(e.target);
+      const coords = adjustCoords(e);
 
-      if (isVertical) coords[0] = coords[0] - heldSegmentNum;
-      else coords[1] = coords[1] - heldSegmentNum;
-
-      const result = player1.gameboard.getPreview(
-        heldShipID,
-        heldShipID + 1,
+      const { coordsList, valid } = player1.gameboard.getPreview(
+        state.heldShipID,
+        state.heldShipID + 1,
         coords,
-        isVertical,
+        state.isVertical,
       );
-      const { coordsList, valid } = result;
 
-      const soundKey = valid ? "hoverValid" : "hoverInvalid";
-      view.playCellHoverSound(soundKey);
-
+      view.playCellHoverSound(valid ? "hoverValid" : "hoverInvalid");
       view.updatePreview(player1.getName(), coordsList, valid);
     }
 
-    function onBoardMouseup(e) {
-      if (heldShipID === null) return;
+    function onBoardDrop(e) {
+      if (state.heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
 
-      const coords = view.parseCellCoords(e.target);
+      const coords = adjustCoords(e);
 
-      if (isVertical) coords[0] = coords[0] - heldSegmentNum;
-      else coords[1] = coords[1] - heldSegmentNum;
-
-      const result = player1.gameboard.placeShip(
-        heldShipID,
-        heldShipID + 1,
+      const { coordsList, valid } = player1.gameboard.placeShip(
+        state.heldShipID,
+        state.heldShipID + 1,
         coords,
-        isVertical,
+        state.isVertical,
       );
-      const { coordsList, valid } = result;
 
       if (!valid) return;
 
-      view.placeShip(player1.getName(), coordsList, heldShipID);
-      view.removePlaceableShip(heldShipID);
+      view.placeShip(player1.getName(), coordsList, state.heldShipID);
+      view.removePlaceableShip(state.heldShipID);
 
-      heldShipID = null;
+      state.heldShipID = null;
     }
 
-    function onBoardMouseleave() {
-      currentHoverEvent = null;
+    function onLeaveBoard() {
+      state.hoverEvent = null;
       view.clearPreview(player1.getName());
       view.clearHoverSoundTimeout();
     }
 
-    function onKeydown(e) {
-      if (e.key === "d") player1.gameboard._logBoard();
-      if (e.key !== "r") return;
-      isVertical = isVertical === true ? false : true;
-      view.toggleVerticalShips(isVertical);
-      onBoardMouseover(currentHoverEvent);
+    function onKeyRotate(e) {
+      if (e.key === "r") {
+        state.isVertical = !state.isVertical;
+        view.toggleVerticalShips(state.isVertical);
+        if (state.hoverEvent) onBoardHover(state.hoverEvent);
+      }
     }
 
-    document.addEventListener("dragstart", (e) => e.preventDefault());
-    fleetContainer.addEventListener("mousedown", onShipMousedown);
-    p1Board.addEventListener("mouseover", onBoardMouseover);
-    p1Board.addEventListener("mouseup", onBoardMouseup);
-    p1Board.addEventListener("mouseleave", onBoardMouseleave);
-    window.addEventListener("keydown", onKeydown);
+    function reset() {
+      resetSetup(player1);
+    }
 
-    // Button Events
-
-    const { resetBtn, randomBtn, deployBtn } = view.eventElems;
-
-    resetBtn.addEventListener("click", () => {
-      resetSetup(player1, NUM_SHIPS);
-    });
-
-    randomBtn.addEventListener("click", () => {
+    function randomize() {
       view.playPlaceRandomSound();
-      resetSetup(player1, NUM_SHIPS);
-      autoPlaceShips(player1, NUM_SHIPS);
-    });
+      resetSetup(player1);
+      autoPlace(player1);
+    }
 
-    deployBtn.addEventListener("click", () => {
+    function deploy() {
       if (player2.getType() === "computer") {
-        runComputerSetup();
+        autoPlace(player2);
       }
 
       view.enterBattlePhase();
+      startBattlePhase();
+    }
 
-      runGame();
-    });
+    function adjustCoords(e) {
+      const coords = view.parseCellCoords(e.target);
 
-    resetBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    resetBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
-    randomBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    randomBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
-    deployBtn.addEventListener("mouseover", view.playButtonHoverSound);
-    deployBtn.addEventListener("mouseleave", view.clearHoverSoundTimeout);
+      if (state.isVertical) coords[0] -= state.heldSegment;
+      else coords[1] -= state.heldSegment;
 
-    // randomBtn.click(); // dev
-    // deployBtn.click(); // dev
+      return coords;
+    }
+
+    return { init };
   }
 
-  function runComputerSetup() {
-    autoPlaceShips(player2, NUM_SHIPS);
+  function resetSetup(player) {
+    player.gameboard.unplaceAllShips();
+    view.renderBoard(player.getName(), player.gameboard.getBoardSize());
+
+    for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
+      view.removePlaceableShip(i);
+      view.addPlaceableShip(i);
+    }
   }
 
-  function runGame() {
-    async function attackCell(receiverName, coords = null) {
+  function autoPlace(player) {
+    let count = 0;
+
+    while (count < CONFIG.NUM_SHIPS) {
+      const coords = randomCoords(player);
+      const isVertical = Math.random() > 0.5;
+
+      const { coordsList, valid } = player.gameboard.placeShip(
+        count,
+        CONFIG.SHIP_LENGTHS[count],
+        coords,
+        isVertical,
+      );
+
+      if (!valid) continue;
+
+      view.removePlaceableShip(count);
+      view.placeShip(player.getName(), coordsList, count);
+
+      count++;
+    }
+  }
+
+  function randomCoords(player) {
+    const size = player.gameboard.getBoardSize();
+    return [Math.floor(Math.random() * size), Math.floor(Math.random() * size)];
+  }
+
+  // ====================
+  // BATTLE PHASE
+  // ====================
+
+  function startBattlePhase() {
+    clearListeners();
+
+    const battle = createBattleController();
+    battle.init();
+  }
+
+  function createBattleController() {
+    const { p1Board, p2Board } = view.eventElems;
+    let waiting = false;
+
+    function init() {
+      addListener(p1Board, "click", onClick);
+      addListener(p2Board, "click", onClick);
+
+      addListener(p2Board, "mouseover", onHover);
+
+      if (player1.getType() === "computer") {
+        attack(player2.getName());
+      }
+    }
+
+    async function attack(receiverName, coords = null) {
       waiting = true;
 
-      const receiver = player1.getName() === receiverName ? player1 : player2;
-      const isComputer = receiver.getType() === "real";
+      const receiver = getPlayer(receiverName);
 
+      const isComputer = receiver.getType() === "real";
       view.playFireSound(isComputer);
 
-      await sleep(1000);
-      // await sleep(50);
+      await sleep(CONFIG.HIT_DELAY);
 
-      let result;
-      result = game.attack(receiverName, coords);
+      const result = game.attack(receiverName, coords);
 
       view.hitCell(receiverName, result.coords);
-      if (result.shipSunk) view.revealShip(receiverName, result.shipID);
 
-      const status = game.getState();
-      if (status.winner) {
-        const winNum = status.winner === player1.getName() ? 1 : 2;
-        console.log(`${winNum}, wins.`);
-        return;
+      if (result.shipSunk) {
+        view.revealShip(receiverName, result.shipID);
       }
 
+      const { winner } = game.getState();
+      if (winner) return;
+
       if (receiver.getType() === "computer") {
-        const newReceiver =
-          player1.getName() === receiverName ? player2 : player1;
-        await sleep(800 + 200 * Math.random());
-        // await sleep(50);
-        await attackCell(newReceiver.getName());
+        await sleep(CONFIG.COMPUTER_DELAY);
+        const next = otherPlayer(receiverName);
+        await attack(next.getName());
       }
 
       waiting = false;
     }
 
-    function onBoardClick(e) {
+    function onClick(e) {
       if (waiting) return;
       if (!e.target.classList.contains("cell")) return;
       if (e.target.classList.contains("hit")) return;
 
       const coords = view.parseCellCoords(e.target);
-      const receiverName = this.dataset.playername;
+      const receiver = this.dataset.playername;
 
-      attackCell(receiverName, coords);
+      attack(receiver, coords);
     }
 
-    const { p1Board, p2Board } = view.eventElems;
-    let waiting = false;
-
-    if (player1.getType() === "computer") attackCell(player2.getName());
-
-    p1Board.addEventListener("click", onBoardClick);
-    p2Board.addEventListener("click", onBoardClick);
-
-    p2Board.addEventListener("mouseover", (e) => {
+    function onHover(e) {
       if (!e.target.classList.contains("cell")) return;
       if (e.target.classList.contains("hit")) return;
-      view.playCellHoverSound("hoverCell");
-    });
 
-    // Autoplay (dev)
-    function autoplay() {
-      let y = 0;
-      let x = 0;
-      setInterval(() => {
-        p2Board.querySelector(`.cell[data-coords="${y},${x}"]`).click();
-        y++;
-        if (y === 10) {
-          y = 0;
-          x++;
-        }
-      }, 250);
+      view.playCellHoverSound("hoverCell");
     }
 
-    autoplay;
+    // Autoplay (dev)
+    // function autoplay() {
+    //   let y = 0;
+    //   let x = 0;
+    //   setInterval(() => {
+    //     p2Board.querySelector(`.cell[data-coords="${y},${x}"]`).click();
+    //     y++;
+    //     if (y === 10) {
+    //       y = 0;
+    //       x++;
+    //     }
+    //   }, CONFIG.AUTOPLAY_DELAY);
+    // }
+
+    // autoplay;
     // autoplay(); // dev
+
+    return { init };
   }
 
-  return {
-    init,
-  };
+  // ====================
+  // HELPERS
+  // ====================
+
+  function getPlayer(name) {
+    return player1.getName() === name ? player1 : player2;
+  }
+
+  function otherPlayer(name) {
+    return player1.getName() === name ? player2 : player1;
+  }
+
+  function bindButtonHover(btn) {
+    addListener(btn, "mouseover", view.playButtonHoverSound);
+    addListener(btn, "mouseleave", view.clearHoverSoundTimeout);
+  }
+
+  function addListener(el, event, handler) {
+    el.addEventListener(event, handler);
+    cleanupFns.push(() => el.removeEventListener(event, handler));
+  }
+
+  function clearListeners() {
+    cleanupFns.forEach((fn) => fn());
+    cleanupFns = [];
+  }
+
+  return { init };
 }

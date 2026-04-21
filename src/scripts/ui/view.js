@@ -105,19 +105,42 @@ export function View(root) {
   // ====================
 
   const SVG = {
-    ship(isHull, isP2, hide) {
+    ship(type, isP2, hide) {
       const p2 = isP2 ? "p2" : "";
       const h = hide ? "hide" : "";
 
-      return isHull
-        ? `<svg class="hull ${p2} ${h}" viewBox="0 0 90 80">
-            <path d="M15 65 C15 30, 45 15, 80 20 L80 65 Z"
-              stroke="currentColor" stroke-width="4" fill="none"/>
-          </svg>`
-        : `<svg class="body ${p2} ${h}" viewBox="0 0 90 80">
-            <rect x="8" y="12"
-              stroke="currentColor" stroke-width="4" fill="none"/>
-          </svg>`;
+      const variants = {
+        nose: `
+          <svg class="nose ${p2} ${h}" viewBox="0 0 100 80">
+            <path d="M10 70 Q45 5 95 30 L95 70 Z"
+              class="base"/>
+            <path d="M25 60 Q55 20 85 40"
+              class="detail"/>
+          </svg>
+        `,
+        mid: `
+          <svg class="mid ${p2} ${h}" viewBox="0 0 100 80">
+            <rect x="10" y="15" width="80" height="50"
+              class="base"/>
+            <line x1="20" y1="30" x2="80" y2="30"
+              class="detail"/>
+            <line x1="20" y1="50" x2="70" y2="50"
+              class="detail faint"/>
+          </svg>
+        `,
+        tail: `
+          <svg class="tail ${p2} ${h}" viewBox="0 0 100 80">
+            <rect x="10" y="15" width="70" height="50"
+              class="base"/>
+            <rect x="75" y="30" width="12" height="20"
+              class="engine"/>
+            <rect x="90" y="34" width="6" height="12"
+              class="engine-glow"/>
+          </svg>
+        `,
+      };
+
+      return variants[type];
     },
 
     hit() {
@@ -227,7 +250,12 @@ export function View(root) {
       seg.className = "ship-segment";
       seg.dataset.segmentnum = i;
 
-      seg.innerHTML = SVG.ship(i === length - 1);
+      let type;
+      if (i === length - 1) type = "nose";
+      else if (i === 0) type = "tail";
+      else type = "mid";
+      seg.innerHTML = SVG.ship(type);
+
       container.appendChild(seg);
     }
 
@@ -360,11 +388,14 @@ export function View(root) {
       const cell = getCell(playerName, coords);
       if (!cell) return;
 
-      const isHull = isP2 ? i === 0 : i === coordsList.length - 1;
-
       cell.classList.add("ship");
       cell.dataset.shipid = shipID;
-      cell.innerHTML = SVG.ship(isHull, isP2, isP2);
+
+      let type;
+      if (i === length - 1) type = "nose";
+      else if (i === 0) type = "tail";
+      else type = "mid";
+      cell.innerHTML = SVG.ship(type);
 
       targetCells.push(cell);
     });
@@ -383,7 +414,8 @@ export function View(root) {
 
   const Effects = {
     impact(cell, hit) {
-      Sound.play(hit ? "hit" : "miss", { volume: 0.4,
+      Sound.play(hit ? "hit" : "miss", {
+        volume: 0.4,
         playbackRate: 0.95 + Math.random() * 0.1,
       });
 

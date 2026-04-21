@@ -317,9 +317,6 @@ button:active {
   }
 }
 
-.ship-segment > svg:not(.hull) {
-  transform: translate(2px);
-}
 .ship-segment > svg {
   pointer-events: none;
 }
@@ -532,8 +529,9 @@ button.random:hover {
   opacity: 0;
 }
 
-svg.hull {
-  transform: rotate(180deg) translate(-1px);
+svg.nose,
+svg.tail {
+  transform: rotate(180deg);
 }
 
 svg.body > rect {
@@ -541,8 +539,65 @@ svg.body > rect {
   height: 64%;
 }
 
-.hull.p2 {
+/* .nose.p2 {
   transform: rotate(180deg) scaleX(-1) translate(-2px);
+} */
+/* --- Ship Styling Upgrade --- */
+
+svg .base {
+  fill: #0c0c22;
+  stroke: var(--text-primary);
+  stroke-width: 3;
+}
+
+svg.p2 .base {
+  stroke: var(--p2-primary);
+}
+
+svg .detail {
+  stroke: var(--text-primary);
+  stroke-width: 2;
+  opacity: 0.7;
+}
+
+svg.p2 .detail {
+  stroke: var(--p2-primary);
+}
+
+svg .detail.faint {
+  opacity: 0.35;
+}
+
+svg .engine {
+  fill: #111133;
+  stroke: var(--text-primary);
+  stroke-width: 2;
+}
+
+svg.p2 .engine {
+  stroke: var(--p2-primary);
+}
+
+svg .engine-glow {
+  fill: var(--text-primary);
+  opacity: 0.7;
+  animation: engineFlicker 0.6s infinite alternate;
+}
+
+svg.p2 .engine-glow {
+  fill: var(--p2-primary);
+}
+
+/* Engine flicker animation */
+@keyframes engineFlicker {
+  from {
+    opacity: 0.2;
+    transform: scaleX(1);
+  }
+  to {
+    opacity: 0.4;
+    transform: scaleX(1.2);
+  }
 }
 
 /* ---Hit Effects--- */

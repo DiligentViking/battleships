@@ -520,7 +520,7 @@ button.random:hover {
 .ship > svg {
   width: calc(100% + 3px);  /* To make them merge as one */
   translate: -1px;
-  height: 100%;
+  height: 98%;
   pointer-events: none;
 
   opacity: 1;
@@ -552,7 +552,22 @@ svg.body > rect {
 
 .ship-segment svg {
   width: 100%;
-  height: 100%;
+  height: 98%;
+}
+
+svg.vertical {
+  rotate: -90deg;
+}
+.ship > svg.vertical {
+  translate: 0 1px;
+}
+.ship > svg.nose.vertical {
+  translate: 1px 3px;
+}
+
+svg.nose.p2.vertical,
+svg.tail.p2.vertical {
+  transform: rotate(180deg) scaleY(-1);
 }
 
 .hull {

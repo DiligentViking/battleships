@@ -137,7 +137,7 @@ export function Controller(player1, player2, game, view) {
 
       if (!valid) return;
 
-      view.placeShip(player1.getName(), coordsList, state.heldShipID);
+      view.placeShip(player1.getName(), coordsList, state.heldShipID, state.isVertical);
       view.removePlaceableShip(state.heldShipID);
 
       state.heldShipID = null;
@@ -158,6 +158,10 @@ export function Controller(player1, player2, game, view) {
     }
 
     function reset() {
+      if (state.isVertical) {
+        state.isVertical = false;
+        view.toggleVerticalShips(state.isVertical);
+      }
       resetSetup(player1);
     }
 
@@ -215,7 +219,7 @@ export function Controller(player1, player2, game, view) {
       if (!valid) continue;
 
       view.removePlaceableShip(count);
-      view.placeShip(player.getName(), coordsList, count);
+      view.placeShip(player.getName(), coordsList, count, isVertical);
 
       count++;
     }

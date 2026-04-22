@@ -1,4 +1,4 @@
-export function Ship(length) {
+export function Ship(length, isVertical) {
   let hits = 0;
 
   return {
@@ -7,6 +7,8 @@ export function Ship(length) {
     }),
 
     getLength: () => length,
+
+    isVertical: () => isVertical,
 
     isSunk: () => hits === length,
 

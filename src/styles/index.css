@@ -518,7 +518,7 @@ button.random:hover {
 /* ---Ship SVGs--- */
 
 .ship > svg {
-  width: calc(100% + 3px);
+  width: calc(100% + 3px);  /* To make them merge as one */
   translate: -1px;
   height: 100%;
   pointer-events: none;
@@ -531,19 +531,24 @@ button.random:hover {
   width: 100%;
 }
 
+.ship > .nose.p2 {
+  translate: 2px;
+}
+
 svg.nose,
 svg.tail {
   transform: rotate(180deg);
+}
+
+svg.nose.p2,
+svg.tail.p2 {
+  transform: rotate(180deg) scaleX(-1);
 }
 
 svg.body > rect {
   width: 72%;
   height: 64%;
 }
-
-/* .nose.p2 {
-  transform: rotate(180deg) scaleX(-1);
-} */
 
 .ship-segment svg {
   width: 100%;

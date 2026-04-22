@@ -383,13 +383,19 @@ export function View(root) {
       cell.classList.add("ship");
       cell.dataset.shipid = shipID;
 
-      let type;
-      if (i === coordsList.length - 1) type = "nose";
-      else if (i === 0) type = "tail";
-      else type = "mid";
-
       const isP2 = playerName === DOM.p2Board.dataset.playername;
       const hide = isP2;
+
+      let type;
+      if (!isP2) {
+        if (i === coordsList.length - 1) type = "nose";
+        else if (i === 0) type = "tail";
+        else type = "mid";
+      } else {
+        if (i === 0) type = "nose";
+        else if (i === coordsList.length - 1) type = "tail";
+        else type = "mid";
+      }
 
       cell.innerHTML = SVG.ship(type, isP2, hide);
 

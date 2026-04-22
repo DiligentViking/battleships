@@ -111,33 +111,27 @@ export function View(root) {
 
       const variants = {
         nose: `
-          <svg class="nose ${p2} ${h}" viewBox="0 0 100 80">
-            <path d="M10 70 Q45 5 95 30 L95 70 Z"
-              class="base"/>
-            <path d="M25 60 Q55 20 85 40"
-              class="detail"/>
-          </svg>
-        `,
+        <svg class="nose ${p2} ${h}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <path d="M0 60 L35 15 L120 15 L120 60 Z" class="hull"/>
+          <path d="M15 52 L40 25 L105 25" class="detail"/>
+        </svg>
+      `,
+
         mid: `
-          <svg class="mid ${p2} ${h}" viewBox="0 0 100 80">
-            <rect x="10" y="15" width="80" height="50"
-              class="base"/>
-            <line x1="20" y1="30" x2="80" y2="30"
-              class="detail"/>
-            <line x1="20" y1="50" x2="70" y2="50"
-              class="detail faint"/>
-          </svg>
-        `,
+        <svg class="mid ${p2} ${h}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <rect x="0" y="15" width="120" height="45" class="hull"/>
+          <line x1="10" y1="30" x2="110" y2="30" class="detail"/>
+          <line x1="10" y1="48" x2="90" y2="48" class="detail faint"/>
+        </svg>
+      `,
+
         tail: `
-          <svg class="tail ${p2} ${h}" viewBox="0 0 100 80">
-            <rect x="10" y="15" width="70" height="50"
-              class="base"/>
-            <rect x="75" y="30" width="12" height="20"
-              class="engine"/>
-            <rect x="90" y="34" width="6" height="12"
-              class="engine-glow"/>
-          </svg>
-        `,
+        <svg class="tail ${p2} ${h}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <rect x="0" y="15" width="85" height="45" class="hull"/>
+          <rect x="85" y="22" width="20" height="30" class="engine"/>
+          <rect x="105" y="26" width="10" height="22" class="engine-glow"/>
+        </svg>
+      `,
       };
 
       return variants[type];
@@ -376,8 +370,6 @@ export function View(root) {
   function placeShip(playerName, coordsList, shipID) {
     clearPreview(playerName);
 
-    const isP2 = playerName === DOM.p2Board.dataset.playername;
-
     // 1. Get animation source (fleet positions)
     const sourceRects = Animation.getFleetSourceRects(coordsList.length);
 
@@ -392,10 +384,14 @@ export function View(root) {
       cell.dataset.shipid = shipID;
 
       let type;
-      if (i === length - 1) type = "nose";
+      if (i === coordsList.length - 1) type = "nose";
       else if (i === 0) type = "tail";
       else type = "mid";
-      cell.innerHTML = SVG.ship(type);
+
+      const isP2 = playerName === DOM.p2Board.dataset.playername;
+      const hide = isP2;
+
+      cell.innerHTML = SVG.ship(type, isP2, hide);
 
       targetCells.push(cell);
     });

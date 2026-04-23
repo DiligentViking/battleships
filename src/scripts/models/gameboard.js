@@ -82,7 +82,11 @@ export function Gameboard() {
       for (const row of board) {
         output += "|";
         for (const cell of row) {
-          output += cell.shipID ?? " ";
+          if (cell.shipID) {
+            output += cell.hit ? "X" : cell.shipID;
+          } else {
+            output += cell.hit ? "m" : " ";
+          }
           output += "|";
         }
         output += "\n";
@@ -130,7 +134,7 @@ export function Gameboard() {
         cellToPlaceOn.shipID = shipID;
       }
 
-      ships.push(Ship(shipLength, isVertical));
+      ships[shipLength - 1] = Ship(shipLength, isVertical);
 
       return { coordsList, valid };
     },

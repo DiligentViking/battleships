@@ -116,3 +116,6 @@ OTHER IDEAS:
 -Actually it's not synced to the first cell's pulsing. But the real giveaway is the cell's visible pulsing. If there's a delay after you do that first hit, you can tell if there's cells before it. I think players will notice it eventually.
 
 -The credits could cinematically show different images in different ways that showed what each upgrade entailed! [example, it shows the old ship styles, then the new ones(like dramatically fading in slowly moving)] [example, it shows the pulsing (will require some video) where it was all random, then it shows the pulsing fixed along with the code like cinematically going]
+
+-consider making light sources consistent somehow
+-and a lil stronger at the hull may be a smart decision as all hulls are kind of pointed toward the middle (which could be the light source)

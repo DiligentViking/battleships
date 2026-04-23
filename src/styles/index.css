@@ -1,7 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap");
 
-/* ---Base--- */
+/*
+==================== 
+Base 
+====================
+*/
 
 :root {
   --bg-deep: #050510;
@@ -165,7 +169,11 @@ button:active {
     0 0 6px var(--p1-glow);
 }
 
-/* ---Helpers--- */
+/*
+==================== 
+HELPERS 
+====================
+*/
 
 .remove {
   display: none !important;
@@ -196,7 +204,11 @@ button:active {
   }
 }
 
-/* ---Layout--- */
+/*
+==================== 
+LAYOUT 
+====================
+*/
 
 .top-area {
   display: flex;
@@ -214,7 +226,11 @@ button:active {
   justify-content: center;
 }
 
-/* ---Placement Phase--- */
+/*
+==================== 
+PLACEMENT PHASE 
+====================
+*/
 
 .fleet-wrapper {
   background: linear-gradient(
@@ -377,7 +393,11 @@ button.random:hover {
     0 0 14px #ff8c1288;
 }
 
-/* ---Boards--- */
+/*
+==================== 
+BOARDS 
+====================
+*/
 
 .board-wrapper {
   background: linear-gradient(
@@ -480,7 +500,11 @@ button.random:hover {
   inset: 0;
 }
 
-/* ---Cells--- */
+/*
+==================== 
+CELLS 
+====================
+*/
 
 .cell {
   font-size: clamp(0.75rem, 1vw, 2rem);
@@ -515,7 +539,11 @@ button.random:hover {
     0 0 6px 1px var(--p1-cell-hover) !important;
 }
 
-/* ---Ship SVGs--- */
+/*
+==================== 
+SHIP SVGS
+====================
+*/
 
 .ship > svg {
   width: calc(100% + 3px);  /* To make them merge as one */
@@ -603,7 +631,11 @@ svg.tail.p2.vertical {
   filter: drop-shadow(0 0 6px #5fd0ff);
 }
 
-/* ---Hit Effects--- */
+/*
+==================== 
+HIT EFFECTS
+====================
+*/
 
 /* Hit/Miss Icons */
 

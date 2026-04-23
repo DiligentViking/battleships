@@ -114,3 +114,5 @@ OTHER IDEAS:
 -an exploit may be done with the hit ship hum pulse sound. The sound is synced to the first cell's pulsing. So if you hear the pulse before the current cell, that means the ship has cells before the currenct cells. Wait and I guess one can do it with the ship's pulsing anyway (yes he can actually! consider accounting for that)?
 -I may keep this as a feature for very skilled/observent players.
 -Actually it's not synced to the first cell's pulsing. But the real giveaway is the cell's visible pulsing. If there's a delay after you do that first hit, you can tell if there's cells before it. I think players will notice it eventually.
+
+-The credits could cinematically show different images in different ways that showed what each upgrade entailed! [example, it shows the old ship styles, then the new ones(like dramatically fading in slowly moving)] [example, it shows the pulsing (will require some video) where it was all random, then it shows the pulsing fixed along with the code like cinematically going]

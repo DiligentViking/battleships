@@ -24,6 +24,9 @@ Base
   --p1-cell-hover: #24c9c9;
   --p2-cell-hover: #cc22aa;
 
+  --ship-p1: var(--p1-primary);
+  --ship-p2: var(--p2-primary);
+
   --cell-border: #084c5b;
 
   --hit-color: #ff3b3b22;
@@ -546,7 +549,7 @@ SHIP SVGS
 */
 
 .ship > svg {
-  width: calc(100% + 3px);  /* To make them merge as one */
+  width: calc(100% + 3px); /* To make them merge as one */
   translate: -1px;
   height: 98%;
   pointer-events: none;
@@ -600,13 +603,13 @@ svg.tail.p2.vertical {
 
 .hull {
   fill: #0a141ed9;
-  stroke: #5fd0ff;
+  stroke: var(--ship-p1);
   stroke-width: 2;
 }
 
 .detail {
   fill: none;
-  stroke: #5fd0ff;
+  stroke: var(--ship-p1);
   stroke-width: 1.5;
   opacity: 0.8;
 }
@@ -617,18 +620,43 @@ svg.tail.p2.vertical {
 
 .engine {
   fill: #14283ce6;
-  stroke: #5fd0ff;
+  stroke: var(--ship-p1);
   stroke-width: 1.5;
 }
 
 .engine-glow {
-  fill: #5fd0ff;
+  fill: var(--ship-p1);
   filter: blur(2px);
 }
 
 .ship-segment.glow .hull,
 .ship-segment.glow .detail {
   filter: drop-shadow(0 0 6px #5fd0ff);
+}
+
+/* P2 Colors */
+
+svg.p2 .hull {
+  fill: #1e0a1ed9;
+  stroke: var(--ship-p2);
+}
+
+svg.p2 .detail {
+  stroke: var(--ship-p2);
+}
+
+svg.p2 .engine {
+  fill: #3c143ce6;
+  stroke: var(--ship-p2);
+}
+
+svg.p2 .engine-glow {
+  fill: var(--ship-p2);
+}
+
+.ship-segment.glow svg.p2 .hull,
+.ship-segment.glow svg.p2 .detail {
+  filter: drop-shadow(0 0 6px var(--ship-p2));
 }
 
 /*

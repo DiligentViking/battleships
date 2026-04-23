@@ -105,19 +105,36 @@ export function View(root) {
   // ====================
 
   const SVG = {
-    ship(isHull, isP2, hide) {
+    ship(type, isP2, isVertical) {
       const p2 = isP2 ? "p2" : "";
-      const h = hide ? "hide" : "";
+      const vertical = isVertical ? "vertical" : "";
 
-      return isHull
-        ? `<svg class="hull ${p2} ${h}" viewBox="0 0 90 80">
-            <path d="M15 65 C15 30, 45 15, 80 20 L80 65 Z"
-              stroke="currentColor" stroke-width="4" fill="none"/>
-          </svg>`
-        : `<svg class="body ${p2} ${h}" viewBox="0 0 90 80">
-            <rect x="8" y="12"
-              stroke="currentColor" stroke-width="4" fill="none"/>
-          </svg>`;
+      const variants = {
+        nose: `
+        <svg class="nose ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <path d="M120 15 L85 60 L0 60 L0 15 Z" class="hull"/>
+          <path d="M105 23 L80 50 L15 50" class="detail"/>
+        </svg>
+        `,
+
+        mid: `
+        <svg class="mid ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <rect x="0" y="15" width="120" height="45" class="hull"/>
+          <line x1="10" y1="30" x2="110" y2="30" class="detail"/>
+          <line x1="10" y1="48" x2="90" y2="48" class="detail faint"/>
+        </svg>
+        `,
+
+        tail: `
+        <svg class="tail ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
+          <rect x="35" y="15" width="85" height="45" class="hull"/>
+          <rect x="15" y="22" width="20" height="30" class="engine"/>
+          <rect x="5" y="26" width="10" height="22" class="engine-glow"/>
+        </svg>
+        `,
+      };
+
+      return variants[type];
     },
 
     hit() {
@@ -227,7 +244,12 @@ export function View(root) {
       seg.className = "ship-segment";
       seg.dataset.segmentnum = i;
 
-      seg.innerHTML = SVG.ship(i === length - 1);
+      let type;
+      if (i === length - 1) type = "nose";
+      else if (i === 0) type = "tail";
+      else type = "mid";
+      seg.innerHTML = SVG.ship(type);
+
       container.appendChild(seg);
     }
 
@@ -288,8 +310,19 @@ export function View(root) {
     }, 1200);
   }
 
-  function toggleVerticalShips() {
+  function toggleVerticalShips(isVertical) {
     DOM.fleetContainer.classList.toggle("vertical");
+
+    const cellSvgs = DOM.fleetContainer.querySelectorAll("svg");
+    for (const svg of cellSvgs) {
+      if (svg.parentNode.parentNode.dataset.shipid === "0") continue;
+      if (svg.classList.contains("nose")) {
+        svg.parentNode.innerHTML = SVG.ship("tail", null, isVertical);
+      } else if (svg.classList.contains("tail")) {
+        svg.parentNode.innerHTML = SVG.ship("nose", null, isVertical);
+      }
+      svg.classList.toggle("vertical");
+    }
   }
 
   const Animation = {
@@ -345,10 +378,8 @@ export function View(root) {
   // SHIP PLACEMENT
   // ====================
 
-  function placeShip(playerName, coordsList, shipID) {
+  function placeShip(playerName, coordsList, shipID, isVertical) {
     clearPreview(playerName);
-
-    const isP2 = playerName === DOM.p2Board.dataset.playername;
 
     // 1. Get animation source (fleet positions)
     const sourceRects = Animation.getFleetSourceRects(coordsList.length);
@@ -360,11 +391,25 @@ export function View(root) {
       const cell = getCell(playerName, coords);
       if (!cell) return;
 
-      const isHull = isP2 ? i === 0 : i === coordsList.length - 1;
-
       cell.classList.add("ship");
       cell.dataset.shipid = shipID;
-      cell.innerHTML = SVG.ship(isHull, isP2, isP2);
+
+      const isP2 = playerName === DOM.p2Board.dataset.playername;
+
+      let type;
+      if (!isP2 || isVertical) {
+        if (i === coordsList.length - 1) type = "nose";
+        else if (i === 0) type = "tail";
+        else type = "mid";
+      } else {
+        if (i === 0) type = "nose";
+        else if (i === coordsList.length - 1) type = "tail";
+        else type = "mid";
+      }
+
+      if (shipID === 0) isVertical = false;
+
+      cell.innerHTML = SVG.ship(type, isP2, isVertical);
 
       targetCells.push(cell);
     });
@@ -383,7 +428,8 @@ export function View(root) {
 
   const Effects = {
     impact(cell, hit) {
-      Sound.play(hit ? "hit" : "miss", { volume: 0.4,
+      Sound.play(hit ? "hit" : "miss", {
+        volume: 0.4,
         playbackRate: 0.95 + Math.random() * 0.1,
       });
 

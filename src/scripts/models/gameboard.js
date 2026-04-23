@@ -130,7 +130,7 @@ export function Gameboard() {
         cellToPlaceOn.shipID = shipID;
       }
 
-      ships.push(Ship(shipLength));
+      ships.push(Ship(shipLength, isVertical));
 
       return { coordsList, valid };
     },

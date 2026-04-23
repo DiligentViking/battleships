@@ -566,14 +566,8 @@ SHIP SVGS
   translate: 2px;
 }
 
-svg.nose,
-svg.tail {
-  transform: rotate(180deg);
-}
-
-svg.nose.p2,
-svg.tail.p2 {
-  transform: rotate(180deg) scaleX(-1);
+svg.p2 {
+  transform: scaleX(-1);
 }
 
 svg.body > rect {
@@ -596,22 +590,25 @@ svg.vertical {
   translate: 1px 3px;
 }
 
-svg.nose.p2.vertical,
-svg.tail.p2.vertical {
-  transform: rotate(180deg) scaleY(-1);
+svg.p2.vertical {
+  transform: scaleY(-1);
 }
 
 .hull {
-  fill: #0a141ed9;
+  fill: url(#metal-p1);
   stroke: var(--ship-p1);
   stroke-width: 2;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,0.08))
+    drop-shadow(0 -1px 0 rgba(0,0,0,0.6));
 }
 
 .detail {
   fill: none;
   stroke: var(--ship-p1);
   stroke-width: 1.5;
-  opacity: 0.8;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.15));
 }
 
 .detail.faint {
@@ -622,6 +619,7 @@ svg.tail.p2.vertical {
   fill: #14283ce6;
   stroke: var(--ship-p1);
   stroke-width: 1.5;
+  filter: brightness(1.2) contrast(1.1);
 }
 
 .engine-glow {
@@ -637,7 +635,7 @@ svg.tail.p2.vertical {
 /* P2 Colors */
 
 svg.p2 .hull {
-  fill: #1e0a1ed9;
+  fill: url(#metal-p2);
   stroke: var(--ship-p2);
 }
 

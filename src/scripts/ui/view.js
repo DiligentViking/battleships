@@ -112,10 +112,10 @@ export function View(root) {
       const variants = {
         nose: `
         <svg class="nose ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
-          <path d="M0 60 L35 15 L120 15 L120 60 Z" class="hull"/>
-          <path d="M15 52 L40 25 L105 25" class="detail"/>
+          <path d="M120 15 L85 60 L0 60 L0 15 Z" class="hull"/>
+          <path d="M105 23 L80 50 L15 50" class="detail"/>
         </svg>
-      `,
+        `,
 
         mid: `
         <svg class="mid ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
@@ -123,15 +123,15 @@ export function View(root) {
           <line x1="10" y1="30" x2="110" y2="30" class="detail"/>
           <line x1="10" y1="48" x2="90" y2="48" class="detail faint"/>
         </svg>
-      `,
+        `,
 
         tail: `
         <svg class="tail ${p2} ${vertical}" viewBox="0 0 120 75" preserveAspectRatio="none">
-          <rect x="0" y="15" width="85" height="45" class="hull"/>
-          <rect x="85" y="22" width="20" height="30" class="engine"/>
-          <rect x="105" y="26" width="10" height="22" class="engine-glow"/>
+          <rect x="35" y="15" width="85" height="45" class="hull"/>
+          <rect x="15" y="22" width="20" height="30" class="engine"/>
+          <rect x="5" y="26" width="10" height="22" class="engine-glow"/>
         </svg>
-      `,
+        `,
       };
 
       return variants[type];

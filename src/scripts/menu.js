@@ -38,7 +38,16 @@ export function Menu(onStart) {
 
     const isHorizontal = Math.random() > 0.5;
 
-    const duration = 2.4 + Math.random() * 0.6;
+    const strong = Math.random() < 0.15;
+
+    const opacity = strong
+      ? 0.1 + Math.random() * 0.1 // rare bright streaks
+      : 0.02 + Math.random() * 0.02; // mostly faint
+
+    const duration = strong
+      ? 1.2 + Math.random() * 0.6 // fast, punchy
+      : 2.5 + Math.random() * 2.5; // slow drift
+
     const travel = 2000;
 
     if (isHorizontal) {
@@ -61,8 +70,7 @@ export function Menu(onStart) {
       el.style.setProperty("--dy", `${travel}px`);
     }
 
-    el.style.opacity = 0.1 + Math.random() * 0.1;
-
+    el.style.opacity = opacity;
     el.style.animationDuration = `${duration}s`;
 
     bg.appendChild(el);
@@ -75,7 +83,7 @@ export function Menu(onStart) {
 
     spawnParticle();
 
-    const next = 120 + Math.random() * 120;
+    const next = 400 + Math.random() * 600;
     setTimeout(spawnLoop, next);
   }
 

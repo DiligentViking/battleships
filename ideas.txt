@@ -119,3 +119,5 @@ OTHER IDEAS:
 
 -consider making light sources consistent somehow
 -and a lil stronger at the hull may be a smart decision as all hulls are kind of pointed toward the middle (which could be the light source)
+
+-super polish: a smart function for every sound in the game, does the fancy left-right stereo thing (for headphones).

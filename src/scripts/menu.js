@@ -37,7 +37,7 @@ export function Menu(onStart) {
 
     bg.appendChild(el);
 
-    setTimeout(() => el.remove(), 600);
+    setTimeout(() => el.remove(), 6000);
   }
 
   function spawnParticle() {
@@ -75,13 +75,16 @@ export function Menu(onStart) {
       const shouldFlash = Math.random() < 0.25;
       if (shouldFlash) {
         const col = Math.floor(Math.random() * cols);
-        const x = col * GRID;
 
-        // delay so it feels like the streak "hits" it
-        const delay = Math.random() * duration * 1000;
+        const progress = Math.random();
+        const delay = progress * duration * 1000;
+
+        const startX = -200; // offscreen start to match CSS
+        const x = startX + progress * travel;
+        const snappedX = Math.round(x / GRID) * GRID; // after computing position
 
         setTimeout(() => {
-          spawnNodeFlash(x, y);
+          spawnNodeFlash(snappedX, y);
         }, delay);
       }
     } else {
@@ -97,12 +100,16 @@ export function Menu(onStart) {
       const shouldFlash = Math.random() < 0.25;
       if (shouldFlash) {
         const row = Math.floor(Math.random() * rows);
-        const y = row * GRID;
 
-        const delay = Math.random() * duration * 1000;
+        const progress = Math.random();
+        const delay = progress * duration * 1000;
+
+        const startY = -200;
+        const y = startY + progress * travel;
+        const snappedY = Math.round(y / GRID) * GRID;
 
         setTimeout(() => {
-          spawnNodeFlash(x, y);
+          spawnNodeFlash(x, snappedY);
         }, delay);
       }
     }

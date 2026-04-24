@@ -28,6 +28,18 @@ export function Menu(onStart) {
     });
   }
 
+  function spawnNodeFlash(x, y) {
+    const el = document.createElement("div");
+    el.className = "node-flash";
+
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+
+    bg.appendChild(el);
+
+    setTimeout(() => el.remove(), 600);
+  }
+
   function spawnParticle() {
     const GRID = 80;
     const cols = Math.ceil(window.innerWidth / GRID);
@@ -59,6 +71,19 @@ export function Menu(onStart) {
 
       el.style.setProperty("--dx", `${travel}px`);
       el.style.setProperty("--dy", `0px`);
+
+      const shouldFlash = Math.random() < 0.25;
+      if (shouldFlash) {
+        const col = Math.floor(Math.random() * cols);
+        const x = col * GRID;
+
+        // delay so it feels like the streak "hits" it
+        const delay = Math.random() * duration * 1000;
+
+        setTimeout(() => {
+          spawnNodeFlash(x, y);
+        }, delay);
+      }
     } else {
       el.classList.add("v");
 
@@ -68,6 +93,18 @@ export function Menu(onStart) {
 
       el.style.setProperty("--dx", `0px`);
       el.style.setProperty("--dy", `${travel}px`);
+
+      const shouldFlash = Math.random() < 0.25;
+      if (shouldFlash) {
+        const row = Math.floor(Math.random() * rows);
+        const y = row * GRID;
+
+        const delay = Math.random() * duration * 1000;
+
+        setTimeout(() => {
+          spawnNodeFlash(x, y);
+        }, delay);
+      }
     }
 
     el.style.setProperty("--final-opacity", opacity);

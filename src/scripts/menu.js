@@ -28,18 +28,6 @@ export function Menu(onStart) {
     });
   }
 
-  function spawnNodeFlash(x, y) {
-    const el = document.createElement("div");
-    el.className = "node-flash";
-
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
-
-    bg.appendChild(el);
-
-    setTimeout(() => el.remove(), 600);
-  }
-
   function spawnParticle() {
     const GRID = 80;
     const width = window.innerWidth;
@@ -51,7 +39,7 @@ export function Menu(onStart) {
     const el = document.createElement("div");
     el.className = "particle";
 
-    const isHorizontal = Math.random() > 0.3;
+    const isHorizontal = Math.random() > 0.4;
     const dir = Math.random() < 0.8 ? 1 : -1;
 
     const strong = Math.random() < 0.15;
@@ -85,6 +73,7 @@ export function Menu(onStart) {
       el.style.setProperty("--dy", `0px`);
 
       duration = Math.abs(distance) / speed;
+      // duration *= 5; // dev
 
       el.style.animationDuration = `${duration}s`;
 
@@ -108,6 +97,7 @@ export function Menu(onStart) {
       el.style.setProperty("--dy", `${distance}px`);
 
       duration = Math.abs(distance) / speed;
+      // duration *= 5; // dev
 
       el.style.animationDuration = `${duration}s`;
 
@@ -124,27 +114,44 @@ export function Menu(onStart) {
 
   function spawnNodeBurstsAlongPath(start, end, fixed, isHorizontal, duration) {
     const GRID = 80;
+    const VISUAL_OFFSET = 0.08; // tweak between 0.05–0.12
+    const STREAK_LENGTH = 1000; // must match your CSS
+    const HEAD_OFFSET = STREAK_LENGTH * 0.4;
 
     const dir = end > start ? 1 : -1;
 
-    const firstNode = Math.ceil(start / GRID) * GRID;
+    const firstNode = Math.ceil((start + GRID) / GRID) * GRID;
 
     for (
       let pos = firstNode;
       dir === 1 ? pos <= end : pos >= end;
       pos += GRID * dir
     ) {
-      const progress = Math.abs(pos - start) / Math.abs(end - start);
-      const delay = progress * duration * 1000;
+      const adjustedPos = pos - dir * HEAD_OFFSET;
+      const progress = Math.abs(adjustedPos - start) / Math.abs(end - start);
+      const clampedProgress = Math.min(progress + VISUAL_OFFSET, 1);
+      const delay = clampedProgress * duration * 1000;
 
       setTimeout(() => {
         if (isHorizontal) {
-          spawnNodeFlash(pos, fixed);
+          spawnNodeSpread(pos, fixed);
         } else {
-          spawnNodeFlash(fixed, pos);
+          spawnNodeSpread(fixed, pos);
         }
       }, delay);
     }
+  }
+
+  function spawnNodeSpread(x, y) {
+    const el = document.createElement("div");
+    el.className = "node-spread";
+
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+
+    bg.appendChild(el);
+
+    setTimeout(() => el.remove(), 2000);
   }
 
   function spawnLoop() {

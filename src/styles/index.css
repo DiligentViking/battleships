@@ -183,7 +183,8 @@ HELPERS
 }
 
 .hide {
-  /* visibility: hidden; */
+  visibility: hidden;
+  opacity: 0 !important;
 }
 
 .show {

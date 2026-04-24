@@ -8,8 +8,8 @@ export function Controller(player1, player2, game, view) {
     HIT_DELAY: 800,
     COMPUTER_DELAY: 600,
   };
-  CONFIG.HIT_DELAY = 0; // dev
-  CONFIG.COMPUTER_DELAY = 0; // dev
+  // CONFIG.HIT_DELAY = 0; // dev
+  // CONFIG.COMPUTER_DELAY = 0; // dev
   // CONFIG.AUTOPLAY_DELAY = 250; // dev
 
   let cleanupFns = [];

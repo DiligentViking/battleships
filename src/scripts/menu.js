@@ -42,7 +42,7 @@ export function Menu(onStart) {
 
     const opacity = strong
       ? 0.1 + Math.random() * 0.1 // rare bright streaks
-      : 0.02 + Math.random() * 0.02; // mostly faint
+      : 0.04 + Math.random() * 0.04; // mostly faint
 
     const duration = strong
       ? 1.2 + Math.random() * 0.6 // fast, punchy
@@ -55,7 +55,7 @@ export function Menu(onStart) {
 
       const row = Math.floor(Math.random() * rows);
       const y = row * GRID;
-      el.style.top = `${y - 3}px`;
+      el.style.top = `${y}px`;
 
       el.style.setProperty("--dx", `${travel}px`);
       el.style.setProperty("--dy", `0px`);
@@ -64,13 +64,13 @@ export function Menu(onStart) {
 
       const col = Math.floor(Math.random() * cols);
       const x = col * GRID;
-      el.style.left = `${x - 3}px`;
+      el.style.left = `${x}px`;
 
       el.style.setProperty("--dx", `0px`);
       el.style.setProperty("--dy", `${travel}px`);
     }
 
-    el.style.opacity = opacity;
+    el.style.setProperty("--final-opacity", opacity);
     el.style.animationDuration = `${duration}s`;
 
     bg.appendChild(el);

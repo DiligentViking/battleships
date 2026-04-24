@@ -12,8 +12,8 @@ Base
   --bg-panel-dark: #0a0a1a;
   --bg-panel-light: #111133;
 
-  --glow-cyan-soft: #00ffff22;
-  --glow-pink-soft: #ff2bd622;
+  --glow-cyan-soft: #00ffff1a;
+  --glow-pink-soft: #ff2bd61a;
 
   --p1-primary: #00ffff;
   --p2-primary: #ff2bd6;
@@ -294,8 +294,8 @@ MAIN MENU
   overflow: hidden;
 
   background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 
   background-size: 80px 80px;
 
@@ -305,64 +305,83 @@ MAIN MENU
 
 .particle {
   position: absolute;
-
-  width: 6px;
-  height: 6px;
-
-  background: white;
-  border-radius: 50%;
-
-  opacity: 0.6;
-
-  box-shadow:
-    0 0 4px rgba(255,255,255,0.8),
-    0 0 10px rgba(255,255,255,0.3);
-
-  animation: particleMove linear forwards;
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* horizontal streak */
-.particle.h::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 300px;
+.particle.h {
   height: 2px;
+  width: 0;
 
   background: linear-gradient(
-    to left,
-    rgba(255,255,255,0.9),
-    rgba(255,255,255,0.2),
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.2),
     transparent
   );
+
+  animation:
+    particleGrowH 0.6s ease-out forwards,
+    particleMove linear forwards,
+    particleFade ease-in-out forwards;
 }
 
 /* vertical streak */
-.particle.v::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
+.particle.v {
   width: 2px;
-  height: 300px;
+  height: 0;
 
   background: linear-gradient(
-    to top,
-    rgba(255,255,255,0.9),
-    rgba(255,255,255,0.2),
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.2),
     transparent
   );
+
+  animation:
+    particleGrowV 0.6s ease-out forwards,
+    particleMove linear forwards,
+    particleFade ease-in-out forwards;
+}
+
+@keyframes particleGrowH {
+  0% {
+    width: 0;
+  }
+  30% {
+    width: 200px;
+  }
+  100% {
+    width: 200px;
+  }
+}
+
+@keyframes particleGrowV {
+  0% {
+    height: 0;
+  }
+  30% {
+    height: 200px;
+  }
+  100% {
+    height: 200px;
+  }
 }
 
 @keyframes particleMove {
   to {
     transform: translate(var(--dx), var(--dy));
   }
+}
+
+@keyframes particleFade {
+  0% { opacity: 0; }
+  10% { opacity: var(--final-opacity); }
+  90% { opacity: var(--final-opacity); }
+  100% { opacity: 0; }
 }
 
 /*
@@ -756,9 +775,8 @@ svg.p2.vertical {
   fill: url(#metal-p1);
   stroke: var(--ship-p1);
   stroke-width: 2;
-  filter:
-    drop-shadow(0 1px 0 rgba(255,255,255,0.08))
-    drop-shadow(0 -1px 0 rgba(0,0,0,0.6));
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.08))
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.6));
 }
 
 .detail {
@@ -766,7 +784,7 @@ svg.p2.vertical {
   stroke: var(--ship-p1);
   stroke-width: 1.5;
   opacity: 0.85;
-  filter: drop-shadow(0 0 2px rgba(255,255,255,0.15));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.15));
 }
 
 .detail.faint {

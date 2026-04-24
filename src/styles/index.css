@@ -86,7 +86,6 @@ h3 {
   position: relative;
 }
 
-h1::after,
 h2::after {
   content: "";
   display: block;
@@ -227,7 +226,6 @@ MAIN MENU
   pointer-events: all;
 }
 
-/* Hide game initially */
 .game-hidden {
   opacity: 0;
   pointer-events: none;
@@ -237,7 +235,7 @@ MAIN MENU
 
 .menu-title {
   position: absolute;
-  top: 18%; /* move higher */
+  top: 18%;
 
   font-size: 3.5rem;
 
@@ -288,31 +286,42 @@ MAIN MENU
   }
 }
 
-/* BACKGROUND STREAKS */
+/* BACKGROUND */
+
+#menuBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+
+  background-size: 80px 80px;
+
+  mask-image: radial-gradient(circle at center, black 1%, transparent 100%);
+  /* mask-image: radial-gradient(circle at center, transparent 1%, black 100%); */
+}
 
 .particle {
   position: absolute;
 
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
 
-  background: rgba(255,255,255,0.8);
+  background: white;
   border-radius: 50%;
 
-  opacity: 0.9;
+  opacity: 0.6;
 
   box-shadow:
-    0 0 6px rgba(255,255,255,0.8),
-    0 0 12px rgba(255,255,255,0.4);
+    0 0 4px rgba(255,255,255,0.8),
+    0 0 10px rgba(255,255,255,0.3);
 
   animation: particleMove linear forwards;
 }
 
-.particle.h {
-  width: 10px;
-  height: 10px;
-}
-
+/* horizontal streak */
 .particle.h::after {
   content: "";
   position: absolute;
@@ -320,16 +329,18 @@ MAIN MENU
   top: 50%;
   transform: translateY(-50%);
 
-  width: 500px;
-  height: 5px;
+  width: 300px;
+  height: 2px;
 
   background: linear-gradient(
     to left,
-    rgba(255,255,255,0.8),
+    rgba(255,255,255,0.9),
+    rgba(255,255,255,0.2),
     transparent
   );
 }
 
+/* vertical streak */
 .particle.v::after {
   content: "";
   position: absolute;
@@ -337,12 +348,13 @@ MAIN MENU
   left: 50%;
   transform: translateX(-50%);
 
-  width: 5px;
-  height: 500px;
+  width: 2px;
+  height: 300px;
 
   background: linear-gradient(
     to top,
-    rgba(255,255,255,0.8),
+    rgba(255,255,255,0.9),
+    rgba(255,255,255,0.2),
     transparent
   );
 }

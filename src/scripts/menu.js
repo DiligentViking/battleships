@@ -29,30 +29,33 @@ export function Menu(onStart) {
   }
 
   function spawnParticle() {
+    const GRID = 80;
+    const cols = Math.ceil(window.innerWidth / GRID);
+    const rows = Math.ceil(window.innerHeight / GRID);
+
     const el = document.createElement("div");
     el.className = "particle";
 
-    const isHorizontal = particleHorizontal;
-    particleHorizontal = !particleHorizontal;
+    const isHorizontal = Math.random() > 0.5;
 
-    const duration = 1.4 + Math.random() * 0.6;
+    const duration = 2.4 + Math.random() * 0.6;
     const travel = 2000;
 
     if (isHorizontal) {
       el.classList.add("h");
 
-      const y = Math.random() * 100;
-      el.style.top = `${y}%`;
-      el.style.left = `-50px`;
+      const row = Math.floor(Math.random() * rows);
+      const y = row * GRID;
+      el.style.top = `${y - 3}px`;
 
       el.style.setProperty("--dx", `${travel}px`);
       el.style.setProperty("--dy", `0px`);
     } else {
       el.classList.add("v");
 
-      const x = Math.random() * 100;
-      el.style.left = `${x}%`;
-      el.style.top = `-50px`;
+      const col = Math.floor(Math.random() * cols);
+      const x = col * GRID;
+      el.style.left = `${x - 3}px`;
 
       el.style.setProperty("--dx", `0px`);
       el.style.setProperty("--dy", `${travel}px`);
@@ -72,7 +75,7 @@ export function Menu(onStart) {
 
     spawnParticle();
 
-    const next = 200 + Math.random() * 200;
+    const next = 120 + Math.random() * 120;
     setTimeout(spawnLoop, next);
   }
 

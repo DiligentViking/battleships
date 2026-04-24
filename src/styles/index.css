@@ -236,26 +236,30 @@ MAIN MENU
 /* TITLE */
 
 .menu-title {
+  position: absolute;
+  top: 18%; /* move higher */
+
   font-size: 3.5rem;
-  margin-bottom: 2.5rem;
 
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px);
 
-  animation: titleReveal 1.6s ease-out forwards;
+  animation: titleReveal 1.4s ease-out forwards;
 }
 
 @keyframes titleReveal {
   0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
     text-shadow: 0 0 0px transparent;
   }
-  60% {
+  70% {
     opacity: 1;
     transform: translateY(0);
   }
   100% {
+    opacity: 1;
+    transform: translateY(0);
     text-shadow:
       0 0 6px var(--glow-cyan-soft),
       0 0 18px var(--glow-cyan-soft);
@@ -286,37 +290,66 @@ MAIN MENU
 
 /* BACKGROUND STREAKS */
 
-.menu-bg {
+.particle {
   position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: -1;
+
+  width: 10px;
+  height: 10px;
+
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+
+  opacity: 0.9;
+
+  box-shadow:
+    0 0 6px rgba(255,255,255,0.8),
+    0 0 12px rgba(255,255,255,0.4);
+
+  animation: particleMove linear forwards;
 }
 
-.streak {
+.particle.h {
+  width: 10px;
+  height: 10px;
+}
+
+.particle.h::after {
+  content: "";
   position: absolute;
-  height: 2px;
-  width: 120px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 500px;
+  height: 5px;
 
   background: linear-gradient(
-    90deg,
-    transparent,
-    var(--p1-primary),
+    to left,
+    rgba(255,255,255,0.8),
     transparent
   );
-
-  opacity: 0.15;
-  filter: blur(1px);
-
-  animation: streakMove linear forwards;
 }
 
-@keyframes streakMove {
-  from {
-    transform: translateX(-150px);
-  }
+.particle.v::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 5px;
+  height: 500px;
+
+  background: linear-gradient(
+    to top,
+    rgba(255,255,255,0.8),
+    transparent
+  );
+}
+
+@keyframes particleMove {
   to {
-    transform: translateX(120vw);
+    transform: translate(var(--dx), var(--dy));
   }
 }
 

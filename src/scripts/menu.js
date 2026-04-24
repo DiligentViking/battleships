@@ -4,6 +4,8 @@ export function Menu(onStart) {
 
   let running = true;
 
+  let particleHorizontal = true;
+
   function init() {
     spawnLoop();
     bindButtons();
@@ -26,31 +28,51 @@ export function Menu(onStart) {
     });
   }
 
-  function spawnStreak() {
+  function spawnParticle() {
     const el = document.createElement("div");
-    el.className = "streak";
+    el.className = "particle";
 
-    const y = Math.random() * 100;
-    const duration = 4 + Math.random() * 6;
-    const delay = Math.random() * 2;
-    const angle = (Math.random() - 0.5) * 20;
+    const isHorizontal = particleHorizontal;
+    particleHorizontal = !particleHorizontal;
 
-    el.style.top = `${y}%`;
+    const duration = 1.4 + Math.random() * 0.6;
+    const travel = 2000;
+
+    if (isHorizontal) {
+      el.classList.add("h");
+
+      const y = Math.random() * 100;
+      el.style.top = `${y}%`;
+      el.style.left = `-50px`;
+
+      el.style.setProperty("--dx", `${travel}px`);
+      el.style.setProperty("--dy", `0px`);
+    } else {
+      el.classList.add("v");
+
+      const x = Math.random() * 100;
+      el.style.left = `${x}%`;
+      el.style.top = `-50px`;
+
+      el.style.setProperty("--dx", `0px`);
+      el.style.setProperty("--dy", `${travel}px`);
+    }
+
+    el.style.opacity = 0.1 + Math.random() * 0.1;
+
     el.style.animationDuration = `${duration}s`;
-    el.style.animationDelay = `${delay}s`;
-    el.style.transform = `rotate(${angle}deg)`;
 
     bg.appendChild(el);
 
-    setTimeout(() => el.remove(), (duration + delay) * 1000);
+    setTimeout(() => el.remove(), duration * 1000);
   }
 
   function spawnLoop() {
     if (!running) return;
 
-    spawnStreak();
+    spawnParticle();
 
-    const next = 200 + Math.random() * 400;
+    const next = 200 + Math.random() * 200;
     setTimeout(spawnLoop, next);
   }
 

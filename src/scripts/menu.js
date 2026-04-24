@@ -48,17 +48,18 @@ export function Menu(onStart) {
     const el = document.createElement("div");
     el.className = "particle";
 
-    const isHorizontal = Math.random() > 0.5;
+    const isHorizontal = particleHorizontal;
+    particleHorizontal = !particleHorizontal;
 
     const strong = Math.random() < 0.15;
 
-    const opacity = strong
-      ? 0.1 + Math.random() * 0.1 // rare bright streaks
-      : 0.04 + Math.random() * 0.04; // mostly faint
+    const opacity = 0.04 + Math.random() * 0.04;
+      // ? 0.1 + Math.random() * 0.1 // rare bright streaks
+      // : 0.04 + Math.random() * 0.04; // mostly faint
 
     const duration = strong
       ? 1.2 + Math.random() * 0.6 // fast, punchy
-      : 2.5 + Math.random() * 2.5; // slow drift
+      : 1.5 + Math.random() * 1.5; // slow drift
 
     const travel = 2000;
 
@@ -120,7 +121,7 @@ export function Menu(onStart) {
 
     spawnParticle();
 
-    const next = 400 + Math.random() * 600;
+    const next = 300 + Math.random() * 600;
     setTimeout(spawnLoop, next);
   }
 

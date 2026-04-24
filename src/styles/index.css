@@ -294,12 +294,12 @@ MAIN MENU
   overflow: hidden;
 
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
 
   background-size: 80px 80px;
 
-  mask-image: radial-gradient(circle at center, black 20%, transparent 100%);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
   /* mask-image: radial-gradient(circle at center, transparent 1%, black 100%); */
 }
 
@@ -307,44 +307,46 @@ MAIN MENU
   position: absolute;
   pointer-events: none;
   opacity: 0;
+
+  animation:
+    particleMove linear forwards,
+    particleFade ease-in-out forwards;
 }
 
 /* horizontal streak */
 .particle.h {
   height: 2px;
-  width: 0;
+  width: 1000px;
 
   background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0.2),
-    transparent
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.25) 70%,
+    transparent 100%
   );
+  filter: blur(0.8px);
 
-  animation:
-    particleGrowH 0.6s ease-out forwards,
-    particleMove linear forwards,
-    particleFade ease-in-out forwards;
+  transform: translate(-500px, 0px);
 }
 
 /* vertical streak */
 .particle.v {
   width: 2px;
-  height: 0;
+  height: 1000px;
 
   background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0.2),
-    transparent
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.25) 70%,
+    transparent 100%
   );
+  filter: blur(0.8px);
 
-  animation:
-    particleGrowV 0.6s ease-out forwards,
-    particleMove linear forwards,
-    particleFade ease-in-out forwards;
+  transform: translate(0px, -500px);
 }
 
 @keyframes particleGrowH {
@@ -378,10 +380,18 @@ MAIN MENU
 }
 
 @keyframes particleFade {
-  0% { opacity: 0; }
-  10% { opacity: var(--final-opacity); }
-  90% { opacity: var(--final-opacity); }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--final-opacity);
+  }
+  60% {
+    opacity: var(--final-opacity);
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .node-flash {
@@ -394,11 +404,11 @@ MAIN MENU
 
   border-radius: 50%;
 
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
 
   box-shadow:
-    0 0 6px rgba(255,255,255,0.9),
-    0 0 18px rgba(255,255,255,0.4);
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 18px rgba(255, 255, 255, 0.4);
 
   opacity: 0;
 

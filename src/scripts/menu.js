@@ -3,18 +3,16 @@ export function Menu(onStart) {
   const bg = document.getElementById("menuBg");
 
   const GRID = 80;
-  const NODE_CHARGE_MS = 420;
 
   let running = true;
   let rails = { h: [], v: [] };
-  let nodes = new Map();
 
   function init() {
-    buildGridEffects();
+    buildGridRails();
     spawnLoop();
     bindButtons();
 
-    window.addEventListener("resize", rebuildGridEffects);
+    window.addEventListener("resize", rebuildGridRails);
   }
 
   function bindButtons() {
@@ -34,11 +32,9 @@ export function Menu(onStart) {
     });
   }
 
-  function buildGridEffects() {
+  function buildGridRails() {
     bg.textContent = "";
-
     rails = { h: [], v: [] };
-    nodes = new Map();
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -49,9 +45,6 @@ export function Menu(onStart) {
     const railLayer = document.createElement("div");
     railLayer.className = "grid-rail-layer";
 
-    const nodeLayer = document.createElement("div");
-    nodeLayer.className = "grid-node-layer";
-
     for (let row = 0; row < rows; row++) {
       const y = row * GRID;
 
@@ -60,7 +53,7 @@ export function Menu(onStart) {
       rail.style.top = `${y}px`;
 
       railLayer.appendChild(rail);
-      rails.h.push({ el: rail, y });
+      rails.h.push(rail);
     }
 
     for (let col = 0; col < cols; col++) {
@@ -71,30 +64,14 @@ export function Menu(onStart) {
       rail.style.left = `${x}px`;
 
       railLayer.appendChild(rail);
-      rails.v.push({ el: rail, x });
-    }
-
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const x = col * GRID;
-        const y = row * GRID;
-
-        const node = document.createElement("div");
-        node.className = "grid-node";
-        node.style.left = `${x}px`;
-        node.style.top = `${y}px`;
-
-        nodeLayer.appendChild(node);
-        nodes.set(`${x},${y}`, node);
-      }
+      rails.v.push(rail);
     }
 
     bg.appendChild(railLayer);
-    bg.appendChild(nodeLayer);
   }
 
-  function rebuildGridEffects() {
-    buildGridEffects();
+  function rebuildGridRails() {
+    buildGridRails();
   }
 
   function spawnStreak() {
@@ -133,14 +110,6 @@ export function Menu(onStart) {
       streak.style.left = `${start}px`;
       streak.style.setProperty("--dx", `${distance}px`);
       streak.style.setProperty("--dy", "0px");
-
-      chargeNodesAlongPath({
-        isHorizontal: true,
-        fixed: rail.y,
-        start,
-        end,
-        duration,
-      });
     } else {
       start = dir === 1 ? -900 : height + 900;
       end = dir === 1 ? height + 900 : -900;
@@ -150,64 +119,14 @@ export function Menu(onStart) {
       streak.style.top = `${start}px`;
       streak.style.setProperty("--dx", "0px");
       streak.style.setProperty("--dy", `${distance}px`);
-
-      chargeNodesAlongPath({
-        isHorizontal: false,
-        fixed: rail.x,
-        start,
-        end,
-        duration,
-      });
     }
 
     streak.style.setProperty("--final-opacity", opacity);
     streak.style.animationDuration = `${duration}s`;
 
-    rail.el.appendChild(streak);
+    rail.appendChild(streak);
 
     setTimeout(() => streak.remove(), duration * 1000);
-  }
-
-  function chargeNodesAlongPath({ isHorizontal, fixed, start, end, duration }) {
-    const dir = end > start ? 1 : -1;
-    const first = dir === 1
-      ? Math.ceil(0 / GRID) * GRID
-      : Math.floor((isHorizontal ? window.innerWidth : window.innerHeight) / GRID) * GRID;
-
-    const limit = isHorizontal ? window.innerWidth : window.innerHeight;
-
-    for (
-      let moving = first;
-      dir === 1 ? moving <= limit : moving >= 0;
-      moving += GRID * dir
-    ) {
-      const headOffset = 420 * dir;
-      const adjusted = moving - headOffset;
-      const progress = Math.abs(adjusted - start) / Math.abs(end - start);
-      const delay = Math.max(0, Math.min(progress, 1)) * duration * 1000;
-
-      setTimeout(() => {
-        if (!running) return;
-
-        const x = isHorizontal ? moving : fixed;
-        const y = isHorizontal ? fixed : moving;
-
-        chargeNode(x, y);
-      }, delay);
-    }
-  }
-
-  function chargeNode(x, y) {
-    const node = nodes.get(`${x},${y}`);
-    if (!node) return;
-
-    node.classList.remove("charged");
-    void node.offsetWidth;
-    node.classList.add("charged");
-
-    setTimeout(() => {
-      node.classList.remove("charged");
-    }, NODE_CHARGE_MS);
   }
 
   function spawnLoop() {
@@ -221,7 +140,7 @@ export function Menu(onStart) {
 
   function exitMenu() {
     running = false;
-    window.removeEventListener("resize", rebuildGridEffects);
+    window.removeEventListener("resize", rebuildGridRails);
 
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";

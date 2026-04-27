@@ -224,6 +224,8 @@ MAIN MENU
   align-items: center;
 
   pointer-events: all;
+
+  /* background: #020207; */
 }
 
 .game-hidden {
@@ -231,58 +233,110 @@ MAIN MENU
   pointer-events: none;
 }
 
+/* soft cinematic dark lift */
+.main-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at center, transparent 0%, #020207 72%), #020207;
+
+  opacity: 1;
+  animation: menuDarkLift 3.2s ease-out forwards;
+}
+
+/* subtle vignette above background, below title/buttons */
+.main-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+
+  background: radial-gradient(
+    circle at center,
+    transparent 38%,
+    rgba(5, 5, 16, 0.55) 100%
+  );
+}
+
 /* TITLE */
 
 .menu-title {
   position: absolute;
   top: 18%;
+  z-index: 5;
 
   font-size: 3.5rem;
 
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(18px) scale(0.985);
+  filter: blur(3px);
 
-  animation: titleReveal 1.4s ease-out forwards;
+  text-shadow:
+    0 0 6px var(--glow-cyan-soft),
+    0 0 18px var(--glow-cyan-soft);
+
+  animation: titleReveal 3s /* cubic-bezier(0.16, 1, 0.3, 1) */ ease-in-out
+    forwards;
 }
 
 @keyframes titleReveal {
   0% {
     opacity: 0;
-    transform: translateY(12px);
-    text-shadow: 0 0 0px transparent;
+    transform: translateY(18px) scaleY(1);
+    filter: blur(3px);
+    letter-spacing: 20px;
   }
-  70% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+
   100% {
     opacity: 1;
-    transform: translateY(0);
-    text-shadow:
-      0 0 6px var(--glow-cyan-soft),
-      0 0 18px var(--glow-cyan-soft);
+    transform: translateY(0) scaleY(1);
+    filter: blur(0);
+    letter-spacing: 1px;
   }
 }
 
 /* BUTTONS */
 
 .menu-buttons {
+  position: relative;
+  z-index: 5;
+
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
-  opacity: 0;
-  animation: fadeIn 1s ease forwards;
-  animation-delay: 1.2s;
 }
 
 .menu-btn {
   width: 240px;
+
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+  animation: buttonsWake 1s ease backwards;
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
+.menu-btn:nth-child(1) {
+  animation-delay: 2.2s;
+}
+
+.menu-btn:nth-child(2) {
+  animation-delay: 2.35s;
+}
+
+.menu-btn:nth-child(3) {
+  animation-delay: 2.5s;
+}
+
+@keyframes buttonsWake {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
   }
 }
 
@@ -295,6 +349,15 @@ MAIN MENU
   position: absolute;
   inset: 0;
   overflow: hidden;
+
+  opacity: 0;
+  filter: brightness(0.45);
+  transform: scale(1.025);
+
+  transition:
+    opacity 2.2s ease,
+    filter 2.2s ease,
+    transform 3s ease;
 
   background:
     linear-gradient(rgba(255, 255, 255, 0.008) 2px, transparent 2px),
@@ -330,18 +393,10 @@ MAIN MENU
   -webkit-mask-composite: source-over;
 }
 
-.main-menu::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-
-  background: radial-gradient(
-    circle at center,
-    transparent 40%,
-    rgba(5, 5, 16, 0.4) 100%
-  );
+.main-menu.menu-awake #menuBg {
+  opacity: 1;
+  filter: brightness(1);
+  transform: scale(1);
 }
 
 .streak {
@@ -357,13 +412,13 @@ MAIN MENU
 .streak::before {
   content: "";
   position: absolute;
-  inset: -40px;
+  inset: -60px;
   pointer-events: none;
 
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 255, 255, 0.40),
-    rgba(255, 255, 255, 0.20) 35%,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.2) 35%,
     transparent 70%
   );
 }
@@ -408,12 +463,29 @@ MAIN MENU
   0% {
     opacity: 0;
   }
+
   10% {
     opacity: var(--final-opacity);
   }
+
   60% {
     opacity: var(--final-opacity);
   }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes menuDarkLift {
+  0% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 0.65;
+  }
+
   100% {
     opacity: 0;
   }

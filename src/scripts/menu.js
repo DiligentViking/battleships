@@ -5,8 +5,14 @@ export function Menu(onStart) {
   let running = true;
 
   function init() {
-    spawnLoop();
+    root.classList.add("menu-entering");
+
     bindButtons();
+
+    setTimeout(() => {
+      root.classList.add("menu-awake");
+      spawnLoop();
+    }, 3000);
   }
 
   function bindButtons() {

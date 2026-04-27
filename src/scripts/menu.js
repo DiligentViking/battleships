@@ -37,12 +37,12 @@ export function Menu(onStart) {
     const el = document.createElement("div");
     el.className = "streak";
 
-    const isHorizontal = Math.random() > 0.4;
+    const isHorizontal = Math.random() > 0.6;
     const dir = Math.random() < 0.8 ? 1 : -1;
 
     const strong = Math.random() < 0.15;
 
-    const opacity = 0.04 + Math.random() * 0.04;
+    const opacity = 0.03 + Math.random() * 0.03;
 
     const speed = strong
       ? 1400 + Math.random() * 400
@@ -103,7 +103,7 @@ export function Menu(onStart) {
 
     spawnStreak();
 
-    const next = 400 + Math.random() * 600;
+    const next = 300 + Math.random() * 500;
     setTimeout(spawnLoop, next);
   }
 

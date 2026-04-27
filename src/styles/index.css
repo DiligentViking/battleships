@@ -289,18 +289,59 @@ MAIN MENU
 /* BACKGROUND */
 
 #menuBg {
+  --grid-size: 80px;
+  --grid-line: 2px;
+
   position: absolute;
   inset: 0;
   overflow: hidden;
 
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.008) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.008) 2px, transparent 2px);
 
-  background-size: 80px 80px;
+  background-size: var(--grid-size) var(--grid-size);
 
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  mask-image:
+    repeating-linear-gradient(
+      to right,
+      black 0 var(--grid-line),
+      transparent var(--grid-line) var(--grid-size)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      black 0 var(--grid-line),
+      transparent var(--grid-line) var(--grid-size)
+    );
+
+  -webkit-mask-image:
+    repeating-linear-gradient(
+      to right,
+      black 0 var(--grid-line),
+      transparent var(--grid-line) var(--grid-size)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      black 0 var(--grid-line),
+      transparent var(--grid-line) var(--grid-size)
+    );
+
+  mask-composite: add;
+  -webkit-mask-composite: source-over;
+}
+
+.main-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    rgba(5, 5, 16, 0.4) 100%
+  );
 }
 
 .streak {
@@ -321,8 +362,8 @@ MAIN MENU
 
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 255, 255, 0.35),
-    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.40),
+    rgba(255, 255, 255, 0.20) 35%,
     transparent 70%
   );
 }

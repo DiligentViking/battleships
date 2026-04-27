@@ -294,40 +294,13 @@ MAIN MENU
   overflow: hidden;
 
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+
   background-size: 80px 80px;
+
   mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-}
-
-.grid-rail-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.grid-rail {
-  position: absolute;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* Horizontal rails (grid rows) */
-.grid-rail.horizontal {
-  left: 0;
-  width: 100%;
-
-  height: 18px;
-  transform: translateY(-9px);
-}
-
-/* Vertical rails (grid columns) */
-.grid-rail.vertical {
-  top: 0;
-  height: 100%;
-
-  width: 18px;
-  transform: translateX(-9px);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
 .streak {
@@ -340,57 +313,48 @@ MAIN MENU
     streakFade ease-in-out forwards;
 }
 
-/* Horizontal streak */
-.streak.horizontal {
-  top: 8px;
+.streak::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
 
-  width: 900px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.08) 35%,
+    transparent 70%
+  );
+}
+
+/* horizontal streak */
+.streak.h {
   height: 2px;
+  width: 1000px;
 
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0) 18%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(160, 245, 255, 0.32) 70%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.25) 70%,
     transparent 100%
   );
-
-  /* glow that gets clipped by rail */
-  box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.4),
-    0 0 18px rgba(120, 240, 255, 0.28),
-    0 0 36px rgba(120, 240, 255, 0.18);
-
-  filter: blur(0.65px);
-
-  transform: translate(-450px, 0);
 }
 
-/* Vertical streak */
-.streak.vertical {
-  left: 8px;
-
+/* vertical streak */
+.streak.v {
   width: 2px;
-  height: 900px;
+  height: 1000px;
 
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(255, 255, 255, 0) 18%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(160, 245, 255, 0.32) 70%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.25) 70%,
     transparent 100%
   );
-
-  box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.4),
-    0 0 18px rgba(120, 240, 255, 0.28),
-    0 0 36px rgba(120, 240, 255, 0.18);
-
-  filter: blur(0.65px);
-
-  transform: translate(0, -450px);
 }
 
 @keyframes streakMove {
@@ -403,15 +367,12 @@ MAIN MENU
   0% {
     opacity: 0;
   }
-
   10% {
     opacity: var(--final-opacity);
   }
-
-  65% {
+  60% {
     opacity: var(--final-opacity);
   }
-
   100% {
     opacity: 0;
   }

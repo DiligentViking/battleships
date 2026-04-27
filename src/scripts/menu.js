@@ -2,17 +2,11 @@ export function Menu(onStart) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
 
-  const GRID = 80;
-
   let running = true;
-  let rails = { h: [], v: [] };
 
   function init() {
-    buildGridRails();
     spawnLoop();
     bindButtons();
-
-    window.addEventListener("resize", rebuildGridRails);
   }
 
   function bindButtons() {
@@ -32,101 +26,76 @@ export function Menu(onStart) {
     });
   }
 
-  function buildGridRails() {
-    bg.textContent = "";
-    rails = { h: [], v: [] };
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    const cols = Math.ceil(width / GRID) + 1;
-    const rows = Math.ceil(height / GRID) + 1;
-
-    const railLayer = document.createElement("div");
-    railLayer.className = "grid-rail-layer";
-
-    for (let row = 0; row < rows; row++) {
-      const y = row * GRID;
-
-      const rail = document.createElement("div");
-      rail.className = "grid-rail horizontal";
-      rail.style.top = `${y}px`;
-
-      railLayer.appendChild(rail);
-      rails.h.push(rail);
-    }
-
-    for (let col = 0; col < cols; col++) {
-      const x = col * GRID;
-
-      const rail = document.createElement("div");
-      rail.className = "grid-rail vertical";
-      rail.style.left = `${x}px`;
-
-      railLayer.appendChild(rail);
-      rails.v.push(rail);
-    }
-
-    bg.appendChild(railLayer);
-  }
-
-  function rebuildGridRails() {
-    buildGridRails();
-  }
-
   function spawnStreak() {
-    const isHorizontal = Math.random() > 0.4;
-    const railList = isHorizontal ? rails.h : rails.v;
-    if (!railList.length) return;
-
-    const rail = railList[Math.floor(Math.random() * railList.length)];
-    const streak = document.createElement("div");
-
-    streak.className = isHorizontal ? "streak horizontal" : "streak vertical";
-
-    const dir = Math.random() < 0.8 ? 1 : -1;
-    const strong = Math.random() < 0.16;
-
+    const GRID = 80;
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    const speed = strong
-      ? 1400 + Math.random() * 400
-      : 700 + Math.random() * 600;
+    const cols = Math.ceil(width / GRID);
+    const rows = Math.ceil(height / GRID);
+
+    const el = document.createElement("div");
+    el.className = "streak";
+
+    const isHorizontal = Math.random() > 0.4;
+    const dir = Math.random() < 0.8 ? 1 : -1;
+
+    const strong = Math.random() < 0.15;
 
     const opacity = 0.04 + Math.random() * 0.04;
 
-    let start;
-    let end;
-    let distance;
+    const speed = strong
+      ? 1400 + Math.random() * 400
+      : 800 + Math.random() * 600;
+
     let duration;
 
     if (isHorizontal) {
-      start = dir === 1 ? -900 : width + 900;
-      end = dir === 1 ? width + 900 : -900;
-      distance = end - start;
-      duration = Math.abs(distance) / speed;
+      el.classList.add("h");
 
-      streak.style.left = `${start}px`;
-      streak.style.setProperty("--dx", `${distance}px`);
-      streak.style.setProperty("--dy", "0px");
+      const row = Math.floor(Math.random() * rows);
+      const y = row * GRID;
+
+      el.style.top = `${y}px`;
+
+      const startX = dir === 1 ? -900 : width + 900;
+      const endX = dir === 1 ? width + 900 : -900;
+
+      const distance = endX - startX;
+
+      el.style.left = `${startX}px`;
+
+      el.style.setProperty("--dx", `${distance}px`);
+      el.style.setProperty("--dy", "0px");
+
+      duration = Math.abs(distance) / speed;
     } else {
-      start = dir === 1 ? -900 : height + 900;
-      end = dir === 1 ? height + 900 : -900;
-      distance = end - start;
-      duration = Math.abs(distance) / speed;
+      el.classList.add("v");
 
-      streak.style.top = `${start}px`;
-      streak.style.setProperty("--dx", "0px");
-      streak.style.setProperty("--dy", `${distance}px`);
+      const col = Math.floor(Math.random() * cols);
+      const x = col * GRID;
+
+      el.style.left = `${x}px`;
+
+      const startY = dir === 1 ? -900 : height + 900;
+      const endY = dir === 1 ? height + 900 : -900;
+
+      const distance = endY - startY;
+
+      el.style.top = `${startY}px`;
+
+      el.style.setProperty("--dx", "0px");
+      el.style.setProperty("--dy", `${distance}px`);
+
+      duration = Math.abs(distance) / speed;
     }
 
-    streak.style.setProperty("--final-opacity", opacity);
-    streak.style.animationDuration = `${duration}s`;
+    el.style.setProperty("--final-opacity", opacity);
+    el.style.animationDuration = `${duration}s`;
 
-    rail.appendChild(streak);
+    bg.appendChild(el);
 
-    setTimeout(() => streak.remove(), duration * 1000);
+    setTimeout(() => el.remove(), duration * 1000);
   }
 
   function spawnLoop() {
@@ -134,13 +103,12 @@ export function Menu(onStart) {
 
     spawnStreak();
 
-    const next = 300 + Math.random() * 700;
+    const next = 400 + Math.random() * 600;
     setTimeout(spawnLoop, next);
   }
 
   function exitMenu() {
     running = false;
-    window.removeEventListener("resize", rebuildGridRails);
 
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";

@@ -2,13 +2,19 @@ export function Menu(onStart) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
 
-  let running = true;
+  const GRID = 80;
+  const NODE_CHARGE_MS = 420;
 
-  let particleHorizontal = true;
+  let running = true;
+  let rails = { h: [], v: [] };
+  let nodes = new Map();
 
   function init() {
+    buildGridEffects();
     spawnLoop();
     bindButtons();
+
+    window.addEventListener("resize", rebuildGridEffects);
   }
 
   function bindButtons() {
@@ -28,143 +34,194 @@ export function Menu(onStart) {
     });
   }
 
-  function spawnParticle() {
-    const GRID = 80;
+  function buildGridEffects() {
+    bg.textContent = "";
+
+    rails = { h: [], v: [] };
+    nodes = new Map();
+
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    const cols = Math.ceil(width / GRID);
-    const rows = Math.ceil(height / GRID);
+    const cols = Math.ceil(width / GRID) + 1;
+    const rows = Math.ceil(height / GRID) + 1;
 
-    const el = document.createElement("div");
-    el.className = "particle";
+    const railLayer = document.createElement("div");
+    railLayer.className = "grid-rail-layer";
 
+    const nodeLayer = document.createElement("div");
+    nodeLayer.className = "grid-node-layer";
+
+    for (let row = 0; row < rows; row++) {
+      const y = row * GRID;
+
+      const rail = document.createElement("div");
+      rail.className = "grid-rail horizontal";
+      rail.style.top = `${y}px`;
+
+      railLayer.appendChild(rail);
+      rails.h.push({ el: rail, y });
+    }
+
+    for (let col = 0; col < cols; col++) {
+      const x = col * GRID;
+
+      const rail = document.createElement("div");
+      rail.className = "grid-rail vertical";
+      rail.style.left = `${x}px`;
+
+      railLayer.appendChild(rail);
+      rails.v.push({ el: rail, x });
+    }
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const x = col * GRID;
+        const y = row * GRID;
+
+        const node = document.createElement("div");
+        node.className = "grid-node";
+        node.style.left = `${x}px`;
+        node.style.top = `${y}px`;
+
+        nodeLayer.appendChild(node);
+        nodes.set(`${x},${y}`, node);
+      }
+    }
+
+    bg.appendChild(railLayer);
+    bg.appendChild(nodeLayer);
+  }
+
+  function rebuildGridEffects() {
+    buildGridEffects();
+  }
+
+  function spawnStreak() {
     const isHorizontal = Math.random() > 0.4;
+    const railList = isHorizontal ? rails.h : rails.v;
+    if (!railList.length) return;
+
+    const rail = railList[Math.floor(Math.random() * railList.length)];
+    const streak = document.createElement("div");
+
+    streak.className = isHorizontal ? "streak horizontal" : "streak vertical";
+
     const dir = Math.random() < 0.8 ? 1 : -1;
+    const strong = Math.random() < 0.16;
 
-    const strong = Math.random() < 0.15;
-
-    const opacity = 0.04 + Math.random() * 0.04;
-    // ? 0.1 + Math.random() * 0.1 // rare bright streaks
-    // : 0.04 + Math.random() * 0.04; // mostly faint
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     const speed = strong
       ? 1400 + Math.random() * 400
       : 700 + Math.random() * 600;
 
+    const opacity = 0.04 + Math.random() * 0.04;
+
+    let start;
+    let end;
+    let distance;
     let duration;
 
     if (isHorizontal) {
-      el.classList.add("h");
-
-      const row = Math.floor(Math.random() * rows);
-      const y = row * GRID;
-
-      el.style.top = `${y}px`;
-
-      const startX = dir === 1 ? -300 : width + 300;
-      const endX = dir === 1 ? width + 300 : -300;
-
-      const distance = endX - startX;
-
-      el.style.left = `${startX}px`;
-
-      el.style.setProperty("--dx", `${distance}px`);
-      el.style.setProperty("--dy", `0px`);
-
+      start = dir === 1 ? -900 : width + 900;
+      end = dir === 1 ? width + 900 : -900;
+      distance = end - start;
       duration = Math.abs(distance) / speed;
-      // duration *= 5; // dev
 
-      el.style.animationDuration = `${duration}s`;
+      streak.style.left = `${start}px`;
+      streak.style.setProperty("--dx", `${distance}px`);
+      streak.style.setProperty("--dy", "0px");
 
-      spawnNodeBurstsAlongPath(startX, endX, y, true, duration);
+      chargeNodesAlongPath({
+        isHorizontal: true,
+        fixed: rail.y,
+        start,
+        end,
+        duration,
+      });
     } else {
-      el.classList.add("v");
-
-      const col = Math.floor(Math.random() * cols);
-      const x = col * GRID;
-
-      el.style.left = `${x}px`;
-
-      const startY = dir === 1 ? -300 : height + 300;
-      const endY = dir === 1 ? height + 300 : -300;
-
-      const distance = endY - startY;
-
-      el.style.top = `${startY}px`;
-
-      el.style.setProperty("--dx", `0px`);
-      el.style.setProperty("--dy", `${distance}px`);
-
+      start = dir === 1 ? -900 : height + 900;
+      end = dir === 1 ? height + 900 : -900;
+      distance = end - start;
       duration = Math.abs(distance) / speed;
-      // duration *= 5; // dev
 
-      el.style.animationDuration = `${duration}s`;
+      streak.style.top = `${start}px`;
+      streak.style.setProperty("--dx", "0px");
+      streak.style.setProperty("--dy", `${distance}px`);
 
-      spawnNodeBurstsAlongPath(startY, endY, x, false, duration);
+      chargeNodesAlongPath({
+        isHorizontal: false,
+        fixed: rail.x,
+        start,
+        end,
+        duration,
+      });
     }
 
-    el.style.setProperty("--final-opacity", opacity);
-    el.style.animationDuration = `${duration}s`;
+    streak.style.setProperty("--final-opacity", opacity);
+    streak.style.animationDuration = `${duration}s`;
 
-    bg.appendChild(el);
+    rail.el.appendChild(streak);
 
-    setTimeout(() => el.remove(), duration * 1000);
+    setTimeout(() => streak.remove(), duration * 1000);
   }
 
-  function spawnNodeBurstsAlongPath(start, end, fixed, isHorizontal, duration) {
-    const GRID = 80;
-    const VISUAL_OFFSET = 0.08; // tweak between 0.05–0.12
-    const STREAK_LENGTH = 1000; // must match your CSS
-    const HEAD_OFFSET = STREAK_LENGTH * 0.4;
-
+  function chargeNodesAlongPath({ isHorizontal, fixed, start, end, duration }) {
     const dir = end > start ? 1 : -1;
+    const first = dir === 1
+      ? Math.ceil(0 / GRID) * GRID
+      : Math.floor((isHorizontal ? window.innerWidth : window.innerHeight) / GRID) * GRID;
 
-    const firstNode = Math.ceil((start + GRID) / GRID) * GRID;
+    const limit = isHorizontal ? window.innerWidth : window.innerHeight;
 
     for (
-      let pos = firstNode;
-      dir === 1 ? pos <= end : pos >= end;
-      pos += GRID * dir
+      let moving = first;
+      dir === 1 ? moving <= limit : moving >= 0;
+      moving += GRID * dir
     ) {
-      const adjustedPos = pos - dir * HEAD_OFFSET;
-      const progress = Math.abs(adjustedPos - start) / Math.abs(end - start);
-      const clampedProgress = Math.min(progress + VISUAL_OFFSET, 1);
-      const delay = clampedProgress * duration * 1000;
+      const headOffset = 420 * dir;
+      const adjusted = moving - headOffset;
+      const progress = Math.abs(adjusted - start) / Math.abs(end - start);
+      const delay = Math.max(0, Math.min(progress, 1)) * duration * 1000;
 
       setTimeout(() => {
-        if (isHorizontal) {
-          spawnNodeSpread(pos, fixed);
-        } else {
-          spawnNodeSpread(fixed, pos);
-        }
+        if (!running) return;
+
+        const x = isHorizontal ? moving : fixed;
+        const y = isHorizontal ? fixed : moving;
+
+        chargeNode(x, y);
       }, delay);
     }
   }
 
-  function spawnNodeSpread(x, y) {
-    const el = document.createElement("div");
-    el.className = "node-spread";
+  function chargeNode(x, y) {
+    const node = nodes.get(`${x},${y}`);
+    if (!node) return;
 
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
+    node.classList.remove("charged");
+    void node.offsetWidth;
+    node.classList.add("charged");
 
-    bg.appendChild(el);
-
-    setTimeout(() => el.remove(), 2000);
+    setTimeout(() => {
+      node.classList.remove("charged");
+    }, NODE_CHARGE_MS);
   }
 
   function spawnLoop() {
     if (!running) return;
 
-    spawnParticle();
+    spawnStreak();
 
-    const next = 300 + Math.random() * 600;
+    const next = 300 + Math.random() * 700;
     setTimeout(spawnLoop, next);
   }
 
   function exitMenu() {
     running = false;
+    window.removeEventListener("resize", rebuildGridEffects);
 
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";

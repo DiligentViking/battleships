@@ -245,8 +245,6 @@ MAIN MENU
   align-items: center;
 
   pointer-events: all;
-
-  /* background: #020207; */
 }
 
 .game-hidden {
@@ -591,6 +589,22 @@ MAIN MENU
 PLACEMENT PHASE 
 ====================
 */
+
+.top-area {
+  display: flex;
+  justify-content: center;
+}
+
+.middle-area {
+  display: flex;
+  margin: 42px;
+  gap: 84px;
+}
+
+.bottom-area {
+  display: flex;
+  justify-content: center;
+}
 
 .fleet-wrapper {
   background: linear-gradient(

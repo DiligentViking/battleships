@@ -12,8 +12,8 @@ Base
   --bg-panel-dark: #0a0a1a;
   --bg-panel-light: #111133;
 
-  --glow-cyan-soft: #00ffff1a;
-  --glow-pink-soft: #ff2bd61a;
+  --glow-cyan-soft: #00ffff22;
+  --glow-pink-soft: #ff2bd622;
 
   --p1-primary: #00ffff;
   --p2-primary: #ff2bd6;
@@ -43,6 +43,24 @@ Base
 }
 
 body {
+  background: var(--bg-deep);
+  color: var(--text-muted);
+
+  font-family: "Oxanium", sans-serif;
+
+  height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+
   background:
     radial-gradient(
       circle at 20% 20%,
@@ -53,17 +71,20 @@ body {
       circle at 80% 80%,
       var(--glow-pink-soft) 0%,
       transparent 45%
-    ),
-    var(--bg-deep);
-  color: var(--text-muted);
+    );
 
-  font-family: "Oxanium", sans-serif;
+  opacity: 1;
+  transition: opacity 2s ease;
+}
 
-  height: 100vh;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  display: flex;
+.ambient-bg.menu-active {
+  opacity: 0.6;
+}
+.ambient-bg.setup-phase {
+  opacity: 0.8;
+}
+.ambient-bg.battle-phase {
+  opacity: 1;
 }
 
 html,

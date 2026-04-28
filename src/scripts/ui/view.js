@@ -3,6 +3,8 @@ export function View(root) {
   // DOM
   // ====================
 
+  const ambientBg = document.querySelector(".ambient-bg");
+
   const DOM = {
     message: root.querySelector(".message"),
 
@@ -508,6 +510,16 @@ export function View(root) {
     },
   };
 
+  function setAmbientPhase(phase) {
+    if (!ambientBg) return;
+
+    ambientBg.classList.remove("menu-active", "setup-phase", "battle-phase");
+
+    if (phase) {
+      ambientBg.classList.add(phase);
+    }
+  }
+
   // ====================
   // PUBLIC API
   // ====================
@@ -547,6 +559,7 @@ export function View(root) {
     selectShip,
     placeShip,
     toggleVerticalShips,
+    setAmbientPhase,
 
     // Battle
     enterBattlePhase() {

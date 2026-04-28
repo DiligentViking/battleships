@@ -1,11 +1,13 @@
 export function Menu(onStart) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
+  const ambient = document.querySelector(".ambient-bg");
 
   let running = true;
 
   function init() {
     root.classList.add("menu-entering");
+    ambient.classList.add("menu-active");
 
     bindButtons();
 
@@ -115,6 +117,8 @@ export function Menu(onStart) {
 
   function exitMenu() {
     running = false;
+
+    ambient.classList.remove("menu-active");
 
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";

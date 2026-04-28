@@ -64,6 +64,7 @@ export function Controller(player1, player2, game, view) {
       view.eventElems;
 
     function init() {
+      view.setAmbientPhase("setup-phase");
       view.enterSetupPhase();
 
       for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
@@ -240,6 +241,8 @@ export function Controller(player1, player2, game, view) {
   // ====================
 
   function startBattlePhase() {
+    view.setAmbientPhase("battle-phase");
+
     clearListeners();
 
     const battle = createBattleController();

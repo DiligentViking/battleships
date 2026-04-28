@@ -121,3 +121,36 @@ OTHER IDEAS:
 -and a lil stronger at the hull may be a smart decision as all hulls are kind of pointed toward the middle (which could be the light source)
 
 -super polish: a smart function for every sound in the game, does the fancy left-right stereo thing (for headphones).
+
+__________
+
+-Options to Add in the Next Version:
+
+-Four levels of ai (make an ultimate one that is better than my current best)(it also moves first)
+ ~Drift
+ ~Hunter
+ ~Sentinel
+ ~Hypercore
+
+-The "Ascension Protocol" challenge (name up for tweaking).
+-It shows a briefing screen that explains rules and things (and a cool soundtrack).
+-You play 5 battles with the AI. You are timed on making your move so if you take to long the AI gets a free shot!
+ ~Round 1 is Drift-smartness AI with a timer, so you get used to having a timer.
+ ~Round 2 upgrades AI to Hunter-smartness.
+ ~Round 3 increases timer speed.
+ ~Round 4 increases AI (Sentinel-smartness) *and* timer speed.
+ ~Round 5 is Hypercore-smartness, and you and the AI are free to move at the same time as much as you want, but you both have energy that regenerates (or only you have energy, the AI just moves at a constant pounding rhythm of doom).
+
+-The menu will only show "Engage AI" and "Ascension Protocol".
+-If you click on "Engage AI" the button set switches to the list of four AI's (be sure to have quick and unique/satisfying fx [maybe like the ship placement]!)
+
+-Make cool descriptions for these.
+
+-and ofc multiplayer options
+
+__________
+
+-Maybe for this version I will have:
+-"versus ai"
+-"multiplayer" (need to make p2 setup!)
+-"settings" (like one or two settings)

@@ -294,30 +294,104 @@ MAIN MENU
   font-size: 3.5rem;
 
   opacity: 0;
-  transform: translateY(18px) scale(0.985);
+  transform: translateY(18px);
   filter: blur(3px);
 
   text-shadow:
     0 0 6px var(--glow-cyan-soft),
     0 0 18px var(--glow-cyan-soft);
 
-  animation: titleReveal 3s /* cubic-bezier(0.16, 1, 0.3, 1) */ ease-in-out
-    forwards;
+  animation:
+    titleReveal 3s ease-in-out forwards,
+    titleGlowBreath 5s ease-in-out 3s infinite,
+    titleFlicker 11s linear 4.5s infinite;
 }
 
 @keyframes titleReveal {
   0% {
     opacity: 0;
-    transform: translateY(18px) scaleY(1);
+    transform: translateY(18px);
     filter: blur(3px);
-    letter-spacing: 20px;
+    letter-spacing: 8px;
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scaleY(1);
+    transform: translateY(0);
     filter: blur(0);
     letter-spacing: 1px;
+  }
+}
+
+@keyframes titleGlowBreath {
+  0% {
+    text-shadow:
+      0 0 6px var(--glow-cyan-soft),
+      0 0 18px var(--glow-cyan-soft),
+      0 0 28px #00ffff08;
+  }
+
+  60% {
+    text-shadow:
+      0 0 12px #e6ffff66,
+      0 0 26px var(--glow-cyan-soft),
+      0 0 48px #00ffff22;
+  }
+
+  100% {
+    text-shadow:
+      0 0 6px var(--glow-cyan-soft),
+      0 0 18px var(--glow-cyan-soft),
+      0 0 28px #00ffff08;
+  }
+}
+
+@keyframes titleFlicker {
+  0%, 88%, 100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  89% {
+    opacity: 0.84;
+    filter: blur(0.3px);
+  }
+
+  89.6% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  90.2% {
+    opacity: 0.9;
+    filter: blur(0.15px);
+  }
+
+  91% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  94% {
+    opacity: 1;
+  }
+
+  94.5% {
+    opacity: 0.7;
+    filter: blur(0.6px);
+  }
+
+  95% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  96% {
+    opacity: 0.85;
+  }
+
+  97% {
+    opacity: 1;
   }
 }
 

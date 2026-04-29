@@ -1,3 +1,5 @@
+import { DEV } from "./dev.js";
+
 export function Menu(onStart) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
@@ -10,6 +12,13 @@ export function Menu(onStart) {
     ambient.classList.add("menu-active");
 
     bindButtons();
+
+    if (DEV.enabled && DEV.skipMenuIntro) {
+      root.classList.add("dev-no-delay");
+      root.classList.add("menu-awake");
+      spawnLoop();
+      return;
+    }
 
     setTimeout(() => {
       root.classList.add("menu-awake");

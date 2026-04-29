@@ -1186,3 +1186,15 @@ HIT EFFECTS
     opacity: 0;
   }
 }
+
+/*
+==================== 
+DEV
+====================
+*/
+
+.dev-no-delay *,
+.dev-no-delay *::before,
+.dev-no-delay *::after {
+  animation-delay: 0s !important;
+}

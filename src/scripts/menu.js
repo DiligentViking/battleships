@@ -6,7 +6,9 @@ export function Menu(onStart) {
   const ambient = document.querySelector(".ambient-bg");
 
   let running = true;
-  let mode = "main"; // "main" | "ai-select"
+  let mode = "main";
+  let selectingAI = false;
+  let aiSelectionContainer = null;
 
   function init() {
     root.classList.add("menu-entering");
@@ -53,16 +55,35 @@ export function Menu(onStart) {
   // ====================
 
   function enterAISelection() {
-    mode = "ai-select";
+    if (mode === "ai-select") return;
 
+    mode = "ai-select";
     root.classList.add("ai-select-active");
 
-    renderAICards();
+    setTimeout(renderAICards, 180);
+  }
+
+  function exitAISelection() {
+    if (selectingAI) return;
+    if (!aiSelectionContainer) return;
+
+    aiSelectionContainer.classList.add("ai-selection-exit");
+    root.classList.remove("ai-select-active");
+
+    setTimeout(() => {
+      aiSelectionContainer?.remove();
+      aiSelectionContainer = null;
+      mode = "main";
+    }, 260);
   }
 
   function renderAICards() {
+    if (mode !== "ai-select") return;
+    if (aiSelectionContainer) return;
+
     const container = document.createElement("div");
     container.className = "ai-selection";
+    aiSelectionContainer = container;
 
     const ais = [
       {
@@ -86,18 +107,20 @@ export function Menu(onStart) {
     ];
 
     ais.forEach((ai, i) => {
-      const card = document.createElement("div");
+      const card = document.createElement("button");
       card.className = `ai-card ${ai.class}`;
-      card.style.animationDelay = `${i * 80}ms`;
+      card.type = "button";
+      card.style.animationDelay = `${i * 90}ms`;
+      card.setAttribute("aria-label", `Engage ${ai.name} AI`);
 
       card.innerHTML = `
         <div class="ai-name">${ai.name}</div>
         <div class="ai-visual"></div>
         <div class="ai-desc">${ai.desc}</div>
-        <button class="ai-select-btn">Engage</button>
+        <div class="ai-select-btn">Engage</div>
       `;
 
-      card.querySelector(".ai-select-btn").addEventListener("click", () => {
+      card.addEventListener("click", () => {
         selectAI(ai.level, card, container);
       });
 
@@ -106,24 +129,27 @@ export function Menu(onStart) {
 
     const back = document.createElement("button");
     back.className = "ai-back-btn";
+    back.type = "button";
     back.textContent = "Back";
-
-    back.addEventListener("click", () => {
-      container.remove();
-      root.classList.remove("ai-select-active");
-      mode = "main";
-    });
+    back.addEventListener("click", exitAISelection);
 
     container.appendChild(back);
-
     root.appendChild(container);
   }
 
   function selectAI(level, card, container) {
+    if (selectingAI) return;
+
+    selectingAI = true;
+
     const cards = container.querySelectorAll(".ai-card");
 
     cards.forEach((c) => {
-      if (c !== card) c.classList.add("dim");
+      c.style.pointerEvents = "none";
+
+      if (c !== card) {
+        c.classList.add("dim");
+      }
     });
 
     card.classList.add("selected");
@@ -131,7 +157,7 @@ export function Menu(onStart) {
     setTimeout(() => {
       exitMenu();
       onStart({ mode: "ai", difficulty: level });
-    }, 500);
+    }, 650);
   }
 
   // ====================
@@ -229,6 +255,7 @@ export function Menu(onStart) {
 
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";
+    root.style.pointerEvents = "none";
 
     setTimeout(() => {
       root.remove();

@@ -1,4 +1,5 @@
 import { DEV } from "./dev.js";
+import { once } from "./models/utils.js";
 
 export function Menu(onStart) {
   const root = document.getElementById("mainMenu");
@@ -68,7 +69,7 @@ export function Menu(onStart) {
     if (!aiSelectionContainer) return;
 
     aiSelectionContainer.classList.add("ai-selection-exit");
-    
+
     setTimeout(() => {
       root.querySelector(".menu-buttons").classList.remove("ai-select-active");
       aiSelectionContainer?.remove();
@@ -118,6 +119,11 @@ export function Menu(onStart) {
         <div class="ai-visual"></div>
         <div class="ai-desc">${ai.desc}</div>
       `;
+
+      once(card, "animationend", (e) => {
+        if (e.animationName !== "aiCardEnter") return;
+        card.classList.add("ready");
+      });
 
       card.addEventListener("click", () => {
         selectAI(ai.level, card, container);

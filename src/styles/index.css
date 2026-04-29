@@ -505,6 +505,8 @@ MAIN MENU
     inset 0 0 18px #000,
     0 0 10px transparent;
 
+  pointer-events: none;
+
   opacity: 0;
   transform: translateY(18px) scale(0.97);
   animation: aiCardEnter 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -515,6 +517,10 @@ MAIN MENU
     box-shadow 220ms ease,
     filter 220ms ease,
     opacity 220ms ease;
+}
+
+.ai-card.ready {
+  pointer-events: auto;
 }
 
 .ai-card::before {
@@ -533,7 +539,7 @@ MAIN MENU
   );
 
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(-150%); /* adds a little delay */
 }
 
 .ai-card::after {
@@ -566,7 +572,7 @@ MAIN MENU
   transform: translateX(100%);
   transition:
     opacity 250ms ease,
-    transform 700ms ease;
+    transform 1000ms ease;
 }
 
 .ai-card.dim {

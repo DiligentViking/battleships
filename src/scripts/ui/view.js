@@ -1,3 +1,5 @@
+import { once } from "../models/utils.js";
+
 export function View(root) {
   // ====================
   // DOM
@@ -89,14 +91,6 @@ export function View(root) {
   // ====================
   // UTILS
   // ====================
-
-  function once(el, event, cb) {
-    const handler = () => {
-      el.removeEventListener(event, handler);
-      cb();
-    };
-    el.addEventListener(event, handler);
-  }
 
   function parseCellCoords(cell) {
     return cell.dataset.coords.split(",").map(Number);

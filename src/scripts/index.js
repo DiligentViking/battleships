@@ -8,15 +8,21 @@ const gameRoot = document.querySelector(".app");
 
 gameRoot.classList.add("game-hidden");
 
-const menu = Menu((mode) => {
+const menu = Menu((config) => {
   gameRoot.classList.remove("game-hidden");
 
-  if (mode === "ai") {
-    console.log("Starting vs AI");
+  let player2;
+
+  if (config.mode === "ai") {
+    const difficulty = config.difficulty;
+
+    player2 = Player("two", "computer", difficulty);
+  } else {
+    // fallback (future expansion)
+    player2 = Player("two", "real");
   }
 
   const player1 = Player("one", "real");
-  const player2 = Player("two", "computer", 2);
 
   const game = Game(player1, player2);
   const view = View(gameRoot);

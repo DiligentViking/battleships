@@ -6,6 +6,7 @@ export function Menu(onStart) {
   const ambient = document.querySelector(".ambient-bg");
 
   let running = true;
+  let mode = "main"; // "main" | "ai-select"
 
   function init() {
     root.classList.add("menu-entering");
@@ -26,14 +27,18 @@ export function Menu(onStart) {
     }, 3000);
   }
 
+  // ====================
+  // BUTTONS
+  // ====================
+
   function bindButtons() {
     root.querySelectorAll(".menu-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const action = btn.dataset.action;
 
-        if (action === "start" || action === "ai") {
-          exitMenu();
-          onStart(action);
+        if (action === "ai") {
+          enterAISelection();
+          return;
         }
 
         if (action === "settings") {
@@ -42,6 +47,96 @@ export function Menu(onStart) {
       });
     });
   }
+
+  // ====================
+  // AI SELECTION
+  // ====================
+
+  function enterAISelection() {
+    mode = "ai-select";
+
+    root.classList.add("ai-select-active");
+
+    renderAICards();
+  }
+
+  function renderAICards() {
+    const container = document.createElement("div");
+    container.className = "ai-selection";
+
+    const ais = [
+      {
+        name: "Drift",
+        desc: "Erratic. Unpredictable. Fires blindly into the void.",
+        level: 0,
+        class: "drift",
+      },
+      {
+        name: "Hunter",
+        desc: "Tracks targets. Exploits weaknesses. Adapts mid-combat.",
+        level: 1,
+        class: "hunter",
+      },
+      {
+        name: "Sentinel",
+        desc: "Calculates outcomes. Eliminates inefficiency. Never misses twice.",
+        level: 2,
+        class: "sentinel",
+      },
+    ];
+
+    ais.forEach((ai, i) => {
+      const card = document.createElement("div");
+      card.className = `ai-card ${ai.class}`;
+      card.style.animationDelay = `${i * 80}ms`;
+
+      card.innerHTML = `
+        <div class="ai-name">${ai.name}</div>
+        <div class="ai-visual"></div>
+        <div class="ai-desc">${ai.desc}</div>
+        <button class="ai-select-btn">Engage</button>
+      `;
+
+      card.querySelector(".ai-select-btn").addEventListener("click", () => {
+        selectAI(ai.level, card, container);
+      });
+
+      container.appendChild(card);
+    });
+
+    const back = document.createElement("button");
+    back.className = "ai-back-btn";
+    back.textContent = "Back";
+
+    back.addEventListener("click", () => {
+      container.remove();
+      root.classList.remove("ai-select-active");
+      mode = "main";
+    });
+
+    container.appendChild(back);
+
+    root.appendChild(container);
+  }
+
+  function selectAI(level, card, container) {
+    const cards = container.querySelectorAll(".ai-card");
+
+    cards.forEach((c) => {
+      if (c !== card) c.classList.add("dim");
+    });
+
+    card.classList.add("selected");
+
+    setTimeout(() => {
+      exitMenu();
+      onStart({ mode: "ai", difficulty: level });
+    }, 500);
+  }
+
+  // ====================
+  // BACKGROUND
+  // ====================
 
   function spawnStreak() {
     const GRID = 80;
@@ -58,7 +153,6 @@ export function Menu(onStart) {
     const dir = Math.random() < 0.8 ? 1 : -1;
 
     const strong = Math.random() < 0.15;
-
     const opacity = 0.03 + Math.random() * 0.03;
 
     const speed = strong
@@ -123,6 +217,10 @@ export function Menu(onStart) {
     const next = 300 + Math.random() * 500;
     setTimeout(spawnLoop, next);
   }
+
+  // ====================
+  // EXIT
+  // ====================
 
   function exitMenu() {
     running = false;

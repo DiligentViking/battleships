@@ -167,6 +167,10 @@ button::before {
   transition: opacity 0.4s ease;
 }
 
+.btn-wrapper:hover {
+  cursor: pointer;
+}
+
 .btn-wrapper:hover button,
 button:hover {
   transform: translateY(-3px);
@@ -640,13 +644,16 @@ MAIN MENU
   position: relative;
   z-index: 1;
 
+  margin-top: 0.75rem;
   margin-bottom: 0.5rem;
 
+  max-width: 88%;
   min-height: 4.8rem;
 
   font-size: 0.9rem;
   line-height: 1.45;
   text-align: center;
+  text-transform: none;
 
   color: var(--text-muted);
 }

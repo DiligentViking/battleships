@@ -89,19 +89,19 @@ export function Menu(onStart) {
     const ais = [
       {
         name: "Drift",
-        desc: "Erratic. Unpredictable. Fires blindly into the void.",
+        desc: "Erratic. Fires blindly into the void.",
         level: 0,
         class: "drift",
       },
       {
         name: "Hunter",
-        desc: "Tracks targets. Exploits weaknesses. Adapts mid-combat.",
+        desc: "Relentless. Locks on, then pursues.",
         level: 1,
         class: "hunter",
       },
       {
         name: "Sentinel",
-        desc: "Calculates outcomes. Eliminates inefficiency. Never misses twice.",
+        desc: "Optimized. Eliminates inefficiency and collapses all resistance.",
         level: 2,
         class: "sentinel",
       },

@@ -480,13 +480,14 @@ MAIN MENU
   position: relative;
   overflow: hidden;
 
-  min-height: 310px;
-  padding: 1.25rem 1.1rem;
+  min-height: 270px;
+  padding: 1.35rem 1.15rem 1.25rem;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
 
   border-radius: 0.9rem;
 
@@ -749,6 +750,9 @@ MAIN MENU
 }
 
 .ai-back-btn {
+  position: relative;
+  z-index: 1;
+
   grid-column: 1 / -1;
   justify-self: center;
 
@@ -1615,8 +1619,8 @@ DEV
 ====================
 */
 
-.dev-no-delay *,
+/* .dev-no-delay *,
 .dev-no-delay *::before,
 .dev-no-delay *::after {
   animation-delay: 0s !important;
-}
+} */

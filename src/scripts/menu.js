@@ -117,7 +117,6 @@ export function Menu(onStart) {
         <div class="ai-name">${ai.name}</div>
         <div class="ai-visual"></div>
         <div class="ai-desc">${ai.desc}</div>
-        <div class="ai-select-btn">Engage</div>
       `;
 
       card.addEventListener("click", () => {

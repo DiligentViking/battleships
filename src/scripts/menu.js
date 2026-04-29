@@ -58,7 +58,7 @@ export function Menu(onStart) {
     if (mode === "ai-select") return;
 
     mode = "ai-select";
-    root.classList.add("ai-select-active");
+    root.querySelector(".menu-buttons").classList.add("ai-select-active");
 
     setTimeout(renderAICards, 180);
   }
@@ -68,9 +68,9 @@ export function Menu(onStart) {
     if (!aiSelectionContainer) return;
 
     aiSelectionContainer.classList.add("ai-selection-exit");
-    root.classList.remove("ai-select-active");
-
+    
     setTimeout(() => {
+      root.querySelector(".menu-buttons").classList.remove("ai-select-active");
       aiSelectionContainer?.remove();
       aiSelectionContainer = null;
       mode = "main";

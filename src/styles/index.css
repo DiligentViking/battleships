@@ -167,6 +167,7 @@ button::before {
   transition: opacity 0.4s ease;
 }
 
+.btn-wrapper:hover button,
 button:hover {
   transform: translateY(-3px);
 
@@ -414,7 +415,6 @@ MAIN MENU
   width: 240px;
 
   opacity: 1;
-  transform: translateY(0);
   pointer-events: all;
   animation: buttonsWake 1s ease backwards;
 }
@@ -437,6 +437,10 @@ MAIN MENU
     transform: translateY(14px);
     pointer-events: none;
   }
+}
+
+.menu-btn:hover {
+  transform: none;
 }
 
 /* AI SELECTION */

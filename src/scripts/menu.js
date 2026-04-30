@@ -1,7 +1,7 @@
 import { DEV } from "./dev.js";
 import { once } from "./models/utils.js";
 
-export function Menu(onStart) {
+export function Menu(onGameStart, sound) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
   const ambient = document.querySelector(".ambient-bg");
@@ -161,7 +161,7 @@ export function Menu(onStart) {
 
     setTimeout(() => {
       exitMenu();
-      onStart({ mode: "ai", difficulty: level });
+      onGameStart({ mode: "ai", difficulty: level });
     }, 650);
   }
 

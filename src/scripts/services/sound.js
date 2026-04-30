@@ -1,13 +1,15 @@
 const SFX = {
+  clickButton: "assets/sfx/cyberpunk-bass-impact.mp3",
+
+  hoverButton: "assets/sfx/hover-button.mp3",
+  hoverValid: "assets/sfx/hover-valid.mp3",
+  hoverInvalid: "assets/sfx/hover-invalid.mp3",
+  hoverCell: "assets/sfx/hover-cell.mp3",
+
   selectShip: "assets/sfx/select-ship-2.mp3",
   placeWoosh: "assets/sfx/place-whoosh.mp3",
   adjustShip: "assets/sfx/adjust-ship.mp3",
   placeRandom: "assets/sfx/place-random.wav",
-
-  hoverCell: "assets/sfx/hover-cell.mp3",
-  hoverValid: "assets/sfx/hover-valid.mp3",
-  hoverInvalid: "assets/sfx/hover-invalid.mp3",
-  hoverButton: "assets/sfx/hover-button.mp3",
 
   hit: "assets/sfx/sci-fi-gun.mp3",
   miss: "assets/sfx/tribecore-kick.mp3",

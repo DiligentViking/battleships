@@ -7,10 +7,13 @@ import { SoundSystem } from "./services/sound.js";
 
 const gameRoot = document.querySelector(".app");
 const sound = SoundSystem();
+const menu = Menu(onGameStart, sound);
 
 gameRoot.classList.add("game-hidden");
 
-const menu = Menu((config) => {
+menu.init();
+
+function onGameStart(config) {
   gameRoot.classList.remove("game-hidden");
 
   let player2;
@@ -29,6 +32,4 @@ const menu = Menu((config) => {
   const controller = Controller(player1, player2, game, view);
 
   controller.init();
-});
-
-menu.init();
+}

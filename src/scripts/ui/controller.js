@@ -1,3 +1,4 @@
+import { DEV } from "../dev.js";
 import { sleep } from "../models/utils.js";
 
 export function Controller(player1, player2, game, view) {
@@ -5,12 +6,10 @@ export function Controller(player1, player2, game, view) {
     NUM_SHIPS: 6,
     SHIP_LENGTHS: [1, 2, 3, 4, 5, 6],
 
-    HIT_DELAY: 800,
-    COMPUTER_DELAY: 600,
+    HIT_DELAY: DEV.enabled ? DEV.delays.hit : 800,
+    COMPUTER_DELAY: DEV.enabled ? DEV.delays.computer : 600,
+    AUTOPLAY_DELAY: DEV.enabled ? DEV.delays.autoplay : 250,
   };
-  // CONFIG.HIT_DELAY = 0; // dev
-  // CONFIG.COMPUTER_DELAY = 0; // dev
-  // CONFIG.AUTOPLAY_DELAY = 250; // dev
 
   let cleanupFns = [];
 
@@ -64,6 +63,7 @@ export function Controller(player1, player2, game, view) {
       view.eventElems;
 
     function init() {
+      view.setAmbientPhase("setup-phase");
       view.enterSetupPhase();
 
       for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
@@ -72,8 +72,8 @@ export function Controller(player1, player2, game, view) {
 
       bindEvents();
 
-      // randomBtn.click(); // dev
-      // deployBtn.click(); // dev
+      if (DEV.enabled && DEV.autoRandomizeFleet) randomBtn.click();
+      if (DEV.enabled && DEV.autoDeployFleet) deployBtn.click();
     }
 
     function bindEvents() {
@@ -240,6 +240,8 @@ export function Controller(player1, player2, game, view) {
   // ====================
 
   function startBattlePhase() {
+    view.setAmbientPhase("battle-phase");
+
     clearListeners();
 
     const battle = createBattleController();

@@ -1,7 +1,11 @@
+import { once } from "../models/utils.js";
+
 export function View(root) {
   // ====================
   // DOM
   // ====================
+
+  const ambientBg = document.querySelector(".ambient-bg");
 
   const DOM = {
     message: root.querySelector(".message"),
@@ -87,14 +91,6 @@ export function View(root) {
   // ====================
   // UTILS
   // ====================
-
-  function once(el, event, cb) {
-    const handler = () => {
-      el.removeEventListener(event, handler);
-      cb();
-    };
-    el.addEventListener(event, handler);
-  }
 
   function parseCellCoords(cell) {
     return cell.dataset.coords.split(",").map(Number);
@@ -508,6 +504,16 @@ export function View(root) {
     },
   };
 
+  function setAmbientPhase(phase) {
+    if (!ambientBg) return;
+
+    ambientBg.classList.remove("menu-active", "setup-phase", "battle-phase");
+
+    if (phase) {
+      ambientBg.classList.add(phase);
+    }
+  }
+
   // ====================
   // PUBLIC API
   // ====================
@@ -547,6 +553,7 @@ export function View(root) {
     selectShip,
     placeShip,
     toggleVerticalShips,
+    setAmbientPhase,
 
     // Battle
     enterBattlePhase() {

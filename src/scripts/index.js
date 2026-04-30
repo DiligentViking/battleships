@@ -2,14 +2,33 @@ import { Player } from "./models/player.js";
 import { Game } from "./models/game.js";
 import { View } from "./ui/view.js";
 import { Controller } from "./ui/controller.js";
+import { Menu } from "./menu.js";
 
-const player1 = Player("one", "real");
-const player2 = Player("two", "computer", 2);
+const gameRoot = document.querySelector(".app");
 
-const game = Game(player1, player2);
+gameRoot.classList.add("game-hidden");
 
-const view = View(document.querySelector(".app"));
+const menu = Menu((config) => {
+  gameRoot.classList.remove("game-hidden");
 
-const controller = Controller(player1, player2, game, view);
+  let player2;
 
-controller.init();
+  if (config.mode === "ai") {
+    const difficulty = config.difficulty;
+
+    player2 = Player("two", "computer", difficulty);
+  } else {
+    // fallback (future expansion)
+    player2 = Player("two", "real");
+  }
+
+  const player1 = Player("one", "real");
+
+  const game = Game(player1, player2);
+  const view = View(gameRoot);
+  const controller = Controller(player1, player2, game, view);
+
+  controller.init();
+});
+
+menu.init();

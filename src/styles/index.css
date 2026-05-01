@@ -141,8 +141,8 @@ button {
   letter-spacing: 1px;
 
   transition:
-    filter 0.2s ease, /* consider making 0.1s for menu btns */
-    transform 0.2s ease,
+    filter 0.2s ease,
+    /* consider making 0.1s for menu btns */ transform 0.2s ease,
     box-shadow 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease;
@@ -1050,15 +1050,14 @@ MAIN MENU
   z-index: 999;
   pointer-events: none;
 
-  background:
-    linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 255, 255, 0.06) 44%,
-      rgba(255, 255, 255, 0.12) 50%,
-      rgba(255, 43, 214, 0.05) 56%,
-      transparent 100%
-    );
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 255, 255, 0.06) 44%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 43, 214, 0.05) 56%,
+    transparent 100%
+  );
 
   transform: translateY(-120%);
   animation: cameraDropScanSoft 1250ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -1147,6 +1146,45 @@ MAIN MENU
 
   100% {
     opacity: 0;
+  }
+}
+
+.ai-card.ai-locking {
+  animation: aiCardLocking 520ms ease-out forwards;
+}
+
+.ai-card.standby {
+  animation: aiCardStandby 520ms ease-out forwards;
+}
+
+@keyframes aiCardLocking {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+
+  45% {
+    transform: translateY(-8px) scale(1.035);
+    filter: brightness(1.45);
+  }
+
+  100% {
+    transform: translateY(-4px) scale(1.02);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes aiCardStandby {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+
+  100% {
+    opacity: 0.32;
+    transform: translateY(10px) scale(0.97);
+    filter: brightness(0.65);
   }
 }
 

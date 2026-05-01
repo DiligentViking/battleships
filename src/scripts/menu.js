@@ -188,19 +188,24 @@ export function Menu(onGameStart, sound) {
 
       if (c !== card) {
         c.classList.add("dim");
+        c.classList.add("standby");
       }
     });
 
     card.classList.add("selected");
-    root.classList.add("camera-drop-active");
+    card.classList.add("ai-locking");
+
+    setTimeout(() => {
+      root.classList.add("camera-drop-active");
+    }, 520);
 
     setTimeout(() => {
       onGameStart({ mode: "ai", difficulty: level });
-    }, 620);
+    }, 980);
 
     setTimeout(() => {
       exitMenu({ animated: false });
-    }, 1450);
+    }, 1850);
   }
 
   // ====================

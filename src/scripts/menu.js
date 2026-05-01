@@ -180,16 +180,20 @@ export function Menu(onGameStart, sound) {
     if (selectingAI) return;
 
     selectingAI = true;
+    sound.clearDebouncedSfx("shimmer1");
 
-    const cards = container.querySelectorAll(".ai-card");
+    const cards = Array.from(container.querySelectorAll(".ai-card"));
+
+    container.classList.add("ai-selection-committed");
 
     cards.forEach((c) => {
       c.style.pointerEvents = "none";
+      c.classList.remove("ready");
 
-      if (c !== card) {
-        c.classList.add("dim");
-        c.classList.add("standby");
-      }
+      if (c === card) return;
+
+      c.style.transition = "";
+      c.classList.add("ai-card-dismissed");
     });
 
     card.classList.add("selected");
@@ -205,7 +209,7 @@ export function Menu(onGameStart, sound) {
 
     setTimeout(() => {
       exitMenu({ animated: false });
-    }, 1850);
+    }, 2100);
   }
 
   // ====================

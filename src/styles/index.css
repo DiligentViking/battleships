@@ -600,7 +600,8 @@ MAIN MENU
     0 0 24px var(--ai-glow),
     0 0 80px color-mix(in srgb, var(--ai-color) 34%, transparent);
 
-  animation: aiSelectedPulse 500ms ease forwards;
+  transition: box-shadow 420ms ease;
+  /* animation: aiSelectedPulse 500ms ease forwards; */
 }
 
 /* AI color identities */
@@ -790,20 +791,6 @@ MAIN MENU
   }
 }
 
-@keyframes aiSelectedPulse {
-  0% {
-    filter: brightness(1);
-  }
-
-  45% {
-    filter: brightness(1.55);
-  }
-
-  100% {
-    filter: brightness(1.15);
-  }
-}
-
 @keyframes aiRingSpin {
   to {
     rotate: 360deg;
@@ -875,6 +862,33 @@ MAIN MENU
     width: 56px;
     height: 56px;
   }
+}
+
+.ai-selection-committed .ai-back-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.ai-card.ai-card-dismissed {
+  opacity: 0.9;
+  transform: translateY(8px) scale(0.96);
+  filter: blur(2px) brightness(0.58);
+
+  transition:
+    opacity 420ms ease,
+    transform 420ms ease,
+    filter 420ms ease;
+}
+
+.ai-card.selected {
+  z-index: 10;
+}
+
+.ai-card.selected.ai-locking {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1.104);
 }
 
 /* BACKGROUND */
@@ -1149,13 +1163,13 @@ MAIN MENU
   }
 }
 
-.ai-card.ai-locking {
+/* .ai-card.ai-locking {
   animation: aiCardLocking 520ms ease-out forwards;
 }
 
 .ai-card.standby {
   animation: aiCardStandby 520ms ease-out forwards;
-}
+} */
 
 @keyframes aiCardLocking {
   0% {

@@ -15,6 +15,7 @@ menu.init();
 
 function onGameStart(config) {
   gameRoot.classList.remove("game-hidden");
+  gameRoot.classList.add("game-descent-enter");
 
   let player2;
 
@@ -32,4 +33,13 @@ function onGameStart(config) {
   const controller = Controller(player1, player2, game, view);
 
   controller.init();
+
+  requestAnimationFrame(() => {
+    gameRoot.classList.add("game-descent-active");
+  });
+
+  setTimeout(() => {
+    gameRoot.classList.remove("game-descent-enter");
+    gameRoot.classList.remove("game-descent-active");
+  }, 1300);
 }

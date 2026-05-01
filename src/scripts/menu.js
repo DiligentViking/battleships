@@ -192,11 +192,15 @@ export function Menu(onGameStart, sound) {
     });
 
     card.classList.add("selected");
+    root.classList.add("camera-drop-active");
 
     setTimeout(() => {
-      exitMenu();
       onGameStart({ mode: "ai", difficulty: level });
-    }, 650);
+    }, 620);
+
+    setTimeout(() => {
+      exitMenu({ animated: false });
+    }, 1450);
   }
 
   // ====================
@@ -287,14 +291,20 @@ export function Menu(onGameStart, sound) {
   // EXIT
   // ====================
 
-  function exitMenu() {
+  function exitMenu({ animated = true } = {}) {
     running = false;
 
     ambient.classList.remove("menu-active");
 
+    root.style.pointerEvents = "none";
+
+    if (!animated) {
+      root.remove();
+      return;
+    }
+
     root.style.transition = "opacity 0.6s ease";
     root.style.opacity = "0";
-    root.style.pointerEvents = "none";
 
     setTimeout(() => {
       root.remove();

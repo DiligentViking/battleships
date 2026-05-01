@@ -1028,6 +1028,128 @@ MAIN MENU
   }
 }
 
+/* CAMERA DROP TRANSITION */
+
+#mainMenu.camera-drop-active {
+  overflow: hidden;
+}
+
+#mainMenu.camera-drop-active .menu-title,
+#mainMenu.camera-drop-active .ai-selection {
+  animation: menuCameraLiftSoft 1300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+#mainMenu.camera-drop-active #menuBg {
+  animation: menuGridDriftSoft 1400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+#mainMenu.camera-drop-active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 255, 255, 0.06) 44%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 43, 214, 0.05) 56%,
+      transparent 100%
+    );
+
+  transform: translateY(-120%);
+  animation: cameraDropScanSoft 1250ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+#mainMenu.camera-drop-active::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  pointer-events: none;
+
+  background: #02040a;
+  opacity: 0;
+  animation: cameraDropDarknessSoft 1400ms ease forwards;
+}
+
+.app.game-descent-enter {
+  opacity: 0;
+  transform: translateY(42px) scale(1.015);
+  filter: blur(2px) brightness(0.82);
+}
+
+.app.game-descent-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0) brightness(1);
+  transition:
+    opacity 1000ms ease,
+    transform 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1200ms ease;
+}
+
+@keyframes menuCameraLiftSoft {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-54px) scale(0.985);
+    filter: blur(2px);
+  }
+}
+
+@keyframes menuGridDriftSoft {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(1.06);
+    filter: blur(4px);
+  }
+}
+
+@keyframes cameraDropScanSoft {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes cameraDropDarknessSoft {
+  0% {
+    opacity: 0;
+  }
+
+  48% {
+    opacity: 0.32;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 /*
 ==================== 
 PLACEMENT PHASE 

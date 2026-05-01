@@ -154,3 +154,8 @@ __________
 -"versus ai"
 -"multiplayer" (need to make p2 setup!)
 -"settings" (like one or two settings)
+
+-idea: versus "The Operative", you can only see its ships whenever there is a radar sweep (like everything is dark and suspensful and you have to use your memory somehow) (figure out what to do with sounds)
+
+-multiplayer idea in the far future: you can unlock a wide variety of tracks to use as your theme song. your theme song plays on your opponent's machine.
+-and maybe during replays. or you can see the replay either from your or the other's perspective.

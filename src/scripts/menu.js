@@ -34,8 +34,25 @@ export function Menu(onGameStart, sound) {
   // BUTTONS
   // ====================
 
+  function playHoverSound() {
+    sound.playDebouncedSfx("buttonHover", "hoverButton", {
+      delay: 80,
+      volume: 0.8,
+    });
+  }
+  function clearHoverSoundTimeout() {
+    sound.clearDebouncedSfx("buttonHover");
+  }
+
+  function playClickSound() {
+    sound.playSfx("clickButton", { volume: 0.35 });
+  }
+
   function bindButtons() {
     root.querySelectorAll(".menu-btn").forEach((btn) => {
+      btn.addEventListener("click", playClickSound);
+      btn.addEventListener("mouseover", playHoverSound);
+      btn.addEventListener("mouseleave", clearHoverSoundTimeout);
       btn.addEventListener("click", () => {
         const action = btn.dataset.action;
 
@@ -109,9 +126,10 @@ export function Menu(onGameStart, sound) {
 
     ais.forEach((ai, i) => {
       const card = document.createElement("button");
+      const delay = i * 90;
       card.className = `ai-card ${ai.class}`;
       card.type = "button";
-      card.style.animationDelay = `${i * 90}ms`;
+      card.style.animationDelay = `${delay}ms`;
       card.setAttribute("aria-label", `Engage ${ai.name} AI`);
 
       card.innerHTML = `
@@ -128,14 +146,30 @@ export function Menu(onGameStart, sound) {
       card.addEventListener("click", () => {
         selectAI(ai.level, card, container);
       });
+      card.addEventListener("mouseenter", () => {
+        sound.playDebouncedSfx("shimmer1", "shimmer1", {
+          delay: 100,
+          volume: 0.1,
+        });
+      });
+      card.addEventListener("mouseleave", () => {
+        sound.clearDebouncedSfx("shimmer1");
+      });
 
       container.appendChild(card);
+
+      setTimeout(() => {
+        sound.playSfx("materialize", { volume: 0.05 });
+      }, delay);
     });
 
     const back = document.createElement("button");
     back.className = "ai-back-btn";
     back.type = "button";
     back.textContent = "Back";
+    back.addEventListener("click", playClickSound);
+    back.addEventListener("mouseover", playHoverSound);
+    back.addEventListener("mouseleave", clearHoverSoundTimeout);
     back.addEventListener("click", exitAISelection);
 
     container.appendChild(back);

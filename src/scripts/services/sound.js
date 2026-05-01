@@ -1,6 +1,10 @@
 const SFX = {
   clickButton: "assets/sfx/cyberpunk-bass-impact.mp3",
 
+  materialize: "assets/sfx/materialize.mp3",
+  shimmer1: "assets/sfx/ice-shimmer-1.wav",
+  shimmer2: "assets/sfx/ice-shimmer-2.wav",
+
   hoverButton: "assets/sfx/hover-button.mp3",
   hoverValid: "assets/sfx/hover-valid.mp3",
   hoverInvalid: "assets/sfx/hover-invalid.mp3",

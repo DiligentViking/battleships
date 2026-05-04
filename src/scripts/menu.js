@@ -116,8 +116,12 @@ export function Menu(onGameStart, sound) {
     aiSelectionContainer = container;
 
     AIS.forEach((ai, i) => {
+      const wrap = document.createElement("div");
+      wrap.className = "ai-card-wrap";
+
       const card = createAICard(ai, i, container);
-      container.appendChild(card);
+      wrap.appendChild(card);
+      container.appendChild(wrap);
 
       setTimeout(() => {
         sound.playSfx("materialize", { volume: 0.05 });
@@ -147,7 +151,7 @@ export function Menu(onGameStart, sound) {
 
     card.addEventListener("animationend", (e) => {
       if (e.animationName !== "aiCardEnter") return;
-      card.classList.add("ready");
+      card.parentNode.classList.add("ready");
     });
 
     card.addEventListener("click", () => {

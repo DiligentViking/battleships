@@ -403,8 +403,12 @@ MAIN MENU
 /* BUTTONS */
 
 .menu-buttons {
-  position: relative;
+  position: absolute;
   z-index: 5;
+
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
 
   display: flex;
   flex-direction: column;
@@ -587,7 +591,28 @@ MAIN MENU
   opacity: 0.45;
 }
 
-.ai-card.ready:hover {
+.ai-card-wrap {
+  min-height: 270px;
+  border-radius: 0.9rem;
+  pointer-events: none;
+}
+
+.ai-card-wrap.ready {
+  pointer-events: auto;
+}
+
+.ai-card-wrap.ready:hover {
+  cursor: pointer;
+}
+
+.ai-card-wrap.ready .ai-card {
+  pointer-events: auto;
+  animation: none;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ai-card-wrap.ready:hover .ai-card {
   transform: translateY(-6px);
   border-color: var(--ai-color);
 
@@ -597,10 +622,9 @@ MAIN MENU
     0 0 44px color-mix(in srgb, var(--ai-color) 12%, transparent);
 
   filter: brightness(1.12);
-  cursor: pointer;
 }
 
-.ai-card.ready:hover::before {
+.ai-card-wrap.ready:hover .ai-card::before {
   opacity: 0.125;
   transform: translateX(100%);
   transition:
@@ -608,17 +632,12 @@ MAIN MENU
     transform 1000ms ease;
 }
 
-.ai-selection-committed .ai-card {
+.ai-selection-committed .ai-card-wrap {
   pointer-events: none;
 }
 
-.ai-selection-committed .ai-card.ready:hover {
+.ai-selection-committed .ai-card-wrap.ready:hover {
   cursor: default;
-}
-
-.ai-selection-committed .ai-card.ready:not(.selected):hover {
-  transform: translateY(0) scale(1);
-  filter: none;
 }
 
 .ai-card.ai-card-dismissed {

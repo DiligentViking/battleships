@@ -494,14 +494,13 @@ MAIN MENU
   --ai-glow: var(--p1-glow);
 
   appearance: none;
-  border: 1px solid color-mix(in srgb, var(--ai-color) 55%, #07111a);
-
   position: relative;
   overflow: hidden;
 
   min-height: 270px;
   padding: 0;
 
+  border: 1px solid color-mix(in srgb, var(--ai-color) 55%, #07111a);
   border-radius: 0.9rem;
 
   background:
@@ -557,13 +556,6 @@ MAIN MENU
     filter 420ms ease;
 }
 
-.ai-card.ready {
-  pointer-events: auto;
-  animation: none;
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
 .ai-card::before {
   content: "";
   position: absolute;
@@ -580,7 +572,7 @@ MAIN MENU
   );
 
   opacity: 0;
-  transform: translateX(-150%); /* adds a little delay */
+  transform: translateX(-150%);
 }
 
 .ai-card::after {
@@ -595,7 +587,7 @@ MAIN MENU
   opacity: 0.45;
 }
 
-.ai-card:hover {
+.ai-card.ready:hover {
   transform: translateY(-6px);
   border-color: var(--ai-color);
 
@@ -608,7 +600,7 @@ MAIN MENU
   cursor: pointer;
 }
 
-.ai-card:hover::before {
+.ai-card.ready:hover::before {
   opacity: 0.125;
   transform: translateX(100%);
   transition:
@@ -616,13 +608,28 @@ MAIN MENU
     transform 1000ms ease;
 }
 
+.ai-selection-committed .ai-card {
+  pointer-events: none;
+}
+
+.ai-selection-committed .ai-card.ready:hover {
+  cursor: default;
+}
+
+.ai-selection-committed .ai-card.ready:not(.selected):hover {
+  transform: translateY(0) scale(1);
+  filter: none;
+}
+
 .ai-card.ai-card-dismissed {
-  filter: blur(3px) grayscale(0.75) brightness(0.42);
+  opacity: 0.8;
+  filter: blur(2px) grayscale(0.8) brightness(0.8);
 
   transition:
-    opacity 520ms ease,
-    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 520ms ease;
+    opacity 400ms ease,
+    filter 400ms ease,
+    border-color 400ms ease,
+    box-shadow 400ms ease;
 }
 
 .ai-card.selected {
@@ -633,14 +640,15 @@ MAIN MENU
   opacity: 1;
   visibility: visible;
 
-  transform: translateY(-6px) scale(1.045);
+  transform: translateY(-6px) scale(1.025);
   filter: brightness(1.12);
+  border-color: var(--ai-color);
 
   transition:
-    transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 760ms ease,
+    transform 750ms ease,
+    filter 750ms ease,
     box-shadow 760ms ease,
-    border-color 420ms ease;
+    border-color 750ms ease;
 
   box-shadow:
     inset 0 0 24px #000,

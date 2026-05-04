@@ -195,15 +195,12 @@ export function Menu(onGameStart, sound) {
     container.classList.add("ai-selection-committed");
 
     cards.forEach((card) => {
-      card.classList.remove("ready");
       card.style.pointerEvents = "none";
     });
 
     selectedCard.classList.add("selected", "ai-locking");
 
-    setTimeout(() => {
-      dismissUnselectedAICards(cards, selectedCard);
-    }, 180);
+    dismissUnselectedAICards(cards, selectedCard);
 
     setTimeout(() => {
       root.classList.add("camera-drop-active");
@@ -221,9 +218,6 @@ export function Menu(onGameStart, sound) {
   function dismissUnselectedAICards(cards, selectedCard) {
     cards.forEach((card) => {
       if (card === selectedCard) return;
-
-      const direction = card.offsetLeft < selectedCard.offsetLeft ? -1 : 1;
-      card.style.setProperty("--dismiss-x", `${direction * 18}px`);
       card.classList.add("ai-card-dismissed");
     });
   }

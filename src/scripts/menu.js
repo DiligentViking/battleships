@@ -44,7 +44,7 @@ export function Menu(onGameStart, sound) {
   }
 
   function playClickSound() {
-    sound.playSfx("clickButton", { volume: 0.35 });
+    sound.playSfx("clickButton", { volume: 0.3 });
   }
 
   function bindButtons() {
@@ -192,7 +192,7 @@ export function Menu(onGameStart, sound) {
 
     selectingAI = true;
     sound.clearDebouncedSfx("aiCardHover");
-    sound.playSfx("clickButton", { volume: 0.28 });
+    sound.playSfx("clickButton", { volume: 0.3 });
 
     const cards = Array.from(container.querySelectorAll(".ai-card"));
 

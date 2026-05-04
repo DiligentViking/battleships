@@ -57,6 +57,7 @@ export function Controller(player1, player2, game, view) {
       heldSegment: null,
       isVertical: false,
       hoverEvent: null,
+      placedShips: new Set(),
     };
 
     const { p1Board, fleetContainer, resetBtn, randomBtn, deployBtn } =
@@ -65,6 +66,7 @@ export function Controller(player1, player2, game, view) {
     function init() {
       view.setAmbientPhase("setup-phase");
       view.enterSetupPhase();
+      view.setDeployReady(false);
 
       for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
         view.addPlaceableShip(i);
@@ -126,24 +128,23 @@ export function Controller(player1, player2, game, view) {
       if (state.heldShipID === null) return;
       if (!e.target.classList.contains("cell")) return;
 
+      const shipID = state.heldShipID;
       const coords = adjustCoords(e);
 
       const { coordsList, valid } = player1.gameboard.placeShip(
-        state.heldShipID,
-        CONFIG.SHIP_LENGTHS[state.heldShipID],
+        shipID,
+        CONFIG.SHIP_LENGTHS[shipID],
         coords,
         state.isVertical,
       );
 
       if (!valid) return;
 
-      view.placeShip(
-        player1.getName(),
-        coordsList,
-        state.heldShipID,
-        state.isVertical,
-      );
-      view.removePlaceableShip(state.heldShipID);
+      view.placeShip(player1.getName(), coordsList, shipID, state.isVertical);
+      view.removePlaceableShip(shipID);
+
+      state.placedShips.add(shipID);
+      updateDeployState();
 
       state.heldShipID = null;
     }
@@ -167,22 +168,49 @@ export function Controller(player1, player2, game, view) {
         state.isVertical = false;
         view.toggleVerticalShips(state.isVertical);
       }
+
       resetSetup(player1);
+
+      state.heldShipID = null;
+      state.heldSegment = null;
+      state.hoverEvent = null;
+      state.placedShips.clear();
+
+      updateDeployState();
     }
 
     function randomize() {
       view.playPlaceRandomSound();
       resetSetup(player1);
       autoPlace(player1);
+
+      state.heldShipID = null;
+      state.heldSegment = null;
+      state.hoverEvent = null;
+      state.placedShips = new Set(
+        Array.from({ length: CONFIG.NUM_SHIPS }, (_, i) => i),
+      );
+
+      updateDeployState();
     }
 
     function deploy() {
+      if (!isFleetReady()) return;
+
       if (player2.getType() === "computer") {
         autoPlace(player2);
       }
 
       view.enterBattlePhase();
       startBattlePhase();
+    }
+
+    function updateDeployState() {
+      view.setDeployReady(isFleetReady());
+    }
+
+    function isFleetReady() {
+      return state.placedShips.size === CONFIG.NUM_SHIPS;
     }
 
     function adjustCoords(e) {

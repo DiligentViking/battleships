@@ -501,6 +501,17 @@ export function View(root, sound) {
       DOM.p1Board.classList.add("placement-phase");
     },
 
+    setDeployReady(isReady) {
+      DOM.deployBtn.disabled = !isReady;
+      DOM.deployBtn.classList.toggle("deploy-ready", isReady);
+      DOM.deployBtn.classList.toggle("deploy-locked", !isReady);
+
+      DOM.deployBtn.setAttribute(
+        "aria-label",
+        isReady ? "Deploy fleet" : "Deploy locked until all ships are placed",
+      );
+    },
+
     addPlaceableShip,
     removePlaceableShip,
     updatePreview,
@@ -595,6 +606,10 @@ export function View(root, sound) {
 
     playPlaceRandomSound() {
       sound.playSfx("placeRandom", { volume: 0.25 });
+    },
+
+    playDeploySound() {
+      sound.playSfx("clickButton", { volume: 0.3 });
     },
 
     revealShip(playerName, shipID) {

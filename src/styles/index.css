@@ -479,6 +479,16 @@ MAIN MENU
     transform 260ms ease;
 }
 
+.ai-selection-committed {
+  pointer-events: none;
+}
+
+.ai-selection-committed .ai-back-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
 .ai-card {
   --ai-color: var(--p1-primary);
   --ai-glow: var(--p1-glow);
@@ -490,13 +500,7 @@ MAIN MENU
   overflow: hidden;
 
   min-height: 270px;
-  padding: 1.35rem 1.15rem 1.25rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  padding: 0;
 
   border-radius: 0.9rem;
 
@@ -520,15 +524,44 @@ MAIN MENU
   animation: aiCardEnter 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 
   transition:
-    transform 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    filter 220ms ease,
-    opacity 220ms ease;
+    opacity 250ms ease,
+    transform 250ms ease,
+    filter 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
 }
 
 .ai-card.ready {
   pointer-events: auto;
+  animation: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ai-card-inner {
+  position: relative;
+  z-index: 1;
+
+  min-height: 270px;
+  padding: 1.35rem 1.15rem 1.25rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  transform: translateY(0) scale(1);
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms ease;
+}
+
+.ai-card.ready {
+  pointer-events: auto;
+  animation: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .ai-card::before {
@@ -563,7 +596,7 @@ MAIN MENU
 }
 
 .ai-card:hover {
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-6px);
   border-color: var(--ai-color);
 
   box-shadow:
@@ -583,25 +616,44 @@ MAIN MENU
     transform 1000ms ease;
 }
 
-.ai-card.dim {
-  opacity: 0.22;
-  filter: grayscale(0.7) brightness(0.65);
-  transform: scale(0.95);
+.ai-card.ai-card-dismissed {
+  filter: blur(3px) grayscale(0.75) brightness(0.42);
+
+  transition:
+    opacity 520ms ease,
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 520ms ease;
 }
 
 .ai-card.selected {
-  z-index: 7;
-  transform: translateY(-8px) scale(1.08);
+  z-index: 10;
+}
 
-  border-color: var(--ai-color);
+.ai-card.selected.ai-locking {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(-6px) scale(1.045);
+  filter: brightness(1.12);
+
+  transition:
+    transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 760ms ease,
+    box-shadow 760ms ease,
+    border-color 420ms ease;
 
   box-shadow:
-    inset 0 0 22px #000,
-    0 0 24px var(--ai-glow),
-    0 0 80px color-mix(in srgb, var(--ai-color) 34%, transparent);
+    inset 0 0 24px #000,
+    0 0 28px var(--ai-glow),
+    0 0 90px color-mix(in srgb, var(--ai-color) 38%, transparent);
+}
 
-  transition: box-shadow 420ms ease;
-  /* animation: aiSelectedPulse 500ms ease forwards; */
+.ai-card.selected.ai-locking::before {
+  opacity: 0.22;
+  transform: translateX(120%);
+  transition:
+    opacity 420ms ease,
+    transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* AI color identities */
@@ -737,36 +789,7 @@ MAIN MENU
   border-radius: 18%;
 }
 
-/* Button */
-
-.ai-select-btn,
-.ai-back-btn {
-  position: relative;
-  z-index: 1;
-}
-
-.ai-select-btn {
-  width: 100%;
-  padding: 0.65rem 1rem;
-
-  border: 1px solid color-mix(in srgb, var(--ai-color) 70%, var(--cell-border));
-  border-radius: 0.5rem;
-
-  box-shadow:
-    inset 0 0 8px #000,
-    0 0 10px color-mix(in srgb, var(--ai-color) 18%, transparent);
-
-  color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.ai-card:hover .ai-select-btn {
-  border-color: var(--ai-color);
-  box-shadow:
-    inset 0 0 10px #000,
-    0 0 16px var(--ai-glow);
-}
+/* Back button */
 
 .ai-back-btn {
   position: relative;
@@ -862,33 +885,6 @@ MAIN MENU
     width: 56px;
     height: 56px;
   }
-}
-
-.ai-selection-committed .ai-back-btn {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease;
-}
-
-.ai-card.ai-card-dismissed {
-  opacity: 0.9;
-  transform: translateY(8px) scale(0.96);
-  filter: blur(2px) brightness(0.58);
-
-  transition:
-    opacity 420ms ease,
-    transform 420ms ease,
-    filter 420ms ease;
-}
-
-.ai-card.selected {
-  z-index: 10;
-}
-
-.ai-card.selected.ai-locking {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) scale(1.104);
 }
 
 /* BACKGROUND */

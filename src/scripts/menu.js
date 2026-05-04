@@ -1,5 +1,4 @@
 import { DEV } from "./dev.js";
-import { once } from "./models/utils.js";
 
 export function Menu(onGameStart, sound) {
   const root = document.getElementById("mainMenu");
@@ -53,16 +52,10 @@ export function Menu(onGameStart, sound) {
       btn.addEventListener("click", playClickSound);
       btn.addEventListener("mouseover", playHoverSound);
       btn.addEventListener("mouseleave", clearHoverSoundTimeout);
+
       btn.addEventListener("click", () => {
-        const action = btn.dataset.action;
-
-        if (action === "ai") {
+        if (btn.dataset.action === "ai") {
           enterAISelection();
-          return;
-        }
-
-        if (action === "settings") {
-          console.log("Settings not implemented yet");
         }
       });
     });
@@ -71,6 +64,27 @@ export function Menu(onGameStart, sound) {
   // ====================
   // AI SELECTION
   // ====================
+
+  const AIS = [
+    {
+      name: "Drift",
+      desc: "Erratic. Fires blindly into the void.",
+      level: 0,
+      className: "drift",
+    },
+    {
+      name: "Hunter",
+      desc: "Relentless. Locks on, then pursues.",
+      level: 1,
+      className: "hunter",
+    },
+    {
+      name: "Sentinel",
+      desc: "Optimized. Eliminates inefficiency and collapses all resistance.",
+      level: 2,
+      className: "sentinel",
+    },
+  ];
 
   function enterAISelection() {
     if (mode === "ai-select") return;
@@ -82,8 +96,7 @@ export function Menu(onGameStart, sound) {
   }
 
   function exitAISelection() {
-    if (selectingAI) return;
-    if (!aiSelectionContainer) return;
+    if (selectingAI || !aiSelectionContainer) return;
 
     aiSelectionContainer.classList.add("ai-selection-exit");
 
@@ -96,120 +109,123 @@ export function Menu(onGameStart, sound) {
   }
 
   function renderAICards() {
-    if (mode !== "ai-select") return;
-    if (aiSelectionContainer) return;
+    if (mode !== "ai-select" || aiSelectionContainer) return;
 
     const container = document.createElement("div");
     container.className = "ai-selection";
     aiSelectionContainer = container;
 
-    const ais = [
-      {
-        name: "Drift",
-        desc: "Erratic. Fires blindly into the void.",
-        level: 0,
-        class: "drift",
-      },
-      {
-        name: "Hunter",
-        desc: "Relentless. Locks on, then pursues.",
-        level: 1,
-        class: "hunter",
-      },
-      {
-        name: "Sentinel",
-        desc: "Optimized. Eliminates inefficiency and collapses all resistance.",
-        level: 2,
-        class: "sentinel",
-      },
-    ];
-
-    ais.forEach((ai, i) => {
-      const card = document.createElement("button");
-      const delay = i * 90;
-      card.className = `ai-card ${ai.class}`;
-      card.type = "button";
-      card.style.animationDelay = `${delay}ms`;
-      card.setAttribute("aria-label", `Engage ${ai.name} AI`);
-
-      card.innerHTML = `
-        <div class="ai-name">${ai.name}</div>
-        <div class="ai-visual"></div>
-        <div class="ai-desc">${ai.desc}</div>
-      `;
-
-      once(card, "animationend", (e) => {
-        if (e.animationName !== "aiCardEnter") return;
-        card.classList.add("ready");
-      });
-
-      card.addEventListener("click", () => {
-        selectAI(ai.level, card, container);
-      });
-      card.addEventListener("mouseenter", () => {
-        sound.playDebouncedSfx("shimmer1", "shimmer1", {
-          delay: 100,
-          volume: 0.1,
-        });
-      });
-      card.addEventListener("mouseleave", () => {
-        sound.clearDebouncedSfx("shimmer1");
-      });
-
+    AIS.forEach((ai, i) => {
+      const card = createAICard(ai, i, container);
       container.appendChild(card);
 
       setTimeout(() => {
         sound.playSfx("materialize", { volume: 0.05 });
-      }, delay);
+      }, i * 90);
     });
 
+    container.appendChild(createAIBackButton());
+    root.appendChild(container);
+  }
+
+  function createAICard(ai, index, container) {
+    const card = document.createElement("button");
+    const delay = index * 90;
+
+    card.className = `ai-card ${ai.className}`;
+    card.type = "button";
+    card.style.animationDelay = `${delay}ms`;
+    card.setAttribute("aria-label", `Engage ${ai.name} AI`);
+
+    card.innerHTML = `
+      <div class="ai-card-inner">
+        <div class="ai-name">${ai.name}</div>
+        <div class="ai-visual"></div>
+        <div class="ai-desc">${ai.desc}</div>
+      </div>
+    `;
+
+    card.addEventListener("animationend", (e) => {
+      if (e.animationName !== "aiCardEnter") return;
+      card.classList.add("ready");
+    });
+
+    card.addEventListener("click", () => {
+      selectAI(ai.level, card, container);
+    });
+
+    card.addEventListener("mouseenter", () => {
+      sound.playDebouncedSfx("aiCardHover", "shimmer1", {
+        delay: 100,
+        volume: 0.1,
+      });
+    });
+
+    card.addEventListener("mouseleave", () => {
+      sound.clearDebouncedSfx("aiCardHover");
+    });
+
+    return card;
+  }
+
+  function createAIBackButton() {
     const back = document.createElement("button");
+
     back.className = "ai-back-btn";
     back.type = "button";
     back.textContent = "Back";
+
     back.addEventListener("click", playClickSound);
     back.addEventListener("mouseover", playHoverSound);
     back.addEventListener("mouseleave", clearHoverSoundTimeout);
     back.addEventListener("click", exitAISelection);
 
-    container.appendChild(back);
-    root.appendChild(container);
+    return back;
   }
 
-  function selectAI(level, card, container) {
+  function selectAI(level, selectedCard, container) {
     if (selectingAI) return;
 
     selectingAI = true;
-    sound.clearDebouncedSfx("shimmer1");
+    sound.clearDebouncedSfx("aiCardHover");
+    sound.playSfx("clickButton", { volume: 0.28 });
 
     const cards = Array.from(container.querySelectorAll(".ai-card"));
 
     container.classList.add("ai-selection-committed");
 
-    cards.forEach((c) => {
-      c.style.pointerEvents = "none";
-      c.classList.remove("ready");
-
-      if (c === card) return;
-
-      c.style.transition = "";
-      c.classList.add("ai-card-dismissed");
+    cards.forEach((card) => {
+      card.classList.remove("ready");
+      card.style.pointerEvents = "none";
     });
 
-    card.classList.add("selected");
-    card.classList.add("ai-locking");
+    selectedCard.classList.add("selected", "ai-locking");
+
+    setTimeout(() => {
+      dismissUnselectedAICards(cards, selectedCard);
+    }, 180);
 
     setTimeout(() => {
       root.classList.add("camera-drop-active");
-    }, 520);
+    }, 760);
 
     setTimeout(() => {
       onGameStart({ mode: "ai", difficulty: level });
-    }, 980);
+    }, 1120);
 
     setTimeout(() => {
       exitMenu({ animated: false });
     }, 2100);
+  }
+
+  function dismissUnselectedAICards(cards, selectedCard) {
+    cards.forEach((card) => {
+      if (card === selectedCard) return;
+
+      const direction = card.offsetLeft < selectedCard.offsetLeft ? -1 : 1;
+      card.style.setProperty("--dismiss-x", `${direction * 18}px`);
+      card.classList.add("ai-card-dismissed");
+    });
   }
 
   // ====================

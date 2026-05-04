@@ -521,6 +521,53 @@ export function View(root, sound) {
     toggleVerticalShips,
     setAmbientPhase,
 
+    playDeployTransition() {
+      return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "phase-transition";
+        overlay.innerHTML = `
+      <div class="phase-transition__vignette"></div>
+      <div class="phase-transition__scan"></div>
+      <div class="phase-transition__core">
+        <div class="phase-transition__ring"></div>
+        <div class="phase-transition__title">Fleet Locked</div>
+        <div class="phase-transition__subtitle">Battle Grid Online</div>
+      </div>
+    `;
+
+        root.appendChild(overlay);
+
+        DOM.message.textContent = "Deploying Fleet";
+
+        root.classList.add("deploy-transition-active");
+        DOM.deployBtn.classList.add("deploy-committing");
+
+        sound.playSfx("shimmer2", { volume: 0.18 });
+
+        setTimeout(() => {
+          root.classList.add("deploy-transition-lock");
+          sound.playSfx("materialize", { volume: 0.08 });
+        }, 420);
+
+        setTimeout(() => {
+          this.enterBattlePhase();
+          root.classList.add("battle-grid-reveal");
+          sound.playSfx("placeWoosh", { volume: 0.18 });
+        }, 900);
+
+        setTimeout(() => {
+          root.classList.remove(
+            "deploy-transition-active",
+            "deploy-transition-lock",
+            "battle-grid-reveal",
+          );
+
+          overlay.remove();
+          resolve();
+        }, 1850);
+      });
+    },
+
     // Battle
     enterBattlePhase() {
       DOM.message.textContent = "Battle";

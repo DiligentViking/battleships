@@ -58,6 +58,7 @@ export function Controller(player1, player2, game, view) {
       isVertical: false,
       hoverEvent: null,
       placedShips: new Set(),
+      deploying: false,
     };
 
     const { p1Board, fleetContainer, resetBtn, randomBtn, deployBtn } =
@@ -194,14 +195,20 @@ export function Controller(player1, player2, game, view) {
       updateDeployState();
     }
 
-    function deploy() {
-      if (!isFleetReady()) return;
+    async function deploy() {
+      if (!isFleetReady() || state.deploying) return;
+
+      state.deploying = true;
+      deployBtn.disabled = true;
 
       if (player2.getType() === "computer") {
         autoPlace(player2);
       }
 
-      view.enterBattlePhase();
+      view.playDeploySound();
+
+      await view.playDeployTransition();
+
       startBattlePhase();
     }
 

@@ -423,7 +423,6 @@ MAIN MENU
   width: 240px;
 
   opacity: 1;
-  pointer-events: all;
   animation: buttonsWake 1s ease backwards;
 }
 
@@ -621,7 +620,7 @@ MAIN MENU
     0 0 20px var(--ai-glow),
     0 0 44px color-mix(in srgb, var(--ai-color) 12%, transparent);
 
-  filter: brightness(1.12);
+  filter: brightness(1.15);
 }
 
 .ai-card-wrap.ready:hover .ai-card::before {
@@ -632,11 +631,12 @@ MAIN MENU
     transform 1000ms ease;
 }
 
-.ai-selection-committed .ai-card-wrap {
+.ai-selection-committed .ai-card-wrap,
+.ai-selection-committed .ai-card {
   pointer-events: none;
 }
 
-.ai-selection-committed .ai-card-wrap.ready:hover {
+.ai-selection-committed .ai-card:hover {
   cursor: default;
 }
 
@@ -660,13 +660,13 @@ MAIN MENU
   visibility: visible;
 
   transform: translateY(-6px) scale(1.025);
-  filter: brightness(1.12);
+  filter: brightness(1.6);
   border-color: var(--ai-color);
 
   transition:
     transform 750ms ease,
     filter 750ms ease,
-    box-shadow 760ms ease,
+    box-shadow 750ms ease,
     border-color 750ms ease;
 
   box-shadow:
@@ -680,7 +680,7 @@ MAIN MENU
   transform: translateX(120%);
   transition:
     opacity 420ms ease,
-    transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* AI color identities */

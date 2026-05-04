@@ -207,6 +207,9 @@ export function Menu(onGameStart, sound) {
     dismissUnselectedAICards(cards, selectedCard);
 
     setTimeout(() => {
+      sound.playSfx("shimmer2", { volume: 0.2 });
+    }, 560);
+    setTimeout(() => {
       root.classList.add("camera-drop-active");
     }, 760);
 

@@ -691,7 +691,7 @@ export function View(root, sound) {
           });
 
           sound.playSfx("placeWoosh", { volume: 0.18 });
-        }, 900);
+        }, 1150);
 
         setTimeout(() => {
           root.classList.remove(
@@ -704,7 +704,7 @@ export function View(root, sound) {
 
           overlay.remove();
           resolve();
-        }, 1850);
+        }, 2450);
       });
     },
 

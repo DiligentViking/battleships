@@ -10,7 +10,11 @@ export function View(root, sound) {
   const DOM = {
     message: root.querySelector(".message"),
 
+    middleArea: root.querySelector(".middle-area"),
+
+    p1BoardWrapper: root.querySelector(".board-wrapper.p1"),
     p2BoardWrapper: root.querySelector(".board-wrapper.p2"),
+
     p1Board: root.querySelector(".board.p1"),
     p2Board: root.querySelector(".board.p2"),
 
@@ -51,6 +55,96 @@ export function View(root, sound) {
 
   function parseCellCoords(cell) {
     return cell.dataset.coords.split(",").map(Number);
+  }
+
+  // ====================
+  // FLIP / LAYOUT ANIMATION
+  // ====================
+
+  const FLIP_DURATION = 760;
+
+  function getRects(elements) {
+    return new Map(elements.map((el) => [el, el.getBoundingClientRect()]));
+  }
+
+  function playFlip(firstRects, elements) {
+    elements.forEach((el) => {
+      const first = firstRects.get(el);
+      const last = el.getBoundingClientRect();
+
+      if (!first) return;
+
+      const dx = first.left - last.left;
+      const dy = first.top - last.top;
+
+      if (!dx && !dy) return;
+
+      el.style.transition = "none";
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+
+      // Force layout before playing the transition.
+      el.getBoundingClientRect();
+
+      requestAnimationFrame(() => {
+        el.style.transition = `transform ${FLIP_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+        el.style.transform = "";
+      });
+    });
+  }
+
+  function freezeToViewport(el) {
+    const rect = el.getBoundingClientRect();
+
+    el.classList.add("layout-frozen");
+
+    el.style.position = "fixed";
+    el.style.left = `${rect.left}px`;
+    el.style.top = `${rect.top}px`;
+    el.style.width = `${rect.width}px`;
+    el.style.height = `${rect.height}px`;
+    el.style.margin = "0";
+    el.style.zIndex = "20";
+    el.style.pointerEvents = "none";
+
+    return rect;
+  }
+
+  function clearLayoutAnimationStyles() {
+    [DOM.p1BoardWrapper, DOM.p2BoardWrapper, DOM.fleetWrapper].forEach((el) => {
+      if (!el) return;
+
+      el.classList.remove("layout-frozen");
+
+      el.style.position = "";
+      el.style.left = "";
+      el.style.top = "";
+      el.style.width = "";
+      el.style.height = "";
+      el.style.margin = "";
+      el.style.zIndex = "";
+      el.style.pointerEvents = "";
+      el.style.transition = "";
+      el.style.transform = "";
+    });
+
+    root.style.minWidth = "";
+    root.style.minHeight = "";
+  }
+
+  function lockRootSize() {
+    root.style.minWidth = `${root.offsetWidth}px`;
+    root.style.minHeight = `${root.offsetHeight}px`;
+  }
+
+  function finishDeployCleanup() {
+    DOM.fleetWrapper.classList.add("remove");
+    DOM.deployBtn.classList.add("remove");
+
+    DOM.fleetWrapper.classList.remove("setup-exiting");
+    DOM.deployBtn.classList.remove("setup-exiting", "deploy-committing");
+    DOM.p2BoardWrapper.classList.remove("battle-revealing");
+
+    clearLayoutAnimationStyles();
   }
 
   // ====================
@@ -495,10 +589,21 @@ export function View(root, sound) {
     // Setup
     enterSetupPhase() {
       DOM.message.textContent = "Position Fleet";
+
+      DOM.middleArea.classList.remove("battle-layout");
+      DOM.middleArea.classList.add("setup-layout");
+
       DOM.p2BoardWrapper.classList.add("remove");
+      DOM.p2BoardWrapper.classList.remove("hide", "battle-revealing");
+
+      DOM.fleetWrapper.classList.remove("remove", "setup-exiting");
       DOM.fleetContainer.classList.remove("hide");
-      DOM.deployBtn.classList.remove("hide");
+
+      DOM.deployBtn.classList.remove("hide", "remove", "setup-exiting");
+
       DOM.p1Board.classList.add("placement-phase");
+
+      clearLayoutAnimationStyles();
     },
 
     setDeployReady(isReady) {
@@ -526,18 +631,20 @@ export function View(root, sound) {
         const overlay = document.createElement("div");
         overlay.className = "phase-transition";
         overlay.innerHTML = `
-      <div class="phase-transition__vignette"></div>
-      <div class="phase-transition__scan"></div>
-      <div class="phase-transition__core">
-        <div class="phase-transition__ring"></div>
-        <div class="phase-transition__title">Fleet Locked</div>
-        <div class="phase-transition__subtitle">Battle Grid Online</div>
-      </div>
-    `;
+          <div class="phase-transition__vignette"></div>
+          <div class="phase-transition__scan"></div>
+          <div class="phase-transition__core">
+            <div class="phase-transition__ring"></div>
+            <div class="phase-transition__title">Fleet Locked</div>
+            <div class="phase-transition__subtitle">Enemy Fleet Incoming</div>
+          </div>
+        `;
 
         root.appendChild(overlay);
 
         DOM.message.textContent = "Deploying Fleet";
+
+        lockRootSize();
 
         root.classList.add("deploy-transition-active");
         DOM.deployBtn.classList.add("deploy-committing");
@@ -550,8 +657,21 @@ export function View(root, sound) {
         }, 420);
 
         setTimeout(() => {
-          this.enterBattlePhase();
-          root.classList.add("battle-grid-reveal");
+          const movingEls = [DOM.p1BoardWrapper];
+          const firstRects = getRects(movingEls);
+
+          // Important:
+          // Freeze the fleet visually BEFORE it leaves normal layout.
+          // This lets the new battle layout form underneath it.
+          freezeToViewport(DOM.fleetWrapper);
+
+          this.enterBattlePhase({ deferRemoval: true });
+
+          requestAnimationFrame(() => {
+            playFlip(firstRects, movingEls);
+            root.classList.add("battle-grid-reveal");
+          });
+
           sound.playSfx("placeWoosh", { volume: 0.18 });
         }, 900);
 
@@ -562,6 +682,8 @@ export function View(root, sound) {
             "battle-grid-reveal",
           );
 
+          finishDeployCleanup();
+
           overlay.remove();
           resolve();
         }, 1850);
@@ -569,52 +691,33 @@ export function View(root, sound) {
     },
 
     // Battle
-    enterBattlePhase() {
+    enterBattlePhase({ deferRemoval = false } = {}) {
       DOM.message.textContent = "Battle";
 
-      DOM.p2BoardWrapper.classList.remove("remove");
-      DOM.p2BoardWrapper.classList.remove("hide");
+      DOM.middleArea.classList.remove("setup-layout");
+      DOM.middleArea.classList.add("battle-layout");
 
-      DOM.fleetWrapper.classList.add("fade-out");
-      once(DOM.fleetWrapper, "transitionend", () =>
-        DOM.fleetWrapper.classList.add("remove"),
-      );
+      DOM.p2BoardWrapper.classList.remove("remove", "hide");
+      DOM.p2BoardWrapper.classList.add("battle-revealing");
 
-      DOM.deployBtn.classList.add("fade-out");
-      once(DOM.deployBtn, "transitionend", () =>
-        DOM.deployBtn.classList.add("remove"),
-      );
+      DOM.fleetWrapper.classList.add("setup-exiting");
+      DOM.deployBtn.classList.add("setup-exiting");
+
+      if (!deferRemoval) {
+        once(DOM.fleetWrapper, "transitionend", () =>
+          DOM.fleetWrapper.classList.add("remove"),
+        );
+
+        once(DOM.deployBtn, "transitionend", () =>
+          DOM.deployBtn.classList.add("remove"),
+        );
+      }
 
       DOM.p1Board.classList.remove("placement-phase");
       DOM.p2Board.classList.remove("placement-phase");
+
       DOM.p1Board.classList.add("battle-phase");
       DOM.p2Board.classList.add("battle-phase");
-    },
-
-    hitCell(playerName, coords) {
-      const cell = getCell(playerName, coords);
-      const board = getBoard(playerName);
-
-      const hasShip = cell.classList.contains("ship");
-
-      const shipID = cell.dataset.shipid;
-      const isComputer = getBoardKey(playerName) === "p2";
-
-      Effects.impact(cell, hasShip);
-      cell.classList.add("hit");
-
-      if (!hasShip) return;
-      Effects.startPulse(board, shipID);
-
-      if (prevPulseShipID === shipID) return;
-      if (!isComputer) return;
-      prevPulseShipID = shipID;
-      setTimeout(() => {
-        sound.playSfx("shipPulse", { volume: 0.1, playbackRate: 0.5 });
-        pulseSoundInterval = setInterval(() => {
-          sound.playSfx("shipPulse", { volume: 0.12, playbackRate: 0.5 });
-        }, 1200);
-      }, 300);
     },
 
     playFireSound(isComputer) {

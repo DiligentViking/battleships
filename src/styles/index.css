@@ -216,9 +216,21 @@ HELPERS
   visibility: visible;
 }
 
-.fade-out {
+.setup-exiting {
   opacity: 0;
-  transition: 0.0001s opacity ease;
+  filter: brightness(0.7) blur(1px);
+  transform: translateY(8px);
+  pointer-events: none;
+
+  transition:
+    opacity 520ms ease,
+    filter 520ms ease,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.layout-frozen {
+  box-sizing: border-box;
+  will-change: opacity, transform, filter;
 }
 
 @keyframes pulseGlow {
@@ -1238,13 +1250,24 @@ PLACEMENT PHASE
 
 .middle-area {
   display: flex;
+  align-items: center;
+  justify-content: center;
+
   margin: 42px;
   gap: 84px;
 }
 
+.middle-area.setup-layout,
+.middle-area.battle-layout {
+  transition: gap 760ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .bottom-area {
+  min-height: 54px;
+
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .fleet-wrapper {
@@ -1537,7 +1560,7 @@ DEPLOY TRANSITION
   transform: translateY(8px);
   transition:
     opacity 500ms ease,
-    transform 500ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 500ms ease;
 }
 
@@ -1545,7 +1568,17 @@ DEPLOY TRANSITION
   animation: shipSystemsLock 650ms ease both;
 }
 
-.app.battle-grid-reveal .board-wrapper.p2 {
+.app.battle-grid-reveal .board-wrapper.p2.battle-revealing {
+  animation: enemyGridReveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.board-wrapper.p2.battle-revealing {
+  opacity: 0;
+  transform: translateX(44px) scale(0.96);
+  filter: blur(3px) brightness(0.5);
+}
+
+.app.battle-grid-reveal .board-wrapper.p2.battle-revealing {
   animation: enemyGridReveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -1705,8 +1738,7 @@ button.deploy.deploy-committing {
   }
 
   45% {
-    filter: brightness(1.9)
-      drop-shadow(0 0 8px var(--p1-primary));
+    filter: brightness(1.9) drop-shadow(0 0 8px var(--p1-primary));
   }
 }
 

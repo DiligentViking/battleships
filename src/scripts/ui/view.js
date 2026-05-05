@@ -680,11 +680,11 @@ export function View(root, sound) {
         root.classList.add("deploy-transition-active");
         DOM.deployBtn.classList.add("deploy-committing");
 
-        sound.playSfx("shimmer2", { volume: 0.18 });
-
+        sound.playSfx("materialize", { volume: 0.08 });
+        
         setTimeout(() => {
           root.classList.add("deploy-transition-lock");
-          sound.playSfx("materialize", { volume: 0.08 });
+          sound.playSfx("shimmer2", { volume: 0.18 });
         }, LOCK_AT);
 
         setTimeout(() => {

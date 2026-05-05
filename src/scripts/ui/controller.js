@@ -1,7 +1,7 @@
 import { DEV } from "../dev.js";
 import { sleep } from "../models/utils.js";
 
-export function Controller(player1, player2, game, view) {
+export function Controller(player1, player2, game, view, config = {}) {
   const CONFIG = {
     NUM_SHIPS: 6,
     SHIP_LENGTHS: [1, 2, 3, 4, 5, 6],
@@ -20,6 +20,12 @@ export function Controller(player1, player2, game, view) {
   function init() {
     setupPlayers();
     renderBoards();
+
+    if (DEV.enabled && config.devStartAt === "battle") {
+      startDevBattlePhase();
+      return;
+    }
+
     startSetupPhase();
   }
 
@@ -43,6 +49,23 @@ export function Controller(player1, player2, game, view) {
   // ====================
   // SETUP PHASE
   // ====================
+
+  function startDevBattlePhase() {
+    view.enterSetupPhase();
+
+    for (let i = 0; i < CONFIG.NUM_SHIPS; i++) {
+      view.addPlaceableShip(i);
+    }
+
+    autoPlace(player1);
+
+    if (player2.getType() === "computer") {
+      autoPlace(player2);
+    }
+
+    view.enterBattlePhase();
+    startBattlePhase();
+  }
 
   function startSetupPhase() {
     clearListeners();

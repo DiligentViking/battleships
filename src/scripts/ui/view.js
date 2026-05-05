@@ -75,19 +75,20 @@ export function View(root, sound) {
 
       if (!first) return Promise.resolve();
 
-      const dx = first.left - last.left;
-      const dy = first.top - last.top;
+      const dx = Math.round((first.left - last.left) * 100) / 100;
+      const dy = Math.round((first.top - last.top) * 100) / 100;
 
       if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
         return Promise.resolve();
       }
 
       el.style.willChange = "transform";
+      el.style.transformOrigin = "center center";
 
       const animation = el.animate(
         [
-          { transform: `translate(${dx}px, ${dy}px)` },
-          { transform: "translate(0, 0)" },
+          { transform: `translate3d(${dx}px, ${dy}px, 0)` },
+          { transform: "translate3d(0, 0, 0)" },
         ],
         {
           duration: FLIP_DURATION,
@@ -100,6 +101,7 @@ export function View(root, sound) {
         .catch(() => {})
         .finally(() => {
           el.style.willChange = "";
+          el.style.transformOrigin = "";
         });
     });
 
@@ -649,6 +651,12 @@ export function View(root, sound) {
 
     playDeployTransition() {
       return new Promise((resolve) => {
+        const LOCK_AT = 420;
+        const LAYOUT_SHIFT_AT = 1150;
+        const FINISH_AT = 3050;
+
+        let layoutPromise = Promise.resolve();
+
         const overlay = document.createElement("div");
         overlay.className = "phase-transition";
         overlay.innerHTML = `
@@ -675,7 +683,7 @@ export function View(root, sound) {
         setTimeout(() => {
           root.classList.add("deploy-transition-lock");
           sound.playSfx("materialize", { volume: 0.08 });
-        }, 420);
+        }, LOCK_AT);
 
         setTimeout(() => {
           const movingEls = [DOM.p1BoardWrapper];
@@ -685,26 +693,38 @@ export function View(root, sound) {
 
           this.enterBattlePhase({ deferRemoval: true });
 
+          // Force the initial p2 reveal state to be committed before animation starts.
+          DOM.p2BoardWrapper.getBoundingClientRect();
+
           requestAnimationFrame(() => {
-            playFlip(firstRects, movingEls);
+            root.classList.add("deploy-layout-shifting");
             root.classList.add("battle-grid-reveal");
+
+            layoutPromise = playFlip(firstRects, movingEls).finally(() => {
+              root.classList.remove("deploy-layout-shifting");
+            });
           });
 
           sound.playSfx("placeWoosh", { volume: 0.18 });
-        }, 1150);
+        }, LAYOUT_SHIFT_AT);
 
         setTimeout(() => {
-          root.classList.remove(
-            "deploy-transition-active",
-            "deploy-transition-lock",
-            "battle-grid-reveal",
-          );
+          layoutPromise.finally(() => {
+            finishDeployCleanup();
 
-          finishDeployCleanup();
+            requestAnimationFrame(() => {
+              root.classList.remove(
+                "deploy-transition-active",
+                "deploy-transition-lock",
+                "battle-grid-reveal",
+                "deploy-layout-shifting",
+              );
 
-          overlay.remove();
-          resolve();
-        }, 2450);
+              overlay.remove();
+              resolve();
+            });
+          });
+        }, FINISH_AT);
       });
     },
 

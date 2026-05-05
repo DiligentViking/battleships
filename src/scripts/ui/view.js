@@ -131,7 +131,7 @@ export function View(root, sound) {
     return rect;
   }
 
-  function clearLayoutAnimationStyles() {
+  function clearLayoutAnimationStyles({ clearRootLock = false } = {}) {
     [DOM.p1BoardWrapper, DOM.p2BoardWrapper, DOM.fleetWrapper].forEach((el) => {
       if (!el) return;
 
@@ -152,7 +152,9 @@ export function View(root, sound) {
       el.style.willChange = "";
     });
 
-    root.style.minHeight = "";
+    if (clearRootLock) {
+      root.style.minHeight = "";
+    }
   }
 
   function lockRootSize() {
@@ -626,7 +628,7 @@ export function View(root, sound) {
 
       DOM.p1Board.classList.add("placement-phase");
 
-      clearLayoutAnimationStyles();
+      clearLayoutAnimationStyles({ clearRootLock: true });
     },
 
     setDeployReady(isReady) {

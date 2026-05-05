@@ -62,38 +62,53 @@ export function View(root, sound) {
   // ====================
 
   const FLIP_DURATION = 760;
+  const FLIP_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 
   function getRects(elements) {
     return new Map(elements.map((el) => [el, el.getBoundingClientRect()]));
   }
 
   function playFlip(firstRects, elements) {
-    elements.forEach((el) => {
+    const animations = elements.map((el) => {
       const first = firstRects.get(el);
       const last = el.getBoundingClientRect();
 
-      if (!first) return;
+      if (!first) return Promise.resolve();
 
       const dx = first.left - last.left;
       const dy = first.top - last.top;
 
-      if (!dx && !dy) return;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        return Promise.resolve();
+      }
 
-      el.style.transition = "none";
-      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      el.style.willChange = "transform";
 
-      // Force layout before playing the transition.
-      el.getBoundingClientRect();
+      const animation = el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: "translate(0, 0)" },
+        ],
+        {
+          duration: FLIP_DURATION,
+          easing: FLIP_EASING,
+          fill: "none",
+        },
+      );
 
-      requestAnimationFrame(() => {
-        el.style.transition = `transform ${FLIP_DURATION}ms cubic-bezier(0.22, 1, 0.36, 1)`;
-        el.style.transform = "";
-      });
+      return animation.finished
+        .catch(() => {})
+        .finally(() => {
+          el.style.willChange = "";
+        });
     });
+
+    return Promise.all(animations);
   }
 
   function freezeToViewport(el) {
     const rect = el.getBoundingClientRect();
+    const computed = getComputedStyle(el);
 
     el.classList.add("layout-frozen");
 
@@ -105,6 +120,11 @@ export function View(root, sound) {
     el.style.margin = "0";
     el.style.zIndex = "20";
     el.style.pointerEvents = "none";
+
+    // Prevent existing class transforms from being applied a second time.
+    el.style.transform = "none";
+    el.style.opacity = computed.opacity;
+    el.style.filter = computed.filter;
 
     return rect;
   }
@@ -125,14 +145,15 @@ export function View(root, sound) {
       el.style.pointerEvents = "";
       el.style.transition = "";
       el.style.transform = "";
+      el.style.opacity = "";
+      el.style.filter = "";
+      el.style.willChange = "";
     });
 
-    root.style.minWidth = "";
     root.style.minHeight = "";
   }
 
   function lockRootSize() {
-    root.style.minWidth = `${root.offsetWidth}px`;
     root.style.minHeight = `${root.offsetHeight}px`;
   }
 
@@ -635,7 +656,7 @@ export function View(root, sound) {
           <div class="phase-transition__scan"></div>
           <div class="phase-transition__core">
             <div class="phase-transition__ring"></div>
-            <div class="phase-transition__title">Fleet Locked</div>
+            <div class="phase-transition__title">Locked In</div>
             <div class="phase-transition__subtitle">Enemy Fleet Incoming</div>
           </div>
         `;
@@ -660,9 +681,6 @@ export function View(root, sound) {
           const movingEls = [DOM.p1BoardWrapper];
           const firstRects = getRects(movingEls);
 
-          // Important:
-          // Freeze the fleet visually BEFORE it leaves normal layout.
-          // This lets the new battle layout form underneath it.
           freezeToViewport(DOM.fleetWrapper);
 
           this.enterBattlePhase({ deferRemoval: true });
@@ -697,8 +715,8 @@ export function View(root, sound) {
       DOM.middleArea.classList.remove("setup-layout");
       DOM.middleArea.classList.add("battle-layout");
 
-      DOM.p2BoardWrapper.classList.remove("remove", "hide");
       DOM.p2BoardWrapper.classList.add("battle-revealing");
+      DOM.p2BoardWrapper.classList.remove("remove", "hide");
 
       DOM.fleetWrapper.classList.add("setup-exiting");
       DOM.deployBtn.classList.add("setup-exiting");

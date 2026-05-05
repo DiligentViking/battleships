@@ -231,6 +231,7 @@ HELPERS
 .layout-frozen {
   box-sizing: border-box;
   will-change: opacity, transform, filter;
+  transform: none !important;
 }
 
 @keyframes pulseGlow {
@@ -1124,6 +1125,10 @@ MAIN MENU
   animation: cameraDropDarknessSoft 1400ms ease forwards;
 }
 
+.app {
+  width: 100%;
+}
+
 .app.game-descent-enter {
   opacity: 0;
   transform: translateY(42px) scale(1.015);
@@ -1568,10 +1573,6 @@ DEPLOY TRANSITION
   animation: shipSystemsLock 650ms ease both;
 }
 
-.app.battle-grid-reveal .board-wrapper.p2.battle-revealing {
-  animation: enemyGridReveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 .board-wrapper.p2.battle-revealing {
   opacity: 0;
   transform: translateX(44px) scale(0.96);
@@ -1721,12 +1722,10 @@ button.deploy.deploy-committing {
 
 @keyframes p1DeployLock {
   45% {
-    transform: scale(1.025);
     filter: brightness(1.35);
   }
 
   100% {
-    transform: scale(0.985);
     filter: brightness(0.8) blur(0.6px);
   }
 }

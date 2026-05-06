@@ -1,7 +1,7 @@
 import { DEV } from "../dev.js";
 import { sleep } from "../models/utils.js";
 
-export function Controller(player1, player2, game, view, config = {}) {
+export function Controller(player1, player2, game, view, config = {}, sound) {
   const CONFIG = {
     NUM_SHIPS: 6,
     SHIP_LENGTHS: [1, 2, 3, 4, 5, 6],
@@ -18,6 +18,8 @@ export function Controller(player1, player2, game, view, config = {}) {
   // ====================
 
   function init() {
+    sound.music.setup();
+
     setupPlayers();
     renderBoards();
 
@@ -230,6 +232,8 @@ export function Controller(player1, player2, game, view, config = {}) {
 
       view.playDeploySound();
 
+      sound.music.stop({});
+
       await view.playDeployTransition();
 
       startBattlePhase();
@@ -344,6 +348,8 @@ export function Controller(player1, player2, game, view, config = {}) {
   // ====================
 
   function startBattlePhase() {
+    sound.music.battle();
+
     view.setAmbientPhase("battle-phase");
 
     clearListeners();

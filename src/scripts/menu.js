@@ -10,38 +10,26 @@ export function Menu(onGameStart, sound) {
   let selectingAI = false;
   let aiSelectionContainer = null;
 
-  let menuMusicStarted = false;
+function init() {
+  sound.music.menu();
 
-  function startMenuMusic() {
-    if (menuMusicStarted) return;
+  root.classList.add("menu-entering");
+  ambient.classList.add("menu-active");
 
-    menuMusicStarted = true;
-    sound.music.menu();
+  bindButtons();
+
+  if (DEV.enabled && DEV.skipMenuIntro) {
+    root.classList.add("dev-no-delay");
+    root.classList.add("menu-awake");
+    spawnLoop();
+    return;
   }
 
-  function init() {
-    startMenuMusic();
-
-    document.addEventListener("pointerdown", startMenuMusic, { once: true });
-    document.addEventListener("keydown", startMenuMusic, { once: true });
-
-    root.classList.add("menu-entering");
-    ambient.classList.add("menu-active");
-
-    bindButtons();
-
-    if (DEV.enabled && DEV.skipMenuIntro) {
-      root.classList.add("dev-no-delay");
-      root.classList.add("menu-awake");
-      spawnLoop();
-      return;
-    }
-
-    setTimeout(() => {
-      root.classList.add("menu-awake");
-      spawnLoop();
-    }, 3000);
-  }
+  setTimeout(() => {
+    root.classList.add("menu-awake");
+    spawnLoop();
+  }, 3000);
+}
 
   // ====================
   // BUTTONS
@@ -213,8 +201,6 @@ export function Menu(onGameStart, sound) {
     }, 760);
 
     setTimeout(() => {
-      sound.music.stop();
-      sound.music.setup();
       onGameStart({ mode: "ai", difficulty: level });
     }, 1120);
 

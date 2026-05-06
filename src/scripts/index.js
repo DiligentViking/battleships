@@ -54,7 +54,7 @@ function onGameStart(config = {}) {
 
   const game = Game(player1, player2);
   const view = View(gameRoot, sound);
-  const controller = Controller(player1, player2, game, view, config);
+  const controller = Controller(player1, player2, game, view, config, sound);
 
   controller.init();
 

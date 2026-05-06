@@ -38,10 +38,15 @@ export function SoundSystem() {
 
   const timeouts = new Map();
   const intervals = new Map();
+  const musicFadeFrames = new Map();
+
+  const UNLOCK_EVENTS = ["pointerdown", "keydown", "touchstart"];
 
   let currentMusic = null;
   let currentMusicName = null;
-  let currentMusicFade = null;
+  let desiredMusicRequest = null;
+  let musicRequestID = 0;
+  let unlockArmed = false;
 
   function createAudioMap(sources) {
     return Object.entries(sources).reduce((map, [name, src]) => {
@@ -116,29 +121,89 @@ export function SoundSystem() {
   // MUSIC CORE
   // ====================
 
+  function stopTrackFade(track) {
+    const frameID = musicFadeFrames.get(track);
+
+    if (frameID !== undefined) {
+      cancelAnimationFrame(frameID);
+      musicFadeFrames.delete(track);
+    }
+  }
+
   function fadeTrack(track, targetVolume, duration = 1000) {
     if (!track) return Promise.resolve();
+
+    stopTrackFade(track);
+
+    if (duration <= 0) {
+      track.volume = targetVolume;
+      return Promise.resolve();
+    }
 
     const startVolume = track.volume;
     const startTime = performance.now();
 
-    cancelAnimationFrame(currentMusicFade);
-
     return new Promise((resolve) => {
       function step(now) {
         const progress = Math.min((now - startTime) / duration, 1);
-        track.volume = startVolume + (targetVolume - startVolume) * progress;
+
+        const nextVolume =
+          startVolume + (targetVolume - startVolume) * progress;
+
+        track.volume = Math.max(0, Math.min(1, nextVolume));
 
         if (progress < 1) {
-          currentMusicFade = requestAnimationFrame(step);
-        } else {
-          currentMusicFade = null;
-          resolve();
+          musicFadeFrames.set(track, requestAnimationFrame(step));
+          return;
         }
+
+        musicFadeFrames.delete(track);
+        resolve();
       }
 
-      currentMusicFade = requestAnimationFrame(step);
+      musicFadeFrames.set(track, requestAnimationFrame(step));
     });
+  }
+
+  function pauseAndResetTrack(track) {
+    track.pause();
+    track.volume = 0;
+
+    try {
+      track.currentTime = 0;
+    } catch {
+      // Some browsers can throw if the media is not seekable yet.
+    }
+  }
+
+  function armMusicUnlock() {
+    if (unlockArmed || typeof document === "undefined") return;
+
+    unlockArmed = true;
+
+    UNLOCK_EVENTS.forEach((eventName) => {
+      document.addEventListener(eventName, retryDesiredMusic, true);
+    });
+  }
+
+  function disarmMusicUnlock() {
+    if (!unlockArmed || typeof document === "undefined") return;
+
+    unlockArmed = false;
+
+    UNLOCK_EVENTS.forEach((eventName) => {
+      document.removeEventListener(eventName, retryDesiredMusic, true);
+    });
+  }
+
+  function retryDesiredMusic() {
+    console.log("fired");
+    if (!desiredMusicRequest) {
+      disarmMusicUnlock();
+      return;
+    }
+
+    playMusicTrack(desiredMusicRequest.name, desiredMusicRequest.options);
   }
 
   async function playMusicTrack(
@@ -149,41 +214,78 @@ export function SoundSystem() {
 
     if (!nextTrack) {
       console.warn(`Unknown music track: ${name}`);
-      return;
+      return false;
     }
 
-    if (currentMusicName === name && !restart) return;
+    const options = { volume, loop, restart, fadeDuration };
+    const requestID = ++musicRequestID;
+
+    desiredMusicRequest = { name, options };
+
+    // Same track already active
+    if (currentMusicName === name && currentMusic && !restart) {
+      currentMusic.loop = loop;
+      disarmMusicUnlock();
+
+      await fadeTrack(currentMusic, volume, fadeDuration);
+
+      return true;
+    }
 
     const prevTrack = currentMusic;
 
-    currentMusic = nextTrack;
-    currentMusicName = name;
+    // Fade out previous track first
+    if (prevTrack && prevTrack !== nextTrack) {
+      await fadeTrack(prevTrack, 0, fadeDuration);
+
+      if (requestID !== musicRequestID) {
+        return false;
+      }
+
+      pauseAndResetTrack(prevTrack);
+    }
 
     nextTrack.loop = loop;
     nextTrack.volume = 0;
 
     if (restart) {
-      nextTrack.currentTime = 0;
+      try {
+        nextTrack.currentTime = 0;
+      } catch {
+        // Ignore seek errors before metadata is ready.
+      }
     }
 
     try {
       await nextTrack.play();
     } catch {
-      // Browsers block audio until the user interacts with the page.
-      return;
+      if (requestID === musicRequestID) {
+        armMusicUnlock();
+      }
+
+      return false;
     }
 
-    if (prevTrack && prevTrack !== nextTrack) {
-      fadeTrack(prevTrack, 0, fadeDuration).then(() => {
-        prevTrack.pause();
-        prevTrack.currentTime = 0;
-      });
+    if (requestID !== musicRequestID) {
+      pauseAndResetTrack(nextTrack);
+      return false;
     }
 
-    fadeTrack(nextTrack, volume, fadeDuration);
+    currentMusic = nextTrack;
+    currentMusicName = name;
+
+    disarmMusicUnlock();
+
+    await fadeTrack(nextTrack, volume, fadeDuration);
+
+    return true;
   }
 
-  function stopMusicTrack({ fadeDuration = 800 } = {}) {
+  function stopMusicTrack({ fadeDuration = 2000 } = {}) {
+    musicRequestID++;
+    desiredMusicRequest = null;
+    disarmMusicUnlock();
+
     if (!currentMusic) return;
 
     const track = currentMusic;
@@ -192,8 +294,9 @@ export function SoundSystem() {
     currentMusicName = null;
 
     fadeTrack(track, 0, fadeDuration).then(() => {
-      track.pause();
-      track.currentTime = 0;
+      if (currentMusic !== track) {
+        pauseAndResetTrack(track);
+      }
     });
   }
 
@@ -208,7 +311,18 @@ export function SoundSystem() {
     timeouts.clear();
     intervals.clear();
 
-    stopMusicTrack();
+    musicFadeFrames.forEach((frameID) => cancelAnimationFrame(frameID));
+    musicFadeFrames.clear();
+
+    desiredMusicRequest = null;
+    currentMusic = null;
+    currentMusicName = null;
+
+    disarmMusicUnlock();
+
+    Object.values(musicTracks).forEach((track) => {
+      pauseAndResetTrack(track);
+    });
   }
 
   // ====================
@@ -362,27 +476,27 @@ export function SoundSystem() {
     menu() {
       return playMusicTrack("menu", {
         volume: 0.15,
-        fadeDuration: 1600,
+        fadeDuration: 500,
       });
     },
 
     setup() {
-      playMusicTrack("setup", {
+      return playMusicTrack("setup", {
         volume: 0.15,
-        fadeDuration: 1800, 
+        fadeDuration: 500,
       });
     },
 
     battle() {
-      playMusicTrack("battle", {
-        volume: 0.34,
-        fadeDuration: 2200,
+      return playMusicTrack("battle", {
+        volume: 0.15,
+        fadeDuration: 500,
       });
     },
 
     victory() {
-      playMusicTrack("victory", {
-        volume: 0.36,
+      return playMusicTrack("victory", {
+        volume: 0.15,
         fadeDuration: 1600,
         restart: true,
         loop: false,
@@ -390,8 +504,8 @@ export function SoundSystem() {
     },
 
     defeat() {
-      playMusicTrack("defeat", {
-        volume: 0.34,
+      return playMusicTrack("defeat", {
+        volume: 0.15,
         fadeDuration: 1600,
         restart: true,
         loop: false,
@@ -399,7 +513,7 @@ export function SoundSystem() {
     },
 
     play(name, options) {
-      playMusicTrack(name, options);
+      return playMusicTrack(name, options);
     },
 
     stop(options) {

@@ -2268,6 +2268,7 @@ HIT EFFECTS
     transparent 70%
   );
   pointer-events: none;
+  z-index: 1;
   opacity: 0;
 
   --initScaleX: 0.2;

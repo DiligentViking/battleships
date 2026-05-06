@@ -681,10 +681,13 @@ export function View(root, sound) {
         DOM.deployBtn.classList.add("deploy-committing");
 
         sound.playSfx("materialize", { volume: 0.08 });
-        
+
+        setTimeout(() => {
+          sound.playSfx("shimmer2", { volume: 0.18 });
+        }, LOCK_AT - 200);
+
         setTimeout(() => {
           root.classList.add("deploy-transition-lock");
-          sound.playSfx("shimmer2", { volume: 0.18 });
         }, LOCK_AT);
 
         setTimeout(() => {

@@ -266,31 +266,77 @@ export function Controller(player1, player2, game, view, config = {}) {
   }
 
   function autoPlace(player) {
-    let count = 0;
+    const shipIDs = Array.from(
+      { length: CONFIG.NUM_SHIPS },
+      (_, shipID) => shipID,
+    ).sort((a, b) => CONFIG.SHIP_LENGTHS[b] - CONFIG.SHIP_LENGTHS[a]);
 
-    while (count < CONFIG.NUM_SHIPS) {
-      const coords = randomCoords(player);
-      const isVertical = Math.random() > 0.5;
+    for (const shipID of shipIDs) {
+      const length = CONFIG.SHIP_LENGTHS[shipID];
+      const placement = getRandomValidPlacement(player, shipID, length);
+
+      if (!placement) {
+        throw new Error(`Could not auto-place ship ${shipID}.`);
+      }
 
       const { coordsList, valid } = player.gameboard.placeShip(
-        count,
-        CONFIG.SHIP_LENGTHS[count],
-        coords,
-        isVertical,
+        shipID,
+        length,
+        placement.coords,
+        placement.isVertical,
       );
 
-      if (!valid) continue;
+      if (!valid) {
+        throw new Error(`Auto-placement failed for ship ${shipID}.`);
+      }
 
-      view.removePlaceableShip(count);
-      view.placeShip(player.getName(), coordsList, count, isVertical);
+      if (player === player1) {
+        view.removePlaceableShip(shipID);
+      }
 
-      count++;
+      view.placeShip(
+        player.getName(),
+        coordsList,
+        shipID,
+        placement.isVertical,
+      );
     }
   }
 
-  function randomCoords(player) {
+  function getRandomValidPlacement(player, shipID, length) {
+    const placements = getValidPlacements(player, shipID, length);
+
+    if (!placements.length) return null;
+
+    const index = Math.floor(Math.random() * placements.length);
+    return placements[index];
+  }
+
+  function getValidPlacements(player, shipID, length) {
     const size = player.gameboard.getBoardSize();
-    return [Math.floor(Math.random() * size), Math.floor(Math.random() * size)];
+    const placements = [];
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        for (const isVertical of [false, true]) {
+          const { valid } = player.gameboard.getPreview(
+            shipID,
+            length,
+            [y, x],
+            isVertical,
+          );
+
+          if (valid) {
+            placements.push({
+              coords: [y, x],
+              isVertical,
+            });
+          }
+        }
+      }
+    }
+
+    return placements;
   }
 
   // ====================

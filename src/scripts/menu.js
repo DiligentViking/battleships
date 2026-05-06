@@ -10,7 +10,21 @@ export function Menu(onGameStart, sound) {
   let selectingAI = false;
   let aiSelectionContainer = null;
 
+  let menuMusicStarted = false;
+
+  function startMenuMusic() {
+    if (menuMusicStarted) return;
+
+    menuMusicStarted = true;
+    sound.music.menu();
+  }
+
   function init() {
+    startMenuMusic();
+
+    document.addEventListener("pointerdown", startMenuMusic, { once: true });
+    document.addEventListener("keydown", startMenuMusic, { once: true });
+
     root.classList.add("menu-entering");
     ambient.classList.add("menu-active");
 
@@ -149,13 +163,11 @@ export function Menu(onGameStart, sound) {
     });
 
     card.addEventListener("mouseenter", () => {
-      if (selectingAI) return;
       sound.ui.shimmerHover();
     });
 
     card.addEventListener("mouseleave", () => {
-      if (selectingAI) return;
-      sound.ui.shimmerHover();
+      sound.ui.clearShimmerHover();
     });
 
     return card;
@@ -201,6 +213,8 @@ export function Menu(onGameStart, sound) {
     }, 760);
 
     setTimeout(() => {
+      sound.music.stop();
+      sound.music.setup();
       onGameStart({ mode: "ai", difficulty: level });
     }, 1120);
 

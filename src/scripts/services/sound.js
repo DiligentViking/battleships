@@ -25,18 +25,23 @@ const SFX = {
 };
 
 const MUSIC = {
-  menu: "assets/music/menu-theme.mp3",
-  battle: "assets/music/battle-theme.mp3",
+  menu: "assets/music/Laser Tournament.mp3",
+  setup: "assets/music/New Order.ogg",
+  battle: "assets/music/graymist.ogg",
+  victory: "assets/music/victory.ogg",
+  defeat: "assets/music/defeat.ogg",
 };
 
 export function SoundSystem() {
   const sfx = createAudioMap(SFX);
-  const music = createAudioMap(MUSIC);
+  const musicTracks = createAudioMap(MUSIC);
 
   const timeouts = new Map();
   const intervals = new Map();
 
   let currentMusic = null;
+  let currentMusicName = null;
+  let currentMusicFade = null;
 
   function createAudioMap(sources) {
     return Object.entries(sources).reduce((map, [name, src]) => {
@@ -45,6 +50,10 @@ export function SoundSystem() {
       return map;
     }, {});
   }
+
+  // ====================
+  // SFX CORE
+  // ====================
 
   function playSfx(name, { volume = 1, playbackRate = 1 } = {}) {
     const base = sfx[name];
@@ -103,40 +112,94 @@ export function SoundSystem() {
     intervals.delete(key);
   }
 
-  async function playMusic(
-    name,
-    { volume = 0.35, loop = true, restart = false } = {},
-  ) {
-    const track = music[name];
+  // ====================
+  // MUSIC CORE
+  // ====================
 
-    if (!track) {
+  function fadeTrack(track, targetVolume, duration = 1000) {
+    if (!track) return Promise.resolve();
+
+    const startVolume = track.volume;
+    const startTime = performance.now();
+
+    cancelAnimationFrame(currentMusicFade);
+
+    return new Promise((resolve) => {
+      function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        track.volume = startVolume + (targetVolume - startVolume) * progress;
+
+        if (progress < 1) {
+          currentMusicFade = requestAnimationFrame(step);
+        } else {
+          currentMusicFade = null;
+          resolve();
+        }
+      }
+
+      currentMusicFade = requestAnimationFrame(step);
+    });
+  }
+
+  async function playMusicTrack(
+    name,
+    { volume = 0.35, loop = true, restart = false, fadeDuration = 1200 } = {},
+  ) {
+    const nextTrack = musicTracks[name];
+
+    if (!nextTrack) {
       console.warn(`Unknown music track: ${name}`);
       return;
     }
 
-    if (currentMusic === track && !restart) return;
+    if (currentMusicName === name && !restart) return;
 
-    stopMusic();
+    const prevTrack = currentMusic;
 
-    currentMusic = track;
-    currentMusic.loop = loop;
-    currentMusic.volume = volume;
-    currentMusic.currentTime = restart ? 0 : currentMusic.currentTime;
+    currentMusic = nextTrack;
+    currentMusicName = name;
+
+    nextTrack.loop = loop;
+    nextTrack.volume = 0;
+
+    if (restart) {
+      nextTrack.currentTime = 0;
+    }
 
     try {
-      await currentMusic.play();
+      await nextTrack.play();
     } catch {
       // Browsers block audio until the user interacts with the page.
+      return;
     }
+
+    if (prevTrack && prevTrack !== nextTrack) {
+      fadeTrack(prevTrack, 0, fadeDuration).then(() => {
+        prevTrack.pause();
+        prevTrack.currentTime = 0;
+      });
+    }
+
+    fadeTrack(nextTrack, volume, fadeDuration);
   }
 
-  function stopMusic() {
+  function stopMusicTrack({ fadeDuration = 800 } = {}) {
     if (!currentMusic) return;
 
-    currentMusic.pause();
-    currentMusic.currentTime = 0;
+    const track = currentMusic;
+
     currentMusic = null;
+    currentMusicName = null;
+
+    fadeTrack(track, 0, fadeDuration).then(() => {
+      track.pause();
+      track.currentTime = 0;
+    });
   }
+
+  // ====================
+  // GLOBAL STOP
+  // ====================
 
   function stopAll() {
     timeouts.forEach((timeout) => clearTimeout(timeout));
@@ -145,8 +208,12 @@ export function SoundSystem() {
     timeouts.clear();
     intervals.clear();
 
-    stopMusic();
+    stopMusicTrack();
   }
+
+  // ====================
+  // PUBLIC SFX API
+  // ====================
 
   const ui = {
     buttonHover() {
@@ -287,16 +354,68 @@ export function SoundSystem() {
     },
   };
 
+  // ====================
+  // PUBLIC MUSIC API
+  // ====================
+
+  const music = {
+    menu() {
+      return playMusicTrack("menu", {
+        volume: 0.15,
+        fadeDuration: 1600,
+      });
+    },
+
+    setup() {
+      playMusicTrack("setup", {
+        volume: 0.15,
+        fadeDuration: 1800, 
+      });
+    },
+
+    battle() {
+      playMusicTrack("battle", {
+        volume: 0.34,
+        fadeDuration: 2200,
+      });
+    },
+
+    victory() {
+      playMusicTrack("victory", {
+        volume: 0.36,
+        fadeDuration: 1600,
+        restart: true,
+        loop: false,
+      });
+    },
+
+    defeat() {
+      playMusicTrack("defeat", {
+        volume: 0.34,
+        fadeDuration: 1600,
+        restart: true,
+        loop: false,
+      });
+    },
+
+    play(name, options) {
+      playMusicTrack(name, options);
+    },
+
+    stop(options) {
+      stopMusicTrack(options);
+    },
+  };
+
   return {
     playSfx,
     playDebouncedSfx,
     clearDebouncedSfx,
     startRepeatingSfx,
     stopRepeatingSfx,
-    playMusic,
-    stopMusic,
     stopAll,
 
+    music,
     ui,
     board,
     ship,

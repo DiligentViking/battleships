@@ -144,7 +144,7 @@ export function Controller(player1, player2, game, view, config = {}) {
         state.isVertical,
       );
 
-      view.playCellHoverSound(valid ? "hoverValid" : "hoverInvalid");
+      view.playCellHoverSound(valid ? "valid" : "invalid");
       view.updatePreview(player1.getName(), coordsList, valid);
     }
 
@@ -412,7 +412,7 @@ export function Controller(player1, player2, game, view, config = {}) {
       if (!e.target.classList.contains("cell")) return;
       if (e.target.classList.contains("hit")) return;
 
-      view.playCellHoverSound("hoverCell");
+      view.playCellHoverSound("target");
     }
 
     // Autoplay (dev)
@@ -448,7 +448,7 @@ export function Controller(player1, player2, game, view, config = {}) {
   }
 
   function bindButtonHover(btn) {
-    addListener(btn, "mouseover", view.playButtonHoverSound);
+    addListener(btn, "mouseenter", view.playButtonHoverSound);
     addListener(btn, "mouseleave", view.clearHoverSoundTimeout);
   }
 

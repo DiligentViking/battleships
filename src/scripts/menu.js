@@ -33,25 +33,15 @@ export function Menu(onGameStart, sound) {
   // BUTTONS
   // ====================
 
-  function playHoverSound() {
-    sound.playDebouncedSfx("buttonHover", "hoverButton", {
-      delay: 80,
-      volume: 0.8,
-    });
-  }
-  function clearHoverSoundTimeout() {
-    sound.clearDebouncedSfx("buttonHover");
-  }
-
-  function playClickSound() {
-    sound.playSfx("clickButton", { volume: 0.3 });
+  function bindMenuButtonSounds(btn) {
+    btn.addEventListener("click", sound.ui.buttonClick);
+    btn.addEventListener("mouseenter", sound.ui.buttonHover);
+    btn.addEventListener("mouseleave", sound.ui.clearButtonHover);
   }
 
   function bindButtons() {
     root.querySelectorAll(".menu-btn").forEach((btn) => {
-      btn.addEventListener("click", playClickSound);
-      btn.addEventListener("mouseover", playHoverSound);
-      btn.addEventListener("mouseleave", clearHoverSoundTimeout);
+      bindMenuButtonSounds(btn);
 
       btn.addEventListener("click", () => {
         if (btn.dataset.action === "ai") {
@@ -124,7 +114,7 @@ export function Menu(onGameStart, sound) {
       container.appendChild(wrap);
 
       setTimeout(() => {
-        sound.playSfx("materialize", { volume: 0.05 });
+        sound.ui.materializeSoft();
       }, i * 90);
     });
 
@@ -159,14 +149,13 @@ export function Menu(onGameStart, sound) {
     });
 
     card.addEventListener("mouseenter", () => {
-      sound.playDebouncedSfx("aiCardHover", "shimmer1", {
-        delay: 100,
-        volume: 0.1,
-      });
+      if (selectingAI) return;
+      sound.ui.shimmerHover();
     });
 
     card.addEventListener("mouseleave", () => {
-      sound.clearDebouncedSfx("aiCardHover");
+      if (selectingAI) return;
+      sound.ui.shimmerHover();
     });
 
     return card;
@@ -179,9 +168,7 @@ export function Menu(onGameStart, sound) {
     back.type = "button";
     back.textContent = "Back";
 
-    back.addEventListener("click", playClickSound);
-    back.addEventListener("mouseover", playHoverSound);
-    back.addEventListener("mouseleave", clearHoverSoundTimeout);
+    bindMenuButtonSounds(back);
     back.addEventListener("click", exitAISelection);
 
     return back;
@@ -191,8 +178,8 @@ export function Menu(onGameStart, sound) {
     if (selectingAI) return;
 
     selectingAI = true;
-    sound.clearDebouncedSfx("aiCardHover");
-    sound.playSfx("clickButton", { volume: 0.3 });
+    sound.ui.clearShimmerHover();
+    sound.ui.buttonClick();
 
     const cards = Array.from(container.querySelectorAll(".ai-card"));
 
@@ -207,7 +194,7 @@ export function Menu(onGameStart, sound) {
     dismissUnselectedAICards(cards, selectedCard);
 
     setTimeout(() => {
-      sound.playSfx("shimmer2", { volume: 0.2 });
+      sound.ui.shimmerLock();
     }, 560);
     setTimeout(() => {
       root.classList.add("camera-drop-active");

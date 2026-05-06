@@ -296,7 +296,7 @@ export function View(root, sound) {
         seg.style.transform = `translate(${dx}px, ${dy}px)`;
         seg.style.transition = "none";
         setTimeout(() => {
-          sound.playSfx("adjustShip", { volume: 0.04 });
+          sound.ship.adjust();
 
           requestAnimationFrame(() => {
             seg.style.transform = "";
@@ -361,7 +361,7 @@ export function View(root, sound) {
     const shipSegments = shipContainer.children;
     for (let i = 0; i < shipSegments.length; i++) {
       setTimeout(() => {
-        sound.playSfx("selectShip", { volume: 0.1 });
+        sound.ship.selectSegment();
 
         const shipSegment = shipSegments[i];
 
@@ -373,12 +373,7 @@ export function View(root, sound) {
       }, i * 70);
     }
 
-    sound.startRepeatingSfx("fleetPulse", "floatPulse", {
-      interval: 1200,
-      volume: 0.03,
-      playbackRate: 0.5,
-      playNow: true,
-    });
+    sound.ship.startFleetPulse();
   }
 
   function toggleVerticalShips(isVertical) {
@@ -427,7 +422,7 @@ export function View(root, sound) {
 
         // PLAY
         setTimeout(() => {
-          sound.playSfx("placeWoosh", { volume: 0.25 });
+          sound.ship.placeSegment();
 
           requestAnimationFrame(() => {
             seg.style.translate = "";
@@ -491,7 +486,7 @@ export function View(root, sound) {
       Animation.animateShipSegments(targetCells, sourceRects);
     });
 
-    sound.stopRepeatingSfx("fleetPulse");
+    sound.ship.stopFleetPulse();
   }
 
   // ====================
@@ -500,10 +495,7 @@ export function View(root, sound) {
 
   const Effects = {
     impact(cell, hit) {
-      sound.playSfx(hit ? "hit" : "miss", {
-        volume: 0.4,
-        playbackRate: 0.95 + Math.random() * 0.1,
-      });
+      sound.board.impact(hit);
 
       const icon = document.createElement("div");
       icon.className = hit ? "hit-icon" : "miss-icon";
@@ -539,8 +531,8 @@ export function View(root, sound) {
     },
 
     flash(board, shipID) {
-      sound.playSfx("sunk", { volume: 0.7 });
-      sound.stopRepeatingSfx("shipPulse");
+      sound.ship.sunk();
+      sound.ship.stopDamagePulse();
 
       const cells = Array.from(
         board.querySelectorAll(`[data-shipid="${shipID}"]`),
@@ -680,10 +672,10 @@ export function View(root, sound) {
         root.classList.add("deploy-transition-active");
         DOM.deployBtn.classList.add("deploy-committing");
 
-        sound.playSfx("materialize", { volume: 0.08 });
+        sound.ui.materializeStrong();
 
         setTimeout(() => {
-          sound.playSfx("shimmer2", { volume: 0.18 });
+          sound.ui.shimmerTransition();
         }, LOCK_AT - 200);
 
         setTimeout(() => {
@@ -710,7 +702,7 @@ export function View(root, sound) {
             });
           });
 
-          sound.playSfx("placeWoosh", { volume: 0.18 });
+          sound.ship.deployWoosh();
         }, LAYOUT_SHIFT_AT);
 
         setTimeout(() => {
@@ -764,25 +756,11 @@ export function View(root, sound) {
     },
 
     playFireSound(isComputer) {
-      const volume = isComputer ? 0.14 : 0.3;
-      sound.playSfx("fire", { volume });
+      sound.board.fire(isComputer);
     },
 
-    playCellHoverSound(sfxName) {
-      if (!["hoverValid", "hoverInvalid", "hoverCell"].includes(sfxName)) {
-        throw Error(`"${sfxName}" is not a valid cell hover sound parameter.`);
-      }
-
-      const volumeMap = {
-        hoverValid: 0.05,
-        hoverInvalid: 0.14,
-        hoverCell: 0.1,
-      };
-
-      sound.playDebouncedSfx("cellHover", sfxName, {
-        delay: 100,
-        volume: volumeMap[sfxName],
-      });
+    playCellHoverSound(type) {
+      sound.board.cellHover(type);
     },
 
     hitCell(playerName, coords) {
@@ -805,34 +783,25 @@ export function View(root, sound) {
 
       prevPulseShipID = pulseKey;
 
-      sound.startRepeatingSfx("shipPulse", "shipPulse", {
-        interval: 1200,
-        volume: 0.08,
-        playbackRate: 0.5,
-        playNow: false,
-      });
+      sound.ship.startDamagePulse();
     },
 
     playButtonHoverSound() {
-      sound.playDebouncedSfx("buttonHover", "hoverButton", {
-        delay: 80,
-        volume: 0.8,
-      });
+      sound.ui.buttonHover();
     },
 
     clearHoverSoundTimeout() {
-      sound.clearDebouncedSfx("cellHover");
-      sound.clearDebouncedSfx("buttonHover");
+      sound.board.clearCellHover();
+      sound.ui.clearButtonHover();
     },
 
     playPlaceRandomSound() {
-      sound.playSfx("placeRandom", { volume: 0.25 });
+      sound.ship.placeRandom();
     },
 
     playDeploySound() {
-      sound.playSfx("clickButton", { volume: 0.3 });
+      sound.ui.buttonClick();
     },
-
     revealShip(playerName, shipID) {
       const board = getBoard(playerName);
 

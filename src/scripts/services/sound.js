@@ -48,6 +48,7 @@ export function SoundSystem() {
 
   function playSfx(name, { volume = 1, playbackRate = 1 } = {}) {
     const base = sfx[name];
+
     if (!base) {
       console.warn(`Unknown sfx: ${name}`);
       return;
@@ -107,6 +108,7 @@ export function SoundSystem() {
     { volume = 0.35, loop = true, restart = false } = {},
   ) {
     const track = music[name];
+
     if (!track) {
       console.warn(`Unknown music track: ${name}`);
       return;
@@ -146,6 +148,145 @@ export function SoundSystem() {
     stopMusic();
   }
 
+  const ui = {
+    buttonHover() {
+      playDebouncedSfx("buttonHover", "hoverButton", {
+        delay: 80,
+        volume: 0.8,
+      });
+    },
+
+    clearButtonHover() {
+      clearDebouncedSfx("buttonHover");
+    },
+
+    buttonClick() {
+      playSfx("clickButton", { volume: 0.3 });
+    },
+
+    materializeSoft() {
+      playSfx("materialize", { volume: 0.05 });
+    },
+
+    materializeStrong() {
+      playSfx("materialize", { volume: 0.08 });
+    },
+
+    shimmerHover() {
+      playDebouncedSfx("aiCardHover", "shimmer1", {
+        delay: 100,
+        volume: 0.1,
+      });
+    },
+
+    clearShimmerHover() {
+      clearDebouncedSfx("aiCardHover");
+    },
+
+    shimmerLock() {
+      playSfx("shimmer2", { volume: 0.2 });
+    },
+
+    shimmerTransition() {
+      playSfx("shimmer2", { volume: 0.18 });
+    },
+  };
+
+  const board = {
+    cellHover(type) {
+      const soundMap = {
+        valid: "hoverValid",
+        invalid: "hoverInvalid",
+        target: "hoverCell",
+      };
+
+      const volumeMap = {
+        valid: 0.05,
+        invalid: 0.14,
+        target: 0.1,
+      };
+
+      const sfxName = soundMap[type];
+
+      if (!sfxName) {
+        throw Error(`"${type}" is not a valid cell hover sound type.`);
+      }
+
+      playDebouncedSfx("cellHover", sfxName, {
+        delay: 100,
+        volume: volumeMap[type],
+      });
+    },
+
+    clearCellHover() {
+      clearDebouncedSfx("cellHover");
+    },
+
+    fire(isComputer) {
+      const volume = isComputer ? 0.14 : 0.3;
+      playSfx("fire", { volume });
+    },
+
+    impact(hit) {
+      playSfx(hit ? "hit" : "miss", {
+        volume: 0.4,
+        playbackRate: 0.95 + Math.random() * 0.1,
+      });
+    },
+  };
+
+  const ship = {
+    selectSegment() {
+      playSfx("selectShip", { volume: 0.1 });
+    },
+
+    adjust() {
+      playSfx("adjustShip", { volume: 0.04 });
+    },
+
+    placeSegment() {
+      playSfx("placeWoosh", { volume: 0.25 });
+    },
+
+    deployWoosh() {
+      playSfx("placeWoosh", { volume: 0.18 });
+    },
+
+    placeRandom() {
+      playSfx("placeRandom", { volume: 0.25 });
+    },
+
+    startFleetPulse() {
+      startRepeatingSfx("fleetPulse", "floatPulse", {
+        interval: 1200,
+        volume: 0.03,
+        playbackRate: 0.5,
+        playNow: true,
+      });
+    },
+
+    stopFleetPulse() {
+      stopRepeatingSfx("fleetPulse");
+    },
+
+    startDamagePulse() {
+      startRepeatingSfx("activeDamagePulse", "shipPulse", {
+        interval: 1200,
+        volume: 0.08,
+        playbackRate: 0.5,
+        playNow: false,
+      });
+    },
+
+    stopDamagePulse() {
+      stopRepeatingSfx("activeDamagePulse");
+    },
+
+    sunk() {
+      playSfx("sunk", { volume: 0.7 });
+    },
+  };
+
   return {
     playSfx,
     playDebouncedSfx,
@@ -155,5 +296,9 @@ export function SoundSystem() {
     playMusic,
     stopMusic,
     stopAll,
+
+    ui,
+    board,
+    ship,
   };
 }

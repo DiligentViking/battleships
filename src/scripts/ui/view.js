@@ -785,6 +785,34 @@ export function View(root, sound) {
       });
     },
 
+    hitCell(playerName, coords) {
+      const cell = getCell(playerName, coords);
+      if (!cell) return;
+
+      const board = getBoard(playerName);
+      const hasShip = cell.classList.contains("ship");
+
+      cell.classList.add("hit");
+      Effects.impact(cell, hasShip);
+
+      if (!hasShip) return;
+
+      const shipID = cell.dataset.shipid;
+      Effects.startPulse(board, shipID);
+
+      const pulseKey = `${playerName}-${shipID}`;
+      if (prevPulseShipID === pulseKey) return;
+
+      prevPulseShipID = pulseKey;
+
+      sound.startRepeatingSfx("shipPulse", "shipPulse", {
+        interval: 1200,
+        volume: 0.08,
+        playbackRate: 0.5,
+        playNow: false,
+      });
+    },
+
     playButtonHoverSound() {
       sound.playDebouncedSfx("buttonHover", "hoverButton", {
         delay: 80,

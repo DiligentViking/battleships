@@ -122,6 +122,8 @@ h2::after {
   );
 
   opacity: 0.4;
+
+  transition: opacity 0.5s ease;
 }
 
 button {
@@ -1550,10 +1552,6 @@ DEPLOY TRANSITION
   pointer-events: none;
 }
 
-.app.deploy-transition-active .message {
-  animation: deployMessageLock 1200ms ease forwards;
-}
-
 .app.deploy-transition-active .board-wrapper.p1 {
   animation: p1DeployLock 1050ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -1564,6 +1562,7 @@ DEPLOY TRANSITION
   transform-origin: center center;
 }
 
+.app.deploy-transition-lock .message,
 .app.deploy-transition-lock .fleet-wrapper,
 .app.deploy-transition-lock .bottom-area {
   filter: brightness(0.6) blur(1.5px);
@@ -1850,6 +1849,43 @@ button.deploy.deploy-committing {
 @keyframes deployRingSpin {
   to {
     rotate: 360deg;
+  }
+}
+
+/* TITLE ENTER */
+
+.message.battle-title-enter {
+  animation: battleTitleEnter 3.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.message.battle-title-enter::after {
+  transition: none;
+  opacity: 0;
+}
+
+@keyframes battleTitleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.9);
+    text-shadow:
+      0 0 0 transparent,
+      0 0 0 transparent;
+  }
+
+  38% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    text-shadow:
+      0 0 14px var(--p2-primary),
+      0 0 38px var(--p2-glow);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    text-shadow:
+      0 0 6px var(--glow-cyan-soft),
+      0 0 18px var(--glow-cyan-soft);
   }
 }
 

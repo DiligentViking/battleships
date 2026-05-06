@@ -1,5 +1,5 @@
 export const DEV = {
-  enabled: false,
+  enabled: true,
 
   startAt: "setup", // "menu" | "setup" | "battle"
   defaultAI: 1, // 0 Drift, 1 Hunter, 2 Sentinel

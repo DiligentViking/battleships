@@ -57,6 +57,19 @@ export function View(root, sound) {
     return cell.dataset.coords.split(",").map(Number);
   }
 
+  function showBattleMessage() {
+    DOM.message.textContent = "Battle";
+    DOM.message.classList.remove("setup-exiting", "battle-title-enter");
+
+    requestAnimationFrame(() => {
+      DOM.message.classList.add("battle-title-enter");
+    });
+
+    once(DOM.message, "animationend", () => {
+      DOM.message.classList.remove("battle-title-enter");
+    });
+  }
+
   // ====================
   // FLIP / LAYOUT ANIMATION
   // ====================
@@ -665,8 +678,6 @@ export function View(root, sound) {
 
         root.appendChild(overlay);
 
-        DOM.message.textContent = "Deploying Fleet";
-
         lockRootSize();
 
         root.classList.add("deploy-transition-active");
@@ -688,7 +699,10 @@ export function View(root, sound) {
 
           freezeToViewport(DOM.fleetWrapper);
 
-          this.enterBattlePhase({ deferRemoval: true });
+          this.enterBattlePhase({
+            deferRemoval: true,
+            deferMessage: true,
+          });
 
           // Force the initial p2 reveal state to be committed before animation starts.
           DOM.p2BoardWrapper.getBoundingClientRect();
@@ -709,6 +723,8 @@ export function View(root, sound) {
           layoutPromise.finally(() => {
             finishDeployCleanup();
 
+            showBattleMessage();
+
             requestAnimationFrame(() => {
               root.classList.remove(
                 "deploy-transition-active",
@@ -718,6 +734,7 @@ export function View(root, sound) {
               );
 
               overlay.remove();
+
               resolve();
             });
           });
@@ -726,8 +743,10 @@ export function View(root, sound) {
     },
 
     // Battle
-    enterBattlePhase({ deferRemoval = false } = {}) {
-      DOM.message.textContent = "Battle";
+    enterBattlePhase({ deferRemoval = false, deferMessage = false } = {}) {
+      if (!deferMessage) {
+        DOM.message.textContent = "Battle";
+      }
 
       DOM.middleArea.classList.remove("setup-layout");
       DOM.middleArea.classList.add("battle-layout");

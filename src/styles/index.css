@@ -2339,13 +2339,323 @@ HIT EFFECTS
 }
 
 /*
-==================== 
-DEV
+====================
+ENDGAME
 ====================
 */
 
-/* .dev-no-delay *,
-.dev-no-delay *::before,
-.dev-no-delay *::after {
-  animation-delay: 0s !important;
-} */
+.ambient-bg.victory-phase {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 30% 25%, #00ffff33 0%, transparent 46%),
+    radial-gradient(circle at 78% 76%, #ffffff14 0%, transparent 42%),
+    var(--bg-deep);
+}
+
+.ambient-bg.defeat-phase {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 30% 25%, #ff2bd633 0%, transparent 46%),
+    radial-gradient(circle at 78% 76%, #ff3b3b22 0%, transparent 42%),
+    var(--bg-deep);
+}
+
+.app.endgame-active {
+  pointer-events: none;
+}
+
+.app.endgame-active .board-wrapper {
+  pointer-events: none;
+}
+
+.app.endgame-victory .board-wrapper.p1::before {
+  opacity: 1;
+  box-shadow: 0 0 34px 4px var(--p1-primary);
+}
+
+.app.endgame-victory .board-wrapper.p2 {
+  filter: brightness(0.88) saturate(0.9);
+}
+
+.app.endgame-defeat .board-wrapper.p1 {
+  filter: brightness(0.72) saturate(0.75);
+}
+
+.app.endgame-defeat .board-wrapper.p2::before {
+  opacity: 1;
+  box-shadow: 0 0 38px 5px var(--p2-primary);
+}
+
+.endgame-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+
+  display: grid;
+  place-items: center;
+
+  pointer-events: auto;
+  opacity: 0;
+
+  transition: opacity 900ms ease;
+}
+
+.endgame-overlay.active {
+  opacity: 1;
+}
+
+.endgame-overlay__vignette {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at center, transparent 0 24%, #02040ee8 72%),
+    linear-gradient(90deg, #00ffff0d, transparent 35% 65%, #ff2bd60d);
+}
+
+.endgame-overlay.victory .endgame-overlay__vignette {
+  background:
+    radial-gradient(circle at center, transparent 0 26%, #02040ed8 74%),
+    linear-gradient(90deg, #00ffff18, transparent 36% 64%, #ffffff0a);
+}
+
+.endgame-overlay.defeat .endgame-overlay__vignette {
+  background:
+    radial-gradient(circle at center, transparent 0 22%, #08020aec 74%),
+    linear-gradient(90deg, #ff2bd61a, transparent 34% 66%, #ff3b3b12);
+}
+
+.endgame-overlay__scan {
+  position: absolute;
+  inset: -20%;
+
+  opacity: 0.65;
+  transform: translateY(-80%);
+
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 44%,
+    #ffffff18 50%,
+    transparent 56%,
+    transparent 100%
+  );
+
+  animation: endgameScanSweep 2200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.endgame-overlay.defeat .endgame-overlay__scan {
+  animation:
+    endgameScanSweep 1800ms cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    endgameCorruptFlicker 2600ms steps(2, end) infinite;
+}
+
+.endgame-panel {
+  position: relative;
+
+  width: min(520px, calc(100vw - 2rem));
+  min-height: 320px;
+  padding: 3rem 2.25rem 2rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  text-align: center;
+
+  border: 1px solid var(--cell-border);
+  border-radius: 1rem;
+
+  background:
+    linear-gradient(180deg, #ffffff08, transparent 30%),
+    linear-gradient(145deg, #070714ee, #101026ee);
+
+  box-shadow:
+    inset 0 0 24px #000,
+    0 0 28px #00ffff22;
+
+  opacity: 0;
+  transform: translateY(20px) scale(0.96);
+  filter: blur(2px);
+
+  animation: endgamePanelEnter 1100ms cubic-bezier(0.22, 1, 0.36, 1) 360ms forwards;
+}
+
+.endgame-overlay.victory .endgame-panel {
+  border-color: color-mix(in srgb, var(--p1-primary) 60%, var(--cell-border));
+  box-shadow:
+    inset 0 0 24px #000,
+    0 0 30px var(--p1-glow),
+    0 0 90px #00ffff22;
+}
+
+.endgame-overlay.defeat .endgame-panel {
+  border-color: color-mix(in srgb, var(--p2-primary) 65%, #ff3b3b);
+  box-shadow:
+    inset 0 0 24px #000,
+    0 0 30px var(--p2-glow),
+    0 0 90px #ff2bd622;
+
+  animation:
+    endgamePanelEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) 260ms forwards,
+    endgamePanelGlitch 4200ms steps(2, end) 1600ms infinite;
+}
+
+.endgame-panel__ring {
+  position: absolute;
+  inset: 28px;
+
+  border: 1px solid #ffffff22;
+  border-radius: 50%;
+
+  opacity: 0.48;
+  pointer-events: none;
+
+  animation: endgameRingSpin 7s linear infinite;
+}
+
+.endgame-panel__ring::before,
+.endgame-panel__ring::after {
+  content: "";
+  position: absolute;
+  inset: 26px;
+
+  border: 1px dashed currentColor;
+  border-radius: inherit;
+
+  opacity: 0.5;
+}
+
+.endgame-overlay.victory .endgame-panel__ring {
+  color: var(--p1-primary);
+  box-shadow:
+    inset 0 0 22px #00ffff16,
+    0 0 28px #00ffff22;
+}
+
+.endgame-overlay.defeat .endgame-panel__ring {
+  color: var(--p2-primary);
+  box-shadow:
+    inset 0 0 22px #ff2bd616,
+    0 0 28px #ff2bd622;
+}
+
+.endgame-kicker {
+  position: relative;
+  z-index: 1;
+
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+
+  color: var(--text-muted);
+}
+
+.endgame-title {
+  position: relative;
+  z-index: 1;
+
+  font-size: clamp(1.6rem, 5vw, 2.5rem);
+}
+
+.endgame-overlay.victory .endgame-title {
+  text-shadow:
+    0 0 10px var(--p1-primary),
+    0 0 36px var(--p1-glow);
+}
+
+.endgame-overlay.defeat .endgame-title {
+  text-shadow:
+    0 0 10px var(--p2-primary),
+    0 0 36px var(--p2-glow);
+}
+
+.endgame-subtitle {
+  position: relative;
+  z-index: 1;
+
+  max-width: 28rem;
+
+  font-size: 0.95rem;
+  line-height: 1.55;
+
+  color: var(--text-muted);
+}
+
+.endgame-return {
+  position: relative;
+  z-index: 1;
+
+  margin-top: 1.25rem;
+  min-width: 210px;
+}
+
+.endgame-overlay.victory .endgame-return {
+  border-color: var(--p1-primary);
+}
+
+.endgame-overlay.defeat .endgame-return {
+  border-color: var(--p2-primary);
+}
+
+@keyframes endgamePanelEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes endgameScanSweep {
+  to {
+    transform: translateY(80%);
+    opacity: 0;
+  }
+}
+
+@keyframes endgameRingSpin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes endgameCorruptFlicker {
+  0%,
+  92%,
+  100% {
+    opacity: 0.55;
+  }
+
+  93% {
+    opacity: 0.2;
+  }
+
+  94% {
+    opacity: 0.75;
+  }
+
+  96% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes endgamePanelGlitch {
+  0%,
+  94%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+
+  95% {
+    transform: translateY(0) translateX(-2px) scale(1.002);
+    filter: blur(0.4px);
+  }
+
+  96% {
+    transform: translateY(0) translateX(2px) scale(0.998);
+    filter: blur(0);
+  }
+}

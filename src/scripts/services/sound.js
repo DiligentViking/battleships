@@ -381,7 +381,7 @@ export function SoundSystem() {
     },
 
     cinematicTransition() {
-      playSfx("cinematicTransition", { volume: 0.5 });
+      playSfx("cinematicTransition", { volume: 0.2 });
     },
   };
 

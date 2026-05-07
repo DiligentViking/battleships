@@ -360,7 +360,9 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
 
   function createBattleController() {
     const { p1Board, p2Board } = view.eventElems;
+
     let waiting = false;
+    let endgameStarted = false;
 
     function init() {
       addListener(p1Board, "click", onClick);
@@ -374,6 +376,8 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
     }
 
     async function attack(receiverName, coords = null) {
+      if (endgameStarted) return;
+
       waiting = true;
 
       const receiver = getPlayer(receiverName);
@@ -383,28 +387,67 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
 
       await sleep(CONFIG.HIT_DELAY);
 
+      if (endgameStarted) return;
+
       const result = game.attack(receiverName, coords);
 
       view.hitCell(receiverName, result.coords);
 
+      let revealPromise = Promise.resolve();
+
       if (result.shipSunk) {
-        view.revealShip(receiverName, result.shipID);
+        revealPromise = view.revealShip(receiverName, result.shipID);
       }
 
       const { winner } = game.getState();
-      if (winner) return;
+
+      if (winner) {
+        await revealPromise;
+        await enterEndgame(winner);
+        return;
+      }
 
       if (receiver.getType() === "computer") {
         await sleep(CONFIG.COMPUTER_DELAY);
+
+        if (endgameStarted) return;
+
         const next = otherPlayer(receiverName);
         await attack(next.getName());
+        return;
       }
 
       waiting = false;
     }
 
+    async function enterEndgame(winnerName) {
+      endgameStarted = true;
+      waiting = true;
+
+      clearListeners();
+      view.clearHoverSoundTimeout();
+
+      const playerWon = winnerName === player1.getName();
+      const outcome = playerWon ? "victory" : "defeat";
+
+      sound.music.stop({ fadeDuration: 1200 });
+      await sleep(1200);
+
+      if (playerWon) {
+        sound.music.victory();
+      } else {
+        sound.music.defeat();
+      }
+
+      view.enterEndgame({
+        outcome,
+        aiLevel: config.difficulty,
+        onReturnToMenu: config.onReturnToMenu,
+      });
+    }
+
     function onClick(e) {
-      if (waiting) return;
+      if (waiting || endgameStarted) return;
       if (!e.target.classList.contains("cell")) return;
       if (e.target.classList.contains("hit")) return;
 
@@ -415,28 +458,12 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
     }
 
     function onHover(e) {
+      if (waiting || endgameStarted) return;
       if (!e.target.classList.contains("cell")) return;
       if (e.target.classList.contains("hit")) return;
 
       view.playCellHoverSound("target");
     }
-
-    // Autoplay (dev)
-    // function autoplay() {
-    //   let y = 0;
-    //   let x = 0;
-    //   setInterval(() => {
-    //     p2Board.querySelector(`.cell[data-coords="${y},${x}"]`).click();
-    //     y++;
-    //     if (y === 10) {
-    //       y = 0;
-    //       x++;
-    //     }
-    //   }, CONFIG.AUTOPLAY_DELAY);
-    // }
-
-    // autoplay;
-    // autoplay(); // dev
 
     return { init };
   }

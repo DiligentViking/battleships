@@ -586,11 +586,106 @@ export function View(root, sound) {
   function setAmbientPhase(phase) {
     if (!ambientBg) return;
 
-    ambientBg.classList.remove("menu-active", "setup-phase", "battle-phase");
+    ambientBg.classList.remove(
+      "menu-active",
+      "setup-phase",
+      "battle-phase",
+      "victory-phase",
+      "defeat-phase",
+    );
 
     if (phase) {
       ambientBg.classList.add(phase);
     }
+  }
+
+  function getEndgameCopy(outcome, aiLevel) {
+    const playerWon = outcome === "victory";
+
+    const fallback = playerWon
+      ? {
+          title: "Victory",
+          subtitle: "Enemy Fleet Neutralized",
+        }
+      : {
+          title: "Defeat",
+          subtitle: "Fleet Lost",
+        };
+
+    const aiCopy = {
+      0: playerWon
+        ? {
+            title: "Drift Dispersed",
+            subtitle: "Erratic targeting patterns collapsed.",
+          }
+        : {
+            title: "Drift Prevails",
+            subtitle: "The void answered back.",
+          },
+
+      1: playerWon
+        ? {
+            title: "Hunter Broken",
+            subtitle: "Pursuit pattern terminated.",
+          }
+        : {
+            title: "Hunter Dominance",
+            subtitle: "Lock acquired. Resistance ended.",
+          },
+
+      2: playerWon
+        ? {
+            title: "Sentinel Overridden",
+            subtitle: "Optimization failed against human command.",
+          }
+        : {
+            title: "Sentinel Ascendant",
+            subtitle: "Resistance mathematically eliminated.",
+          },
+    };
+
+    return aiCopy[aiLevel] ?? fallback;
+  }
+
+  function createEndgameOverlay({ outcome, aiLevel, onReturnToMenu }) {
+    const { title, subtitle } = getEndgameCopy(outcome, aiLevel);
+
+    const overlay = document.createElement("section");
+    overlay.className = `endgame-overlay ${outcome}`;
+    overlay.setAttribute("aria-labelledby", "endgameTitle");
+    overlay.setAttribute("aria-describedby", "endgameSubtitle");
+
+    overlay.innerHTML = `
+    <div class="endgame-overlay__vignette"></div>
+    <div class="endgame-overlay__scan"></div>
+
+    <div class="endgame-panel" role="dialog" aria-modal="false">
+      <div class="endgame-panel__ring"></div>
+
+      <p class="endgame-kicker">
+        ${outcome === "victory" ? "Combat Resolved" : "System Compromised"}
+      </p>
+
+      <h2 class="endgame-title" id="endgameTitle">${title}</h2>
+      <p class="endgame-subtitle" id="endgameSubtitle">${subtitle}</p>
+
+      <button class="endgame-return" type="button" aria-label="Return to main menu">
+        Return to Menu
+      </button>
+    </div>
+  `;
+
+    const returnBtn = overlay.querySelector(".endgame-return");
+
+    returnBtn.addEventListener("click", () => {
+      sound.ui.buttonClick();
+      onReturnToMenu?.();
+    });
+
+    returnBtn.addEventListener("mouseenter", sound.ui.buttonHover);
+    returnBtn.addEventListener("mouseleave", sound.ui.clearButtonHover);
+
+    return overlay;
   }
 
   // ====================
@@ -777,6 +872,33 @@ export function View(root, sound) {
       DOM.p2Board.classList.add("battle-phase");
     },
 
+    enterEndgame({ outcome, aiLevel, onReturnToMenu }) {
+      const playerWon = outcome === "victory";
+
+      setAmbientPhase(playerWon ? "victory-phase" : "defeat-phase");
+
+      root.classList.add("endgame-active", `endgame-${outcome}`);
+
+      DOM.message.textContent = playerWon ? "Victory" : "Defeat";
+      DOM.message.classList.remove("battle-title-enter");
+
+      DOM.p1Board.classList.add("endgame-board");
+      DOM.p2Board.classList.add("endgame-board");
+
+      const overlay = createEndgameOverlay({
+        outcome,
+        aiLevel,
+        onReturnToMenu,
+      });
+
+      root.appendChild(overlay);
+
+      requestAnimationFrame(() => {
+        overlay.classList.add("active");
+        overlay.querySelector(".endgame-return")?.focus();
+      });
+    },
+
     playFireSound(isComputer) {
       sound.board.fire(isComputer);
     },
@@ -824,18 +946,23 @@ export function View(root, sound) {
     playDeploySound() {
       sound.ui.buttonClick();
     },
+
     revealShip(playerName, shipID) {
       const board = getBoard(playerName);
 
       Effects.stopPulse(board, shipID);
 
-      setTimeout(() => {
-        Effects.flash(board, shipID);
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          Effects.flash(board, shipID);
 
-        board
-          .querySelectorAll(`[data-shipid="${shipID}"] svg`)
-          .forEach((svg) => svg.classList.remove("hide"));
-      }, 250);
+          board
+            .querySelectorAll(`[data-shipid="${shipID}"] svg`)
+            .forEach((svg) => svg.classList.remove("hide"));
+
+          setTimeout(resolve, 700);
+        }, 250);
+      });
     },
   };
 }

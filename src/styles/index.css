@@ -1628,7 +1628,7 @@ button.deploy.deploy-committing {
     linear-gradient(90deg, #00ffff10, transparent 35% 65%, #ff2bd610);
 
   opacity: 0;
-  animation: deployVignette 2400ms ease 420ms forwards;
+  animation: deployVignette 2900ms ease /* 620ms */ forwards;
 }
 
 .phase-transition__scan {
@@ -1647,7 +1647,7 @@ button.deploy.deploy-committing {
   );
 
   transform: translateY(-80%);
-  animation: deployScanSweep 2000ms cubic-bezier(0.22, 1, 0.36, 1) 420ms forwards;
+  animation: deployScanSweep 2000ms cubic-bezier(0.22, 1, 0.36, 1) /* 620ms */ forwards;
 }
 
 .phase-transition__core {
@@ -1661,7 +1661,7 @@ button.deploy.deploy-committing {
 
   opacity: 0;
   transform: scale(0.88);
-  animation: deployCoreWake 2100ms ease forwards;
+  animation: deployCoreWake 2600ms ease forwards;
 }
 
 .phase-transition__ring {
@@ -1675,7 +1675,7 @@ button.deploy.deploy-committing {
     inset 0 0 22px #00ffff22,
     0 0 28px #00ffff33;
 
-  animation: deployRingSpin 2200ms linear forwards;
+  animation: deployRingSpin 2800ms linear forwards;
 }
 
 .phase-transition__ring::before,
@@ -1691,7 +1691,7 @@ button.deploy.deploy-committing {
 .phase-transition__ring::after {
   inset: 48px;
   border-color: #ffffff55;
-  animation: deployRingSpin 1200ms linear reverse forwards;
+  animation: deployRingSpin 1700ms linear reverse forwards;
 }
 
 .phase-transition__title,

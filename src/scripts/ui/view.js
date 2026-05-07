@@ -658,9 +658,9 @@ export function View(root, sound) {
 
     playDeployTransition() {
       return new Promise((resolve) => {
-        const LOCK_AT = 420;
-        const LAYOUT_SHIFT_AT = 1150;
-        const FINISH_AT = 3050;
+        const LOCK_AT = 620;
+        const LAYOUT_SHIFT_AT = 2050;
+        const FINISH_AT = 3550;
 
         let layoutPromise = Promise.resolve();
 
@@ -676,22 +676,27 @@ export function View(root, sound) {
           </div>
         `;
 
-        root.appendChild(overlay);
+        sound.ui.deploy();
 
         lockRootSize();
 
         root.classList.add("deploy-transition-active");
         DOM.deployBtn.classList.add("deploy-committing");
 
-        sound.ui.materializeStrong();
-
         setTimeout(() => {
           sound.ui.shimmerTransition();
         }, LOCK_AT - 200);
 
         setTimeout(() => {
+          sound.ui.lockedIn();
+
+          root.appendChild(overlay);
           root.classList.add("deploy-transition-lock");
         }, LOCK_AT);
+
+        setTimeout(() => {
+          sound.ui.cinematicTransition();
+        }, LAYOUT_SHIFT_AT - 250);
 
         setTimeout(() => {
           const movingEls = [DOM.p1BoardWrapper];
@@ -715,8 +720,6 @@ export function View(root, sound) {
               root.classList.remove("deploy-layout-shifting");
             });
           });
-
-          sound.ship.deployWoosh();
         }, LAYOUT_SHIFT_AT);
 
         setTimeout(() => {

@@ -15,6 +15,10 @@ const SFX = {
   adjustShip: "assets/sfx/adjust-ship.mp3",
   placeRandom: "assets/sfx/place-random.wav",
 
+  deploy: "assets/sfx/sci-fi-door.wav",
+  lockedIn: "assets/sfx/locked-in.wav",
+  cinematicTransition: "assets/sfx/cinematic-transition.wav",
+
   hit: "assets/sfx/sci-fi-gun.mp3",
   miss: "assets/sfx/tribecore-kick.mp3",
   sunk: "assets/sfx/metallic-impact.wav",
@@ -349,10 +353,6 @@ export function SoundSystem() {
       playSfx("materialize", { volume: 0.05 });
     },
 
-    materializeStrong() {
-      playSfx("materialize", { volume: 0.08 });
-    },
-
     shimmerHover() {
       playDebouncedSfx("aiCardHover", "shimmer1", {
         delay: 100,
@@ -370,6 +370,18 @@ export function SoundSystem() {
 
     shimmerTransition() {
       playSfx("shimmer2", { volume: 0.18 });
+    },
+
+    deploy() {
+      playSfx("deploy", { volume: 0.2 });
+    },
+
+    lockedIn() {
+      playSfx("lockedIn", { volume: 0.2 });
+    },
+
+    cinematicTransition() {
+      playSfx("cinematicTransition", { volume: 0.5 });
     },
   };
 

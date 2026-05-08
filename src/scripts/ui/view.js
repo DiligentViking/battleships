@@ -36,6 +36,7 @@ export function View(root, sound) {
   };
 
   let prevPulseShipID; // for sound
+  let debugRevealShips = false;
 
   function getBoardKey(playerName) {
     return DOM.p1Board.dataset.playername === playerName ? "p1" : "p2";
@@ -474,7 +475,7 @@ export function View(root, sound) {
       cell.dataset.shipid = shipID;
 
       const isP2 = playerName === DOM.p2Board.dataset.playername;
-      const hidden = isP2;
+      const hidden = isP2 && !debugRevealShips;
 
       let type;
       if (!isP2 || isVertical) {
@@ -963,6 +964,14 @@ export function View(root, sound) {
           setTimeout(resolve, 700);
         }, 250);
       });
+    },
+
+    setDebugRevealShips(isEnabled) {
+      debugRevealShips = isEnabled;
+
+      DOM.p2Board
+        .querySelectorAll(".ship svg")
+        .forEach((svg) => svg.classList.toggle("hide", !debugRevealShips));
     },
   };
 }

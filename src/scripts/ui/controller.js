@@ -2,13 +2,16 @@ import { DEV } from "../dev.js";
 import { sleep } from "../models/utils.js";
 
 export function Controller(player1, player2, game, view, config = {}, sound) {
-  const CONFIG = {
-    NUM_SHIPS: 6,
-    SHIP_LENGTHS: [1, 2, 3, 4, 5, 6],
+  const DEV_ONE_SHIP = DEV.enabled && DEV.oneShipPerSide;
+  const DEV_INSTANT_HIT = DEV.enabled && DEV.instantHit;
 
-    HIT_DELAY: DEV.enabled ? DEV.delays.hit : 800,
-    COMPUTER_DELAY: DEV.enabled ? DEV.delays.computer : 600,
-    AUTOPLAY_DELAY: DEV.enabled ? DEV.delays.autoplay : 250,
+  const CONFIG = {
+    NUM_SHIPS: DEV_ONE_SHIP ? 1 : 6,
+    SHIP_LENGTHS: DEV_ONE_SHIP ? [1] : [1, 2, 3, 4, 5, 6],
+
+    HIT_DELAY: DEV_INSTANT_HIT ? 0 : 800,
+    COMPUTER_DELAY: DEV_INSTANT_HIT ? 0 : 600,
+    AUTOPLAY_DELAY: 250,
   };
 
   let cleanupFns = [];
@@ -32,13 +35,18 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
   }
 
   function setupPlayers() {
+    function initComputerTargets(player, enemyPlayer) {
+      const enemyBoardSize = enemyPlayer.gameboard.getBoardSize();
+      player.initComputerTargets(enemyBoardSize);
+    }
+
     view.initBoardPlayerNames(player1.getName(), player2.getName());
 
     if (player1.getType() === "computer") {
-      player1.initComputerTargets(player2.gameboard.getBoardSize());
+      initComputerTargets(player1, player2);
     }
     if (player2.getType() === "computer") {
-      player2.initComputerTargets(player1.gameboard.getBoardSize());
+      initComputerTargets(player2, player1);
     }
   }
 
@@ -46,8 +54,9 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
     const size = player1.gameboard.getBoardSize();
     view.renderBoard(player1.getName(), size);
     view.renderBoard(player2.getName(), size);
-  }
 
+    view.setDebugRevealShips(DEV.enabled && DEV.revealShips);
+  }
   // ====================
   // SETUP PHASE
   // ====================
@@ -99,9 +108,6 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
       }
 
       bindEvents();
-
-      if (DEV.enabled && DEV.autoRandomizeFleet) randomBtn.click();
-      if (DEV.enabled && DEV.autoDeployFleet) deployBtn.click();
     }
 
     function bindEvents() {
@@ -365,6 +371,12 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
     let endgameStarted = false;
 
     function init() {
+      if (DEV.enabled && DEV.aiAlwaysHits)
+        player2._initDevComputerTargets(
+          player1.gameboard.getBoardSize(),
+          player1.gameboard._getDebugInfo().board,
+        );
+
       addListener(p1Board, "click", onClick);
       addListener(p2Board, "click", onClick);
 

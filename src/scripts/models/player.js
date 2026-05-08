@@ -1,4 +1,5 @@
 import { Gameboard } from "./gameboard.js";
+import { DEV } from "../dev.js";
 
 export function Player(name, type, smartness = 0) {
   const gameboard = Gameboard();
@@ -179,6 +180,19 @@ export function Player(name, type, smartness = 0) {
     getName: () => name,
 
     getType: () => type,
+
+    _initDevComputerTargets: (enemyBoardSize, enemyGameboard) => {
+      remainingCells.length = 0;
+
+      for (let y = 0; y < enemyBoardSize; y++) {
+        for (let x = 0; x < enemyBoardSize; x++) {
+          const cell = enemyGameboard[y][x];
+          if (cell.shipID !== null) {
+            remainingCells.push([y, x]);
+          }
+        }
+      }
+    },
 
     initComputerTargets: (enemyBoardSize) => {
       for (let i = 0; i < enemyBoardSize; i++) {

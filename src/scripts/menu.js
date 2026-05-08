@@ -1,5 +1,3 @@
-import { DEV } from "./dev.js";
-
 export function Menu(onGameStart, sound) {
   const root = document.getElementById("mainMenu");
   const bg = document.getElementById("menuBg");
@@ -10,26 +8,19 @@ export function Menu(onGameStart, sound) {
   let selectingAI = false;
   let aiSelectionContainer = null;
 
-function init() {
-  sound.music.menu();
+  function init() {
+    sound.music.menu();
 
-  root.classList.add("menu-entering");
-  ambient.classList.add("menu-active");
+    root.classList.add("menu-entering");
+    ambient.classList.add("menu-active");
 
-  bindButtons();
+    bindButtons();
 
-  if (DEV.enabled && DEV.skipMenuIntro) {
-    root.classList.add("dev-no-delay");
-    root.classList.add("menu-awake");
-    spawnLoop();
-    return;
+    setTimeout(() => {
+      root.classList.add("menu-awake");
+      spawnLoop();
+    }, 3000);
   }
-
-  setTimeout(() => {
-    root.classList.add("menu-awake");
-    spawnLoop();
-  }, 3000);
-}
 
   // ====================
   // BUTTONS

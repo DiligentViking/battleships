@@ -201,7 +201,6 @@ export function SoundSystem() {
   }
 
   function retryDesiredMusic() {
-    console.log("fired");
     if (!desiredMusicRequest) {
       disarmMusicUnlock();
       return;
@@ -381,7 +380,7 @@ export function SoundSystem() {
     },
 
     cinematicTransition() {
-      playSfx("cinematicTransition", { volume: 0.2 });
+      playSfx("cinematicTransition", { volume: 0.4 });
     },
   };
 

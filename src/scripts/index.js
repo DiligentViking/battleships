@@ -31,7 +31,7 @@ function startGameFromDev() {
     mode: "ai",
     difficulty: DEV.defaultAI,
     devStartAt: DEV.startAt,
-    animatedEntry: !DEV.skipGameDescent,
+    animatedEntry: false,
   });
 }
 

@@ -603,53 +603,49 @@ export function View(root, sound) {
   function getEndgameCopy(outcome, aiLevel) {
     const playerWon = outcome === "victory";
 
-    const fallback = playerWon
-      ? {
-          title: "Victory",
-          subtitle: "Enemy Fleet Neutralized",
-        }
-      : {
-          title: "Defeat",
-          subtitle: "Fleet Lost",
-        };
-
     const aiCopy = {
       0: playerWon
         ? {
-            title: "Drift Dispersed",
-            subtitle: "Erratic targeting patterns collapsed.",
+            kicker: "Drift Dispersed",
+            title: "Victory",
+            subtitle: "Erratic targeting patterns eradicated.",
           }
         : {
-            title: "Drift Prevails",
+            kicker: "Drift Prevails",
+            title: "Defeat",
             subtitle: "The void answered back.",
           },
 
       1: playerWon
         ? {
-            title: "Hunter Broken",
+            kicker: "Hunter Broken",
+            title: "Victory",
             subtitle: "Pursuit pattern terminated.",
           }
         : {
-            title: "Hunter Dominance",
+            kicker: "Hunter Dominance",
+            title: "Defeat",
             subtitle: "Lock acquired. Resistance ended.",
           },
 
       2: playerWon
         ? {
-            title: "Sentinel Overridden",
+            kicker: "Sentinel Overridden",
+            title: "Victory",
             subtitle: "Optimization failed against human command.",
           }
         : {
-            title: "Sentinel Ascendant",
+            kicker: "Sentinel Ascendant",
+            title: "Defeat",
             subtitle: "Resistance mathematically eliminated.",
           },
     };
 
-    return aiCopy[aiLevel] ?? fallback;
+    return aiCopy[aiLevel];
   }
 
   function createEndgameOverlay({ outcome, aiLevel, onReturnToMenu }) {
-    const { title, subtitle } = getEndgameCopy(outcome, aiLevel);
+    const { kicker, title, subtitle } = getEndgameCopy(outcome, aiLevel);
 
     const overlay = document.createElement("section");
     overlay.className = `endgame-overlay ${outcome}`;
@@ -657,14 +653,13 @@ export function View(root, sound) {
     overlay.setAttribute("aria-describedby", "endgameSubtitle");
 
     overlay.innerHTML = `
-    <div class="endgame-overlay__vignette"></div>
     <div class="endgame-overlay__scan"></div>
 
     <div class="endgame-panel" role="dialog" aria-modal="false">
       <div class="endgame-panel__ring"></div>
 
       <p class="endgame-kicker">
-        ${outcome === "victory" ? "Combat Resolved" : "System Compromised"}
+        ${kicker}
       </p>
 
       <h2 class="endgame-title" id="endgameTitle">${title}</h2>
@@ -892,7 +887,7 @@ export function View(root, sound) {
         onReturnToMenu,
       });
 
-      root.appendChild(overlay);
+      document.body.appendChild(overlay);
 
       requestAnimationFrame(() => {
         overlay.classList.add("active");

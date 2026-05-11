@@ -1,4 +1,4 @@
-<h1 align="center"><a href="./src/">Grid Ships</a></h1>
+<h1 align="center"><a href="https://diligentviking.github.io/battleships/src/">Grid Ships</a></h1>
 
 <h3 align="center">The most cinematic Battleship game in the solar system.</h3>
 

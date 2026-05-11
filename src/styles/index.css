@@ -2808,3 +2808,50 @@ FINAL HIT CINEMATIC
     filter: brightness(0.82) saturate(0.72);
   }
 } */
+
+/*
+====================
+RETURN TO MENU
+====================
+*/
+
+.app.returning-to-menu {
+  pointer-events: none;
+  transform: scale(0.975);
+  filter: brightness(0.5) blur(1.5px);
+  transition:
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1s ease;
+}
+
+.endgame-overlay.returning {
+  pointer-events: none;
+}
+
+.endgame-overlay.returning .endgame-panel {
+  transform: scale(0.98);
+  filter: brightness(0.7) blur(1px);
+  opacity: 0.65;
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1s ease;
+}
+
+.return-to-menu-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+
+  pointer-events: none;
+
+  background: radial-gradient(circle at center, transparent 0%, #000 72%), #000;
+
+  opacity: 0;
+
+  transition: opacity 2s ease;
+}
+
+.return-to-menu-veil.active {
+  opacity: 1;
+}

@@ -6,7 +6,7 @@ export const DEV = {
 
   aiAlwaysHits: false,
 
-  oneShipPerSide: false,
+  oneShipPerSide: true,
   revealShips: true,
   instantHit: true,
 };

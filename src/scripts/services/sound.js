@@ -492,21 +492,21 @@ export function SoundSystem() {
   const music = {
     menu() {
       return playMusicTrack("menu", {
-        volume: 0.15,
+        volume: 0.14,
         fadeDuration: 500,
       });
     },
 
     setup() {
       return playMusicTrack("setup", {
-        volume: 0.15,
+        volume: 0.10,
         fadeDuration: 500,
       });
     },
 
     battle() {
       return playMusicTrack("battle", {
-        volume: 0.15,
+        volume: 0.10,
         fadeDuration: 500,
       });
     },

@@ -74,6 +74,34 @@ export function View(root, sound) {
     });
   }
 
+  let returningToMenu = false;
+
+  function playReturnToMenuTransition() {
+    if (returningToMenu) return Promise.resolve();
+
+    returningToMenu = true;
+
+    sound.ui.clearButtonHover();
+    sound.board.clearCellHover();
+    sound.music.stop({ fadeDuration: 650 });
+
+    root.classList.add("returning-to-menu");
+
+    const veil = document.createElement("div");
+    veil.className = "return-to-menu-veil";
+    veil.setAttribute("aria-hidden", "true");
+
+    document.body.appendChild(veil);
+
+    requestAnimationFrame(() => {
+      veil.classList.add("active");
+    });
+
+    return new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
+  }
+
   // ====================
   // FLIP / LAYOUT ANIMATION
   // ====================
@@ -718,8 +746,16 @@ export function View(root, sound) {
 
     const returnBtn = overlay.querySelector(".endgame-return");
 
-    returnBtn.addEventListener("click", () => {
+    returnBtn.addEventListener("click", async () => {
+      if (returningToMenu) return;
+
       sound.ui.buttonClick();
+
+      returnBtn.disabled = true;
+      overlay.classList.add("returning");
+
+      await playReturnToMenuTransition();
+
       onReturnToMenu?.();
     });
 
@@ -918,7 +954,9 @@ export function View(root, sound) {
 
       setAmbientPhase(playerWon ? "victory-phase" : "defeat-phase");
 
-      document.querySelector(".final-hit-focus__shade").classList.add("fade-out");
+      document
+        .querySelector(".final-hit-focus__shade")
+        .classList.add("fade-out");
 
       root.classList.add("endgame-active", `endgame-${outcome}`);
 

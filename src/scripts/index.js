@@ -6,8 +6,11 @@ import { Controller } from "./ui/controller.js";
 import { Menu } from "./menu.js";
 import { SoundSystem } from "./services/sound.js";
 
-const gameRoot = document.querySelector(".app");
-const mainMenu = document.getElementById("mainMenu");
+let gameRoot = document.querySelector(".app");
+let mainMenu = document.getElementById("mainMenu");
+
+const appTemplate = gameRoot.cloneNode(true);
+const menuTemplate = mainMenu.cloneNode(true);
 
 const sound = SoundSystem();
 
@@ -35,6 +38,31 @@ function startGameFromDev() {
   });
 }
 
+function restartToMenu() {
+  sound.stopAll();
+
+  document.querySelectorAll(".endgame-overlay, .final-hit-focus, .return-to-menu-veil")
+    .forEach((el) => el.remove());
+
+  const freshApp = appTemplate.cloneNode(true);
+  const freshMenu = menuTemplate.cloneNode(true);
+
+  gameRoot.replaceWith(freshApp);
+
+  if (mainMenu?.isConnected) {
+    mainMenu.replaceWith(freshMenu);
+  } else {
+    document.body.insertBefore(freshMenu, freshApp);
+  }
+
+  gameRoot = freshApp;
+  mainMenu = freshMenu;
+
+  gameRoot.classList.add("game-hidden");
+
+  startGameFromMenu();
+}
+
 function onGameStart(config = {}) {
   gameRoot.classList.remove("game-hidden");
 
@@ -42,18 +70,16 @@ function onGameStart(config = {}) {
     gameRoot.classList.add("game-descent-enter");
   }
 
-  let player2;
-
-  if (config.mode === "ai") {
-    player2 = Player("two", "computer", config.difficulty);
-  } else {
-    player2 = Player("two", "real");
-  }
-
   const player1 = Player("one", "real");
+
+  const player2 =
+    config.mode === "ai"
+      ? Player("two", "computer", config.difficulty)
+      : Player("two", "real");
 
   const game = Game(player1, player2);
   const view = View(gameRoot, sound);
+
   const controller = Controller(
     player1,
     player2,
@@ -61,7 +87,7 @@ function onGameStart(config = {}) {
     view,
     {
       ...config,
-      onReturnToMenu: () => window.location.reload(),
+      onReturnToMenu: restartToMenu,
     },
     sound,
   );

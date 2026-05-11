@@ -209,6 +209,12 @@ export function SoundSystem() {
     playMusicTrack(desiredMusicRequest.name, desiredMusicRequest.options);
   }
 
+  function duckCurrentMusic({ volume = 0.045, fadeDuration = 380 } = {}) {
+    if (!currentMusic) return Promise.resolve(false);
+
+    return fadeTrack(currentMusic, volume, fadeDuration).then(() => true);
+  }
+
   async function playMusicTrack(
     name,
     { volume = 0.35, loop = true, restart = false, fadeDuration = 1200 } = {},
@@ -521,6 +527,10 @@ export function SoundSystem() {
         restart: true,
         loop: false,
       });
+    },
+
+    duck(options) {
+      return duckCurrentMusic(options);
     },
 
     play(name, options) {

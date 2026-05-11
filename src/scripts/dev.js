@@ -1,12 +1,12 @@
 export const DEV = {
   enabled: true,
 
-  startAt: "setup", // "menu" | "setup" | "battle"
-  defaultAI: 0, // 0 Drift, 1 Hunter, 2 Sentinel
+  startAt: "menu", // "menu" | "setup" | "battle"
+  defaultAI: 1, // 0 Drift, 1 Hunter, 2 Sentinel
 
-  aiAlwaysHits: true,
+  aiAlwaysHits: false,
 
-  oneShipPerSide: true,
+  oneShipPerSide: false,
   revealShips: true,
   instantHit: true,
 };

@@ -251,6 +251,11 @@ HELPERS
   transform: none !important;
 }
 
+.fade-out {
+  opacity: 0 !important;
+  transition: opacity 1s ease !important;
+}
+
 @keyframes pulseGlow {
   0% {
     opacity: 0.5;
@@ -1918,6 +1923,8 @@ BOARDS
   border-radius: 0.5rem;
   padding: 20px;
   position: relative;
+
+  transition: filter 1s ease;
 }
 
 .board-wrapper.p1::after {
@@ -2255,7 +2262,7 @@ HIT EFFECTS
 }
 
 .shockwave.hit {
-  border-color: #ff3ba0;
+  border-color: #ff3b3baa;
 }
 
 .shockwave.miss {
@@ -2377,7 +2384,8 @@ ENDGAME
 
 .app.endgame-active {
   pointer-events: none;
-  filter: blur(2px);
+  filter: blur(1px);
+  transition: filter 1s ease;
 }
 
 .app.endgame-active .board-wrapper {
@@ -2385,7 +2393,7 @@ ENDGAME
 }
 
 .app.endgame-victory .board-wrapper.p1 {
-  filter: brightness(1.1);
+  filter: brightness(1.2);
 }
 .app.endgame-victory .board-wrapper.p1::before {
   opacity: 1;
@@ -2393,15 +2401,15 @@ ENDGAME
 }
 
 .app.endgame-victory .board-wrapper.p2 {
-  filter: brightness(0.6);
+  filter: brightness(0.5);
 }
 
 .app.endgame-defeat .board-wrapper.p2 {
-  filter: brightness(1.1);
+  filter: brightness(1.2);
 }
 
 .app.endgame-defeat .board-wrapper.p1 {
-  filter: brightness(0.6);
+  filter: brightness(0.5);
 }
 
 .app.endgame-defeat .board-wrapper.p2::before {
@@ -2574,6 +2582,14 @@ ENDGAME
     0 0 10px var(--p2-primary),
     0 0 36px var(--p2-glow);
 }
+.endgame-overlay.defeat .endgame-title::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--p2-primary),
+    transparent
+  );
+}
 
 .endgame-subtitle {
   position: relative;
@@ -2599,9 +2615,9 @@ ENDGAME
   border-color: var(--p1-primary);
 }
 
-.endgame-overlay.defeat .endgame-return {
+/* .endgame-overlay.defeat .endgame-return {
   border-color: var(--p2-primary);
-}
+} */
 
 @keyframes endgamePanelEnter {
   to {
@@ -2662,3 +2678,133 @@ ENDGAME
     filter: blur(0);
   }
 }
+
+/*
+====================
+FINAL HIT CINEMATIC
+====================
+*/
+
+.app.final-hit-cinematic {
+  pointer-events: none;
+}
+
+.cell.final-hit-impact {
+  animation: finalTargetImpact 1200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.final-hit-focus {
+  --target-x: 50vw;
+  --target-y: 50vh;
+  --target-size: 40px;
+
+  position: fixed;
+  inset: 0;
+  z-index: 925;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 520ms ease;
+}
+
+.final-hit-focus.active {
+  opacity: 1;
+}
+
+.final-hit-focus.resolved {
+  opacity: 0.85;
+}
+
+.final-hit-focus__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at var(--target-x) var(--target-y),
+      transparent 0 calc(var(--target-size) * 1.55),
+      rgba(5, 5, 16, 0.32) calc(var(--target-size) * 2.35),
+      rgba(2, 3, 10, 0.74) 72%
+    ),
+    linear-gradient(90deg, #00ffff08, transparent 38% 62%, #ff2bd608);
+}
+
+.final-hit-icon.icon-animate {
+  animation: finalIconDrop 1300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.final-hit-wave.shockwave-animate {
+  animation: finalShockwaveExpand 1200ms ease-out forwards;
+  animation-delay: 120ms;
+}
+
+.final-ship-collapse {
+  animation: finalShipCollapse 1300ms ease-in-out both;
+}
+
+@keyframes finalTargetImpact {
+  0% {
+    filter: brightness(3.2) saturate(1.8);
+    box-shadow:
+      inset 0 0 24px #ffffffcc,
+      0 0 24px #ffffffaa,
+      0 0 80px currentColor;
+  }
+
+  100% {
+    filter: brightness(1.05) saturate(1);
+  }
+}
+
+@keyframes finalIconDrop {
+  0% {
+    transform: scale(14);
+    opacity: 0;
+    filter: blur(3px) brightness(2);
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0) brightness(1.6);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+    filter: blur(0.1px) brightness(1);
+  }
+}
+
+@keyframes finalShockwaveExpand {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.15);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(5);
+  }
+}
+
+/* @keyframes finalShipCollapse {
+  0% {
+    filter: brightness(1);
+  }
+
+  25% {
+    filter: brightness(2.6) drop-shadow(0 0 12px #ffffff88);
+  }
+
+  48% {
+    filter: brightness(0.7) contrast(1.4);
+  }
+
+  72% {
+    filter: brightness(1.7) drop-shadow(0 0 10px currentColor);
+  }
+
+  100% {
+    filter: brightness(0.82) saturate(0.72);
+  }
+} */

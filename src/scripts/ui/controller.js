@@ -393,29 +393,52 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
       waiting = true;
 
       const receiver = getPlayer(receiverName);
-
       const isComputer = receiver.getType() === "real";
+
       view.playFireSound(isComputer);
 
-      await sleep(CONFIG.HIT_DELAY);
+      const result = game.attack(receiverName, coords);
+      coords = result.coords;
+      const { winner } = game.getState();
+
+      const finalHit = winner !== null;
+
+      if (finalHit) {
+        clearListeners();
+        view.clearHoverSoundTimeout();
+
+        await Promise.all([
+          sound.music.duck({ volume: 0.045, fadeDuration: 420 }),
+          view.prepareFinalHit({
+            playerName: receiverName,
+            coords,
+          }),
+        ]);
+      }
+
+      await sleep(finalHit ? 220 : CONFIG.HIT_DELAY);
 
       if (endgameStarted) return;
 
-      const result = game.attack(receiverName, coords);
-
-      view.hitCell(receiverName, result.coords);
+      view.hitCell(receiverName, coords, { finalHit });
 
       let revealPromise = Promise.resolve();
 
       if (result.shipSunk) {
-        revealPromise = view.revealShip(receiverName, result.shipID);
+        revealPromise = view.revealShip(receiverName, result.shipID, {
+          finalHit,
+        });
       }
 
-      const { winner } = game.getState();
-
-      if (winner) {
+      if (finalHit) {
         await revealPromise;
-        await enterEndgame(winner);
+
+        const playerWon = winner === player1.getName();
+        const outcome = playerWon ? "victory" : "defeat";
+
+        await view.resolveFinalHit({ outcome });
+
+        await enterEndgame(winner, { finalHit });
         return;
       }
 
@@ -432,7 +455,7 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
       waiting = false;
     }
 
-    async function enterEndgame(winnerName) {
+    async function enterEndgame(winnerName, { finalHit = false } = {}) {
       endgameStarted = true;
       waiting = true;
 
@@ -442,8 +465,8 @@ export function Controller(player1, player2, game, view, config = {}, sound) {
       const playerWon = winnerName === player1.getName();
       const outcome = playerWon ? "victory" : "defeat";
 
-      sound.music.stop({ fadeDuration: 1200 });
-      await sleep(1200);
+      sound.music.stop({ fadeDuration: finalHit ? 800 : 1200 });
+      await sleep(finalHit ? 450 : 1200);
 
       if (playerWon) {
         sound.music.victory();

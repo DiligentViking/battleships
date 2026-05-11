@@ -35,6 +35,9 @@ export function View(root, sound) {
     p2: [],
   };
 
+  let finalHitOverlay = null;
+  let finalHitTargetCell = null;
+
   let prevPulseShipID; // for sound
   let debugRevealShips = false;
 
@@ -508,11 +511,13 @@ export function View(root, sound) {
   // ====================
 
   const Effects = {
-    impact(cell, hit) {
+    impact(cell, hit, { finalHit = false } = {}) {
       sound.board.impact(hit);
 
       const icon = document.createElement("div");
-      icon.className = hit ? "hit-icon" : "miss-icon";
+      icon.className = `${hit ? "hit-icon" : "miss-icon"}${
+        finalHit ? " final-hit-icon" : ""
+      }`;
       icon.innerHTML = hit ? SVG.hit() : SVG.miss();
 
       cell.appendChild(icon);
@@ -520,7 +525,9 @@ export function View(root, sound) {
       once(icon, "animationend", () => icon.remove());
 
       const wave = document.createElement("div");
-      wave.className = `shockwave ${hit ? "hit" : "miss"}`;
+      wave.className = `shockwave ${hit ? "hit" : "miss"}${
+        finalHit ? " final-hit-wave" : ""
+      }`;
 
       cell.appendChild(wave);
       requestAnimationFrame(() => wave.classList.add("shockwave-animate"));
@@ -584,6 +591,44 @@ export function View(root, sound) {
     },
   };
 
+  function clearFinalHitCinematic() {
+    finalHitTargetCell?.classList.remove("final-hit-target");
+    finalHitTargetCell = null;
+
+    finalHitOverlay?.remove();
+    finalHitOverlay = null;
+
+    root.classList.remove(
+      "final-hit-cinematic",
+      "final-hit-impacting",
+      "final-hit-victory",
+      "final-hit-defeat",
+    );
+  }
+
+  function createFinalHitOverlay(cell) {
+    const rect = cell.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const overlay = document.createElement("div");
+    overlay.className = "final-hit-focus";
+    overlay.setAttribute("aria-hidden", "true");
+
+    overlay.innerHTML = `
+      <div class="final-hit-focus__shade"></div>
+    `;
+
+    overlay.style.setProperty("--target-x", `${centerX}px`);
+    overlay.style.setProperty("--target-y", `${centerY}px`);
+    overlay.style.setProperty(
+      "--target-size",
+      `${Math.max(rect.width, rect.height)}px`,
+    );
+
+    return overlay;
+  }
+
   function setAmbientPhase(phase) {
     if (!ambientBg) return;
 
@@ -623,7 +668,7 @@ export function View(root, sound) {
             subtitle: "Pursuit pattern terminated.",
           }
         : {
-            kicker: "Hunter Dominance",
+            kicker: "Hunter Dominant",
             title: "Defeat",
             subtitle: "Lock acquired. Resistance ended.",
           },
@@ -632,12 +677,12 @@ export function View(root, sound) {
         ? {
             kicker: "Sentinel Overridden",
             title: "Victory",
-            subtitle: "Optimization failed against human command.",
+            subtitle: "Human command prevails.",
           }
         : {
             kicker: "Sentinel Ascendant",
             title: "Defeat",
-            subtitle: "Resistance mathematically eliminated.",
+            subtitle: "Resistance proficiently eliminated.",
           },
     };
 
@@ -873,10 +918,12 @@ export function View(root, sound) {
 
       setAmbientPhase(playerWon ? "victory-phase" : "defeat-phase");
 
+      document.querySelector(".final-hit-focus__shade").classList.add("fade-out");
+
       root.classList.add("endgame-active", `endgame-${outcome}`);
 
-      DOM.message.textContent = playerWon ? "Victory" : "Defeat";
       DOM.message.classList.remove("battle-title-enter");
+      DOM.message.classList.add("fade-out");
 
       DOM.p1Board.classList.add("endgame-board");
       DOM.p2Board.classList.add("endgame-board");
@@ -895,6 +942,44 @@ export function View(root, sound) {
       });
     },
 
+    prepareFinalHit({ playerName, coords }) {
+      const cell = getCell(playerName, coords);
+      if (!cell) return Promise.resolve();
+
+      clearFinalHitCinematic();
+      sound.board.clearCellHover();
+      sound.ui.clearButtonHover();
+
+      finalHitTargetCell = cell;
+      finalHitTargetCell.classList.add("final-hit-target");
+
+      finalHitOverlay = createFinalHitOverlay(cell);
+      document.body.appendChild(finalHitOverlay);
+
+      root.classList.add("final-hit-cinematic");
+
+      requestAnimationFrame(() => {
+        finalHitOverlay?.classList.add("active");
+      });
+
+      return new Promise((resolve) => setTimeout(resolve, 850));
+    },
+
+    resolveFinalHit({ outcome }) {
+      root.classList.add(`final-hit-${outcome}`);
+      root.classList.add("final-hit-impacting");
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          finalHitTargetCell?.classList.remove("final-hit-target");
+          finalHitTargetCell = null;
+          resolve();
+        }, 650);
+      });
+    },
+
+    clearFinalHitCinematic,
+
     playFireSound(isComputer) {
       sound.board.fire(isComputer);
     },
@@ -903,7 +988,7 @@ export function View(root, sound) {
       sound.board.cellHover(type);
     },
 
-    hitCell(playerName, coords) {
+    hitCell(playerName, coords, { finalHit = false } = {}) {
       const cell = getCell(playerName, coords);
       if (!cell) return;
 
@@ -911,7 +996,12 @@ export function View(root, sound) {
       const hasShip = cell.classList.contains("ship");
 
       cell.classList.add("hit");
-      Effects.impact(cell, hasShip);
+      Effects.impact(cell, hasShip, { finalHit });
+
+      if (finalHit) {
+        root.classList.add("final-hit-impacting");
+        cell.classList.add("final-hit-impact");
+      }
 
       if (!hasShip) return;
 
@@ -943,21 +1033,30 @@ export function View(root, sound) {
       sound.ui.buttonClick();
     },
 
-    revealShip(playerName, shipID) {
+    revealShip(playerName, shipID, { finalHit = false } = {}) {
       const board = getBoard(playerName);
 
       Effects.stopPulse(board, shipID);
 
       return new Promise((resolve) => {
-        setTimeout(() => {
-          Effects.flash(board, shipID);
+        setTimeout(
+          () => {
+            if (finalHit) {
+              board
+                .querySelectorAll(`[data-shipid="${shipID}"]`)
+                .forEach((cell) => cell.classList.add("final-ship-collapse"));
+            }
 
-          board
-            .querySelectorAll(`[data-shipid="${shipID}"] svg`)
-            .forEach((svg) => svg.classList.remove("hide"));
+            Effects.flash(board, shipID);
 
-          setTimeout(resolve, 700);
-        }, 250);
+            board
+              .querySelectorAll(`[data-shipid="${shipID}"] svg`)
+              .forEach((svg) => svg.classList.remove("hide"));
+
+            setTimeout(resolve, finalHit ? 1200 : 700);
+          },
+          finalHit ? 450 : 250,
+        );
       });
     },
 
